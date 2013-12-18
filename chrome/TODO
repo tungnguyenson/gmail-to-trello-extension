@@ -1,0 +1,11 @@
+- [done] When popup is appeared, remember last choice
+- [done] Link back to Gmail, can search
+- [done] Detect most visible thread on screen
+- [done] refactor
+- [done] Check valid gmail's event (email thread mode)
+- attachments
+- add due date
+- validate textbox data (empty state)
+- Add email body to comments
+- Include "From <email> to Description"
+- Fix bug: Stop detecting & parsing after user changed form's data
