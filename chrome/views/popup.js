@@ -511,18 +511,10 @@ GmailToTrello.PopupView.prototype.reset = function() {
 GmailToTrello.PopupView.prototype.displaySubmitCompleteForm = function() {
     var data = this.data.newCard;
     log(this.data);
-    var donationForm = '<form target="_blank" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top"> \
-		<input type="hidden" name="cmd" value="_s-xclick"> \
-<input type="hidden" name="hosted_button_id" value="TP9UEC5U32RP6"> \
-<input type="image" style="float:none;padding-top:5px" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!"> \
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1"> \
-</form>';
     this.showMessage('A Trello card has been added <br /> <br /> \
 		 		<a href="' + data.url + '" target="_blank">' + data.title + '</a>' +
             '<br /><br /><hr />' +
-            '<b>Is it helpful and want more features?</b><br />Support my development by clicking the button below :) ' +
-            donationForm +
-            '<br>or give me your <a href="https://chrome.google.com/webstore/support/oceoildfbiaeclndnjknjpfaoofeekgl?hl=en">feature request</a> or <a href="https://chrome.google.com/webstore/detail/gmail-to-trello/oceoildfbiaeclndnjknjpfaoofeekgl/reviews?hl=en">rating</a>');
+            '<b>Show your support by giving your <a href="https://chrome.google.com/webstore/support/oceoildfbiaeclndnjknjpfaoofeekgl?hl=en#bug">Feedback</a> or <a href="https://chrome.google.com/webstore/detail/gmail-to-trello/oceoildfbiaeclndnjknjpfaoofeekgl/reviews?hl=en">Rating</a>');
 
     this.$popupContent.hide();
 };
