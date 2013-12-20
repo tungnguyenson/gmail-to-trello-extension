@@ -1,4 +1,4 @@
-gmail-to-trello-extension
+Gmail to Trello Extension
 =========================
 
-gmail-to-trello-extension
+There are some useful documents in ./docs folder
