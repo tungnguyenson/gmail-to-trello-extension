@@ -11,15 +11,33 @@
  extractData()
  */
 
+/**
+ * Debug variable
+ */
 var globalInit = false;
+
+/**
+ * Turn on/off debug mode with logging
+ */
 var logEnabled = false;
 
+
+/**
+ * Global log. A wrapper for console.log, depend on logEnabled flag
+ * @param  {any} data data to write log
+ */
 function log(data) {
     if (logEnabled)
         console.log(data);
 };
 
 
+/**
+ * Handle request from background.js
+ * @param  request      Request object, contain parameters
+ * @param  sender       
+ * @param  sendResponse Callback function
+ */
 function requestHandler(request, sender, sendResponse) {
     switch (request.message) {
         case "initialize":
@@ -41,11 +59,10 @@ function requestHandler(request, sender, sendResponse) {
 
 chrome.extension.onMessage.addListener(requestHandler);
 
-var GmailToTrello = GmailToTrello || {};
-
+var GmailToTrello = GmailToTrello || {}; // Namespace initialization
 var app = new GmailToTrello.App();
 
 /*
- *  UNIT TEST
+ *  UNIT TEST GOES HERE
  */
 

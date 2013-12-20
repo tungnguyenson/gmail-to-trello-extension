@@ -1,12 +1,17 @@
-var GmailToTrello = GmailToTrello || {};
+/**
+ * MenuControl
+ * @depend eventTarget.js
+ */
 
-GmailToTrello.Menu = function(itemSelector) {
+MenuControl = function(itemSelector) {
     this.items = jQuery(itemSelector);
     this.event = new EventTarget();
 
     for (var i = 0; i < this.items.length; i++) {
         this.items[i].menuIndex = i;
     }
+
+    //bind event
     var self = this;
     this.items.click(function() {
         var $current = self.items.parent().find('> .active:first');
@@ -23,7 +28,4 @@ GmailToTrello.Menu = function(itemSelector) {
         this.classList.add('active');
         self.event.fire('onMenuClick', {target: this, index: newIndex});
     });
-};
-
-GmailToTrello.Menu.prototype = {
 };

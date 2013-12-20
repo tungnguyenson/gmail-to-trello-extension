@@ -1,6 +1,7 @@
-/** GmailToTrelloApp application
+/** GmailToTrello Application
  */
-var GmailToTrello = GmailToTrello || {};
+
+var GmailToTrello = GmailToTrello || {}; // Namespace initialization
 
 GmailToTrello.App = function() {
     this.popupView = new GmailToTrello.PopupView();
@@ -95,28 +96,6 @@ GmailToTrello.App.prototype.bindEvents = function() {
 };
 
 GmailToTrello.App.prototype.initialize = function() {
-    // lazy loading, only inject a button
     this.data.isInitialized = false;
     this.gmailView.detect();
-/*        
-    var self = this;
-
-    if (this.gmailView.detect()) {
-        // just add click handler
-    }
-    else if (this.gmailView.detectEmailOpenningMode()) {
-        log('GTT::found email reading mode');
-
-        
-        //this.data.isInitialized = false;
-        //this.popupView.init();
-        
-        //demo
-        //this.popupView.$addCardButton.click();
-
-    }
-
-    // initialize
-*/    
-
 };

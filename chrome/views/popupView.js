@@ -385,7 +385,7 @@ GmailToTrello.PopupView.prototype.updateLists = function() {
     jQuery('#gttListMsg', this.$popup).hide();
     jQuery('#gttList', this.$popup).html(strOptions).show();
 
-    var listControl = new GmailToTrello.Menu('#gttList li');
+    var listControl = new MenuControl('#gttList li');
     listControl.event.addListener('onMenuClick', function(e, params) {
         self.validateData();
     });
