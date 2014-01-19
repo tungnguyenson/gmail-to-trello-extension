@@ -1,25 +1,25 @@
 /*
  Flows:
- 1st loading (onDocumentReady)
- loadUserSettings()
- initPopup() // html, data binding & event binding
- initTrelloData()
- extractData()
+    + 1st loading (onDocumentReady)
+        - loadUserSettings()
+        - initPopup() // html, data binding & event binding
+        - initTrelloData()
+        - extractData()
  
- 2nd loading (onButtonToggle)
- initTrelloData()
- extractData()
+    + 2nd loading (onButtonToggle)
+        - initTrelloData()
+        - extractData()
  */
-
-/**
- * Debug variable
- */
-var globalInit = false;
 
 /**
  * Turn on/off debug mode with logging
  */
 var logEnabled = false;
+
+/**
+ * Variable for debugging purpose only
+ */
+var globalInit = false;
 
 
 /**
@@ -46,7 +46,7 @@ function requestHandler(request, sender, sendResponse) {
             // enough delay for gmail finishes rendering
             log('GTT::tabs.onUpdated - complete');
             setTimeout(function() {
-                jQuery(document).ready(function() {
+                jQuery(document).ready(function() {                    
                     log('GTT::document.ready');
                     app.initialize();
                 });
@@ -61,6 +61,24 @@ chrome.extension.onMessage.addListener(requestHandler);
 
 var GmailToTrello = GmailToTrello || {}; // Namespace initialization
 var app = new GmailToTrello.App();
+
+// Inject code: for accessing Gmail's GLOBALS object
+// reference: http://stackoverflow.com/questions/9602022/chrome-extension-retrieving-gmails-original-message
+document.addEventListener('GTT_connectExtension', function(e) {
+    //console.log(e.detail);
+    app.data.userEmail = e.detail[10];
+//    console.log(app.data);
+});
+
+var actualCode = ['setTimeout(function() {', 
+    'document.dispatchEvent(new CustomEvent("GTT_connectExtension", { ',
+    '    detail: GLOBALS',
+    '}));}, 0);'].join('\n');
+
+var script = document.createElement('script');
+script.textContent = actualCode;
+(document.head||document.documentElement).appendChild(script);
+script.parentNode.removeChild(script);
 
 /*
  *  UNIT TEST GOES HERE

@@ -4,6 +4,10 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.1.3.1
+-------------
+- Add email address to specify where the card came from
+
 Version 2.1.3
 -------------
 - Is now support an option to assign yourself on creating card

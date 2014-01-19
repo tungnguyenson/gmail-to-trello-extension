@@ -186,7 +186,8 @@ GmailToTrello.Model.prototype.submit = function() {
     var data = this.newCard;
 
     if (data.useBacklink) {
-        var txtDirect = "[Direct](" + document.location.href + " \"Direct link to creator's email, not acccessible from anyone else\")";
+        var email = this.userEmail.replace('@', '\\@');
+        var txtDirect = "["+email+"](" + document.location.href + " \"Direct link to creator's email, not acccessible from anyone else\")";
 
         //subject = subject.replace('"', '');
         //subject = subject.replace(' ', '+');
@@ -213,7 +214,7 @@ GmailToTrello.Model.prototype.submit = function() {
         else
             txtSearch += "[Search](https://mail.google.com/mail/#search/" + subject + " \"Search by email subject\")";
 
-        data.description += "\n\n---\nImported from Gmail: " + txtSearch + " | " + txtDirect;
+        data.description += "\n\n---\nImported from Gmail: " + txtDirect + " | " + txtSearch;
         //after:2013/11/17 before:2013/11/20
         //#advanced-search/subset=all&has=bug&within=1d&date=Nov+18%2C+2013
         //
