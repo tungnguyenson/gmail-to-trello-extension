@@ -48,6 +48,7 @@ function requestHandler(request, sender, sendResponse) {
             setTimeout(function() {
                 jQuery(document).ready(function() {                    
                     log('GTT::document.ready');
+                    getGmailObject();
                     app.initialize();
                 });
             }, 1000);
@@ -62,25 +63,29 @@ chrome.extension.onMessage.addListener(requestHandler);
 var GmailToTrello = GmailToTrello || {}; // Namespace initialization
 var app = new GmailToTrello.App();
 
-// Inject code: for accessing Gmail's GLOBALS object
-// reference: http://stackoverflow.com/questions/9602022/chrome-extension-retrieving-gmails-original-message
-document.addEventListener('GTT_connectExtension', function(e) {
-    //console.log(e.detail);
-    app.data.userEmail = e.detail[10];
-//    console.log(app.data);
-});
+function getGmailObject() {
+    // Inject code: for accessing Gmail's GLOBALS object
+    // reference: http://stackoverflow.com/questions/9602022/chrome-extension-retrieving-gmails-original-message
+    document.addEventListener('GTT_connectExtension', function(e) {
+        //console.log(e.detail);
+        app.data.userEmail = e.detail[10];
+    //    console.log(app.data);
+    });
 
-var actualCode = ['setTimeout(function() {', 
-    'document.dispatchEvent(new CustomEvent("GTT_connectExtension", { ',
-    '    detail: GLOBALS',
-    '}));}, 0);'].join('\n');
+    var actualCode = ['setTimeout(function() {', 
+        'document.dispatchEvent(new CustomEvent("GTT_connectExtension", { ',
+        '    detail: GLOBALS',
+        '}));}, 0);'].join('\n');
 
-var script = document.createElement('script');
-script.textContent = actualCode;
-(document.head||document.documentElement).appendChild(script);
-script.parentNode.removeChild(script);
+    var script = document.createElement('script');
+    script.textContent = actualCode;
+    (document.head||document.documentElement).appendChild(script);
+    script.parentNode.removeChild(script);
+
+
+}
 
 /*
- *  UNIT TEST GOES HERE
+ *  UNIT TESTS GOES HERE. AFFECT TO EVERY PAGES
  */
 
