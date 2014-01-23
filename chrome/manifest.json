@@ -35,6 +35,7 @@
   ],
   "web_accessible_resources":[
     "images/icon-13.jpg",
+    "images/new_icon.gif",
     "lib/jquery.min.map"
   ],
   "homepage_url": "http://facebook.com/tungns",

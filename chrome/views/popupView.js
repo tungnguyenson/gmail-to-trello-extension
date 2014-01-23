@@ -50,6 +50,8 @@ GmailToTrello.PopupView.prototype.init = function() {
 	<div class="hdr clearfix"> \
 		<div class="userinfo"><span class="item">&nbsp;&nbsp;GMail to Trello</span> \
 		</div> \
+        <span class="item">|</span> \
+        <a class="item" href="https://trello.com/b/CGU9BYgd/gmail-to-trello-development" target="_blank"><img src="' + chrome.extension.getURL('images/new_icon.gif') + '" /> Features/Bugs</a> \
    		<a class="item" href="javascript:void(0)" id="close-button">[x] Close</a> 	\
 	</div> \
 	<div class="popupMsg">Loading...</div> \
@@ -514,7 +516,7 @@ GmailToTrello.PopupView.prototype.displaySubmitCompleteForm = function() {
     this.showMessage('A Trello card has been added <br /> <br /> \
 		 		<a href="' + data.url + '" target="_blank">' + data.title + '</a>' +
             '<br /><br /><hr />' +
-            '<b>Show your support by giving your <a href="https://chrome.google.com/webstore/support/oceoildfbiaeclndnjknjpfaoofeekgl?hl=en#bug">Feedback</a> or <a href="https://chrome.google.com/webstore/detail/gmail-to-trello/oceoildfbiaeclndnjknjpfaoofeekgl/reviews?hl=en">Rating</a>');
+            '<b>Show your support by giving your <a href="https://chrome.google.com/webstore/detail/gmail-to-trello/oceoildfbiaeclndnjknjpfaoofeekgl/reviews?hl=en">rating</a>');
 
     this.$popupContent.hide();
 };
