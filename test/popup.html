@@ -1,0 +1,109 @@
+<link rel="stylesheet" type="text/css" href="https://plus.google.com/_/scs/apps-static/_/ss/k=oz.sbw_bss.-1smgvanzin92w.L.W.O/rs=AItRSTNCcL4cfF-dTrM8Z7IVww5VRtSevA"/>
+<link rel="stylesheet" type="text/css" href="https://plus.google.com/_/scs/apps-static/_/ss/k=oz.recentposts.xax01ynfb4he.L.W.O/am=CA/rs=AItRSTOQ1PbwbApidfgypDGlhOTEigpOgA"/>
+<link rel="stylesheet" type="text/css" href="../chrome/style.css"/>
+<script type="text/javascript" src="../chrome/lib/jquery.min.js"></script>
+<script type="text/javascript" src="../chrome/lib/jquery-ui-1.10.3.custom.min.js"></script>
+<script type="text/javascript" src="../chrome/lib/eventTarget.js"></script>
+<script type="text/javascript" src="../chrome/lib/menuControl.js"></script>
+<meta charset="utf-8">
+
+<div id="gttPopup" class="J-M jQjAxd open" style="right:0; width: 500px">
+    <div id="gttPopupSlider" class="ui-draggable"></div>
+    <div class="inner">
+        <div class="hdr clearfix">
+            <div class="userinfo">
+                <a class="item" href="https://trello.com/tungnguyenson" target="_blank">
+                    <img class="member-avatar" src="https://trello-avatars.s3.amazonaws.com/890b425b01eea6ec255438ab5c6385f8/30.png">
+                </a>	<a class="item" href="https://trello.com/tungnguyenson" target="_blank">tungnguyenson</a> 	<span class="item">|</span> 	<a class="item signOutButton" href="javascript:void(0)">Logout?</a>
+            </div>
+            <span class="item">|</span> 
+            <a class="item" href="https://trello.com/b/CGU9BYgd/gmail-to-trello-development" target="_blank">
+                <img src="chrome-extension://fpmfeohlnanankfeefaffagnkbmgcldg/images/new_icon.gif">Features/Bugs</a>	<a class="item" href="javascript:void(0)" id="close-button">[x] Close</a> 
+        </div>
+        <div class="popupMsg" style="display: none;">Loading Trello data...</div>
+        <div class="content menuInnerContainer hidden" style="display: block;">
+            <dl>
+                <dt>Board.:</dt>
+                <dd>
+                    <select id="gttBoard">
+                        <option value="">Please select ...</option>
+                        <option value="5234e877fac59a0d540060cc">My Boards » Board has no Org</option>
+                        <option value="52e1397addf85d4751f99319">My Boards » Gmail To Trello Development</option>
+                        <option value="5152cba413c787aa1e00358c">My Boards » IT - Equipment Tool</option>
+                        <option value="5268ff76874be19a6e00528e">My Boards » My new board</option>
+                        <option value="515becd3e9d9a5cf4800837d">My Boards » Tiki - SEO</option>
+                        <option value="515c843d2b6946fb600005c5">My Boards » Tiki - System</option>
+                        <option value="527edf9f4fc854947300a9c0">My Boards » Tiki Roadmap 2014</option>
+                        <option value="51cc311df58462cf2c00091c">My Boards » Todo</option>
+                        <option value="516d6d133bdb27dc0f00089d">My Boards » Todo - 2013</option>
+                        <option value="516d6ecf519c2a04780000f6">My Boards » Todo - This month (April)</option>
+                        <option value="514321bd285483120c0013e2">My Boards » Todo - Today</option>
+                        <option value="4fe1a359700bbe3d205e2a28">My Boards » Welcome Board</option>
+                        <option value="_">-----</option>
+                        <option value="520b0d7d81aeaa6c0600004e">Tiki Mobile » Development</option>
+                        <option value="520b0d8ff11f77df150000dc">Tiki Mobile » Planning</option>
+                        <option value="523fe521ab45ca843d004a84">Tiki Mobile » [iOS] Developement</option>
+                        <option value="_">-----</option>
+                        <option value="522e7bfcee85598b19005456">Tiki.vn » Backend</option>
+                        <option value="52382201b71c250138001c8b">Tiki.vn » Backend Development</option>
+                        <option value="4f7aaae4884e41fa4b5ebe02">Tiki.vn » Bugs only!</option>
+                        <option value="5121b4c2a28e3a03470021cd">Tiki.vn » IT</option>
+                        <option value="5152cbc8e6c156d907003a6d">Tiki.vn » IT - Equipment Tool</option>
+                        <option value="4fed12bc2138223d613bc37d">Tiki.vn » Inbox</option>
+                        <option value="5104d1f2e002eb8d5600241c">Tiki.vn » Lab</option>
+                        <option value="50a44fbf0fdb1b383f00d48f">Tiki.vn » Launched 2012</option>
+                        <option value="50eb8b56801918b44c000c3f">Tiki.vn » Launched 2013</option>
+                        <option value="515bece9e147a75d4b00899e">Tiki.vn » Marketing</option>
+                        <option value="522ffbe0083b6cb547000106">Tiki.vn » New platform</option>
+                        <option value="518c4f2187092e331e0045be">Tiki.vn » OS Backlog</option>
+                        <option value="4fb4b2b68a035da13f59b392">Tiki.vn » Product Planning</option>
+                        <option value="4fed0d6b5ba1eb606b25ca19">Tiki.vn » Product Roadmap 2012</option>
+                        <option value="50e7f267ba2a89635c0016e3">Tiki.vn » Product Roadmap 2013</option>
+                        <option value="5177a2752f7344f71f003394">Tiki.vn » QA and Technical Support</option>
+                        <option value="4fed81f4841320c446047157">Tiki.vn » System &amp; Engineering</option>
+                        <option value="518a0f025912858b080022f8">Tiki.vn » TOS Development</option>
+                        <option value="52dc97229868f85f7aecdad2">Tiki.vn » Talaria Frontend</option>
+                        <option value="4e7962f143cecbc072fceeaf">Tiki.vn » Tiki Development</option>
+                        <option value="5188cc20ae1a983f51011b46">Tiki.vn » Tiki Mobile</option>
+                        <option value="527eee098a4abad21f0041af">Tiki.vn » Tiki Roadmap 2014</option>
+                        <option value="510770dba3c834f225008549">Tiki.vn » Tiki.vn upgrading Q1-2013</option>
+                        <option value="_">-----</option>
+                        <option value="4fe5b8ddc56570256a0ba8c1">Trenity » Treboard</option>
+                        <option value="515c8408cc0b92957d000789">Trenity » Welcome copy</option>
+                    </select>
+                </dd>
+                <dt>List:</dt>
+                <dd class="clearfix listrow">
+                    <span id="gttListMsg" style="display: none;">Loading...</span> 
+                    <ul id="gttList" style="display: block;">
+                        <li value="5234e877fac59a0d540060cd" class="active">To Do</li>
+                        <li value="5234e877fac59a0d540060ce">Doing</li>
+                        <li value="5234e877fac59a0d540060cf">Done</li>
+                    </ul>
+                </dd>
+                <dt>Title:</dt>
+                <dd>
+                    <input type="text" id="gttTitle" style="width: 396px;">
+                </dd>
+                <dt>Description:</dt>
+                <dd>
+                    <textarea id="gttDesc" style="height: 180px; width: 396px;"></textarea>
+                </dd>
+                <dd>
+                    <input type="checkbox" checked="checked" id="chkBackLink">
+                    <label for="chkBackLink">Link back to GMail</label>
+                    <input type="checkbox" checked="checked" id="chkSelfAssign" style="margin-left:30px">
+                    <label for="chkSelfAssign">Assign me to this card</label>
+                </dd>
+                <dd>
+                    <input type="button" id="addTrelloCard" value="Add to Trello card">
+                </dd>
+            </dl>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+	var listControl = new MenuControl('#gttList li');
+</script>
