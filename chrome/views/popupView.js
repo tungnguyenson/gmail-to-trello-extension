@@ -57,8 +57,8 @@ GmailToTrello.PopupView.prototype.init = function() {
 	<div class="popupMsg">Loading...</div> \
         <div class="content menuInnerContainer hidden"> \
             <dl> \
-                <dt>Orgs. filter:</dt> \
-                <dd> \
+                <dt style="display:none">Orgs. filter:</dt> \
+                <dd style="display:none"> \
                    <select id="gttOrg"> \
                       <option value="all">All</option> \
                       <option value="-1">My Boards</option> \
@@ -280,7 +280,8 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
     }
     var $org = jQuery('#gttOrg', this.$popup);
     $org.html(strOptions);
-
+    $org.val('all');
+/*
     if (this.data.settings.orgId) {
         var settingId = this.data.settings.orgId;
         for (var i = 0; i < data.trello.orgs.length; i++) {
@@ -291,7 +292,7 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
             }
         }
     }
-
+*/
     this.updateBoards();
 
     if (data.settings.hasOwnProperty('useBacklink')) {

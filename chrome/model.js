@@ -23,6 +23,9 @@ GmailToTrello.Model.prototype.init = function() {
         log('GTT::settings:');
         if (response.hasOwnProperty("storage"))
             self.settings = JSON.parse(response.storage);
+        if (self.settings.hasOwnProperty('debugMode') && self.settings.debugMode) 
+            logEnabled = true;
+        log('Here are user settings:');
         log(self.settings);
     });
 
@@ -100,7 +103,7 @@ GmailToTrello.Model.prototype.loadTrelloData = function() {
         if (data.hasOwnProperty('idOrganizations') && data.idOrganizations.length > 0) {
             log('Getting user orgs');
             Trello.get('members/me/organizations', {fields: "displayName"}, function(data) {
-                //log(data);
+                log(data);
                 for (var i = 0; i < data.length; i++) {
                     self.trello.orgs.push(data[i]);
                 }
@@ -118,7 +121,7 @@ GmailToTrello.Model.prototype.loadTrelloData = function() {
                     if (data[i].idOrganization === null)
                         data[i].idOrganization = -1;
                 }
-                //log(data);
+                log(data);
                 self.trello.boards = data;
                 self.checkTrelloDataReady();
             });

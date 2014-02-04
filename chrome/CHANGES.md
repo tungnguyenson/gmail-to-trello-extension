@@ -4,6 +4,12 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.1.3.4
+-------------
+- Add "Options" page
+- Fix no-wrap error in new card's link displays after creation
+- Remove Organization filter
+
 Version 2.1.3.1
 -------------
 - Add email address to specify where the card came from
