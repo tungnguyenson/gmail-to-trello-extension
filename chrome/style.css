@@ -24,6 +24,7 @@
     opacity: 0.95;
     z-index: 9998;
     overflow: visible;
+    white-space: normal;
 }
 
 #gttPopupSlider {
