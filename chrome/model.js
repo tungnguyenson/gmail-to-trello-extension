@@ -25,6 +25,8 @@ GmailToTrello.Model.prototype.init = function() {
             self.settings = JSON.parse(response.storage);
         if (self.settings.hasOwnProperty('debugMode') && self.settings.debugMode) 
             logEnabled = true;
+        if (self.settings.orgId == '-1')
+            self.settings.orgId = 'all';
         log('Here are user settings:');
         log(self.settings);
     });
