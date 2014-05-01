@@ -22,7 +22,7 @@
     background: #FEFEFE;
     padding:0;
     opacity: 0.95;
-    z-index: 9998;
+    z-index: 99998; /*still behind the slider*/
     overflow: visible;
     white-space: normal;
 }
@@ -33,7 +33,7 @@
 	width:3px;
     border-top:32px solid #0088C3;/*#0088C3;*/
 	background: #0088C3;
-    z-index: 9999;
+    z-index: 99999;
     cursor: col-resize;
 
 }
