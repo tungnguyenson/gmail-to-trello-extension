@@ -7,7 +7,7 @@ GmailToTrello.PopupView = function() {
 
     this.data = null;
 
-    this.MIN_WIDTH = 420;
+    this.MIN_WIDTH = 450;
 
     // process
     this.waitingHiddenThread = false;
@@ -111,7 +111,7 @@ GmailToTrello.PopupView.prototype.init = function() {
     //log('defaultLeft: '+this.$addCardButton.position().left);
     //log('final left: '+left);
 
-    this.$popup.css('left', left + 'px');
+    //this.$popup.css('left', left + 'px');
     this.onResize();
 
     this.bindEvents();
@@ -169,8 +169,10 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
     $slider.draggable({axis: "x", containment: [0, 0, constraintRight, 0],
         stop: function(event, ui) {
             var distance = ui.position.left - ui.originalPosition.left;
-            self.$popup.css('left', (self.$popup.position().left + distance) + 'px');
-            $slider.css('left', ui.originalPosition.left + 'px');
+            self.$popup.css('width', self.$popup.width()-distance+'px');
+            $slider.css('left', '0');
+            //self.$popup.css('left', (self.$popup.position().left + distance) + 'px');
+            //$slider.css('left', ui.originalPosition.left + 'px');
             self.onResize();
         }
     });

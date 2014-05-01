@@ -15,7 +15,7 @@
     position: absolute; 
     max-height: none;
     right:0;
-    /*min-height: 410px; */
+    min-width: 450px;
     -webkit-user-select: none; overflow: hidden; 
     border-top:2px solid #ccc;/*#0088C3;*/
     border-bottom:2px solid #ccc;
