@@ -1,22 +1,22 @@
-.hidden {display: none}
+#gttPopup .hidden {display: none}
 
-.clearfix:before,  
-.clearfix:after {  
-    content: " ";  
-    display: table;  
-}  
-.clearfix:after {  
-    clear: both;  
-}  
+.clearfix:before,
+.clearfix:after {
+    content: " ";
+    display: table;
+}
+.clearfix:after {
+    clear: both;
+}
 /* toolbar holder */
 .iH div {position: static}
 
 #gttPopup {
-    position: absolute; 
+    position: absolute;
     max-height: none;
     right:0;
     min-width: 450px;
-    -webkit-user-select: none; overflow: hidden; 
+    -webkit-user-select: none; overflow: hidden;
     border-top:2px solid #ccc;/*#0088C3;*/
     border-bottom:2px solid #ccc;
     background: #FEFEFE;
@@ -28,11 +28,11 @@
 }
 
 #gttPopupSlider {
-	position: absolute;
-	left:0;top:-2px;bottom:-2px;
-	width:3px;
+    position: absolute;
+    left:0;top:-2px;bottom:-2px;
+    width:3px;
     border-top:32px solid #0088C3;/*#0088C3;*/
-	background: #0088C3;
+    background: #0088C3;
     z-index: 99999;
     cursor: col-resize;
 
@@ -58,7 +58,7 @@
 ul#gttList {float:left;margin:0;padding:0;}
 /*
 #gttList li {float:left;margin:0 10px 0 0;padding:5px 10px;list-style: none;border: 1px solid #ccc;border-radius:3px;cursor:pointer;background: #F2F2F2;font-size:11px;}
-*/
+ */
 #gttPopup .listrow {min-height: 31px}
 #gttList li {float:left;margin:0 10px 5px 0;padding:4px 10px;list-style: none;border-radius:3px;border: 1px solid #ccc;border-top-width:5px;cursor:pointer;background: #F2F2F2;font-size:11px;cursor: pointer;font-weight: bold;color:#666;}
 #gttList li:hover, #gttList li.active, #gttList li.active:hover {border-color:#3086B7;color:#05679E;}
@@ -77,7 +77,7 @@ ul#gttList {float:left;margin:0;padding:0;}
 /*
 #gttPopup #closeButton {z-index:9999;position: absolute;top:0;right:0;padding: 5px 15px;border: 1px solid #CBCBCB;background: #F2F2F2;color:#000;text-decoration: none}
 #gttPopup #closeButton:hover {background: #ccc}
-*/
+ */
 
 #gttPopup .hdr {font-weight: bold;vertical-align: middle;line-height: 30px;height: 30px;background:#ECEAED;border-bottom: 1px solid #ccc}
 #gttPopup .hdr a {text-decoration: none}
