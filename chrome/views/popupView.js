@@ -55,7 +55,7 @@ GmailToTrello.PopupView.prototype.init = function() {
    		<a class="item" href="javascript:void(0)" id="close-button">[x] Close</a> 	\
 	</div> \
 	<div class="popupMsg">Loading...</div> \
-        <div class="content menuInnerContainer hidden"> \
+        <div class="content menuInnerContainer" style="display:none"> \
             <dl> \
                 <dt style="display:none">Orgs. filter:</dt> \
                 <dd style="display:none"> \
@@ -517,9 +517,7 @@ GmailToTrello.PopupView.prototype.displaySubmitCompleteForm = function() {
     var data = this.data.newCard;
     log(this.data);
     this.showMessage('A Trello card has been added <br /> <br /> \
-		 		<a href="' + data.url + '" target="_blank">' + data.title + '</a>' +
-            '<br /><br /><hr />' +
-            '<b>Show your support by giving your <a href="https://chrome.google.com/webstore/detail/gmail-to-trello/oceoildfbiaeclndnjknjpfaoofeekgl/reviews?hl=en">rating</a>');
+		 		<a href="' + data.url + '" target="_blank">' + data.title + '</a>');
 
     this.$popupContent.hide();
 };
