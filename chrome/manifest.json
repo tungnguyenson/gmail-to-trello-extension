@@ -42,7 +42,8 @@
   "offline_enabled": false,
   "permissions": [
     "tabs", 
-    "http://*/*", "https://*/*"
+    "https://mail.google.com/*",
+    "https://*.trello.com/*"
   ],
   "options_page": "options.html"
 }
