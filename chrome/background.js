@@ -29,7 +29,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 });
 
 function checkForValidUrl(tab) {
-    if (tab.url.indexOf('/mail.google.com/') >= 0) {
+    if (tab.url.indexOf('https://mail.google.com/') == 0) {
         chrome.pageAction.show(tab.id);
 
         console.log(tab.url);

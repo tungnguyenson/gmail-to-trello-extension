@@ -248,17 +248,16 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
 
     //bind trello data
     var user = data.trello.user;
-    var strUserAvatarHtml = '';
-    if (user.avatarUrl)
-        strUserAvatarHtml = '<img class="member-avatar" src="' + user.avatarUrl + '"/>';
-    else
-        strUserAvatarHtml = '<span class="member-avatar">' + user.username.substr(0, 1).toUpperCase() + '</span>';
-    var strUserHtml = '<a class="item" href="' + user.url + '" target="_blank">' + strUserAvatarHtml + '</a> \
-			<a class="item" href="' + user.url + '" target="_blank">' + user.username + '</a> 	\
-			<span class="item">|</span> \
-			<a class="item signOutButton" href="javascript:void(0)">Logout?</a>';
-
-    jQuery('.userinfo', this.$popup).html(strUserHtml);
+    var $userAvatar = '';
+    if (user.avatarUrl) {
+        $userAvatar = $('<img class="member-avatar">').attr('src', user.avatarUrl);
+    }
+    else {
+        $userAvatar = $('<span class="member-avatar">').text(user.username.substr(0, 1).toUpperCase());
+    }
+    $('.userinfo', this.$popup).append($('<a class="item">').attr('href', user.url).attr('target', '_blank').append($userAvatar));
+    $('.userinfo', this.$popup).append($('<a class="item">').attr('href', user.url).attr('target', '_blank').append(user.username));
+    $('.userinfo', this.$popup).append($('<span class="item">|</span> <a class="item signOutButton" href="javascript:void(0)">Logout?</a>'));
 
     jQuery('.signOutButton', this.$popup).click(function() {
         self.showMessage('Sorry! I have not known yet :(. You may try the following: \
@@ -275,13 +274,12 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
 
 
     var orgs = data.trello.orgs;
-    var strOptions = '<option value="all">All</option>';
+    var $org = $('#gttOrg', this.$popup);
+    $org.append($('<option value="all">All</option>'));
     for (var i = 0; i < orgs.length; i++) {
         var item = orgs[i];
-        strOptions += '<option value="' + item.id + '">' + item.displayName + '</option>';
+        $org.append($('<option>').attr('value', item.id).append(item.displayName));
     }
-    var $org = jQuery('#gttOrg', this.$popup);
-    $org.html(strOptions);
     $org.val('all');
 /*
     if (this.data.settings.orgId) {
@@ -345,20 +343,20 @@ GmailToTrello.PopupView.prototype.updateBoards = function() {
 
     var boards = this.data.trello.boards;
 
-    var strOptions = '<option value="">Please select ... </option>';
+
+    var $board = jQuery('#gttBoard', this.$popup);
+    $board.append($('<option value="">Please select ... </option>'));
     for (var i = 0; i < filteredOrgs.length; i++) {
         var orgItem = filteredOrgs[i];
         if (i > 0 && filteredOrgs.length > 1)
-            strOptions += '<option value="_">-----</option>';
+            $board.append($('<option value="_">-----</option>'));
         for (var j = 0; j < boards.length; j++) {
             if (boards[j].idOrganization == orgItem.id) {
                 var item = boards[j];
-                strOptions += '<option value="' + item.id + '">' + orgItem.displayName + ' &raquo; ' + item.name + '</option>';
+                $board.append($('<option>').attr('value', item.id).append(orgItem.displayName + ' &raquo; ' + item.name));
             }
         }
     }
-    var $board = jQuery('#gttBoard', this.$popup);
-    $board.html(strOptions);
 
     var settings = this.data.settings;
     if (settings.orgId && settings.orgId == orgId && settings.boardId) {
@@ -378,17 +376,15 @@ GmailToTrello.PopupView.prototype.updateBoards = function() {
 GmailToTrello.PopupView.prototype.updateLists = function() {
     var self = this;
     var lists = this.data.trello.lists;
-    var strOptions = '';
+    var $gtt = $('#gttList', this.$popup);
+
     for (var i = 0; i < lists.length; i++) {
         var item = lists[i];
-//        strOptions += '<option value="' + item.id + '">' + item.name + '</option>';
-        strOptions += '<li value="' + item.id + '">' + item.name + '</li>';
-//            if (item.id == saveSettingId)
-//                saveSettingFound = true;
+        $gtt.append($('<li>').attr('value', item.id).append(item.name));
     }
+    $gtt.show();
 
     jQuery('#gttListMsg', this.$popup).hide();
-    jQuery('#gttList', this.$popup).html(strOptions).show();
 
     var listControl = new MenuControl('#gttList li');
     listControl.event.addListener('onMenuClick', function(e, params) {
@@ -516,8 +512,16 @@ GmailToTrello.PopupView.prototype.reset = function() {
 GmailToTrello.PopupView.prototype.displaySubmitCompleteForm = function() {
     var data = this.data.newCard;
     log(this.data);
-    this.showMessage('A Trello card has been added <br /> <br /> \
-		 		<a href="' + data.url + '" target="_blank">' + data.title + '</a>');
 
+    // NB: this is a terrible hack. The existing showMessage displays HTML by directly substituting text strings.
+    // This is very dangerous (very succeptible to XSS attacks) and generally bad practice.  It should be either 
+    // switched to a templating system, or changed to use jQuery. For now, I've used this to fix
+    // vulnerabilities without having to completely rewrite the substitution part of this code.
+    // TODO(vijayp): clean this up in the future
+    var jQueryToRawHtml = function(jQueryObject) {
+        return jQueryObject.prop('outerHTML');
+    }
+    this.showMessage('A Trello card has been added <br /> <br />' + 
+        jQueryToRawHtml($('<a>').attr('href', data.url).attr('target', '_blank').append(data.title)));
     this.$popupContent.hide();
 };
