@@ -8,6 +8,7 @@ GmailToTrello.GmailView = function() {
     
     this.event = new EventTarget();
     this.data = null;
+    this.gmailEmailData = null; // GMail API email data
 
     this.$root = null;
 
@@ -138,68 +139,34 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     if (this.parsingData)
         return;
 
-    this.parsingData = true;
-    var startTime = new Date().getTime();
     var data = {};
 
-    // subject
-    this.$emailSubject = jQuery(this.selectors.emailSubject, this.$root);
-    data.subject = this.$emailSubject.text().trim();
+    //console.log("parseData");
+    //console.log(this.gmailEmailData);
+    // Last mail in thread
+    var lastMail = this.gmailEmailData.threads[this.gmailEmailData.last_email];
 
-    // find active email
-    if (this.layoutMode === this.LAYOUT_SPLIT)
-        $viewport = jQuery(this.selectors.viewportSplit, this.$root);
-    else 
-        $viewport = jQuery(this.selectors.viewport, this.$root);
-    log($viewport);
-    var y0 = $viewport.offset().top;
-    //log(y0);
-    var $visibleMail = null;
-    // parse expanded emails again
-    jQuery(this.selectors.expandedEmails, this.$root).each(function() {
-//        log(this);
-//        log(this.offsetTop + ':'+jQuery(this).offset().top);
-        $this = jQuery(this);
-        if ($visibleMail === null && $this.offset().top >= y0)
-            $visibleMail = $this;
-    });
+    data.subject = lastMail.subject;
+    data.timestamp = lastMail.timestamp;
+    data.time = new Date(data.timestamp).toString('dd.MM.yyyy HH:mm');
+    data.date = new Date(data.timestamp).toString('dd.MM.yyyy');
 
-    // email body
-    var $emailBody = jQuery(this.selectors.emailBody, $visibleMail);
-    var bodyText = $emailBody[0].innerText;
-    //data.body = bodyText.trim();
-    //var bodyText = $emailBody.text();
-    //log(bodyText);
-    //remove spaces
-    bodyText = bodyText.replace(/\s{2,}/g, function(str) {
-        if (str.indexOf("\n\n\n") !== false)
-            return "\n\n";
-        else if (str.indexOf("\n") !== false)
-            return "\n";
-        else
-            return ' ';
-    });
+    var bodyText = lastMail.content_html.trim();
+    bodyText = bodyText.replace(/<br[\w\/]*>/ig, "\n");
+    bodyText = bodyText.replace(/<\/div>/ig, "</div>\n");
+    bodyText = bodyText.replace(/<\/p>/ig, "</p>\n\n");
+    bodyText = $("<html>"+bodyText+"</html>");
+    bodyText = bodyText.text();
+
+    // replace more than two newlines
+    bodyText = bodyText.replace(/\n\n+/g, "\n\n");
+
     data.body = bodyText.trim();
+    data.from = lastMail.from;
 
-    // timestamp
-    var $time = jQuery(this.selectors.timestamp, $visibleMail);
-    var timeValue = ($time) ? $time.attr('title') : '';
-    timeValue = timeValue ? timeValue.replace('at', '') : '';
-//    log(timeValue);
-    if (timeValue !== '') {
-        timeValue = Date.parse(timeValue);
-//        log(timeValue);
-        if (timeValue)
-            timeValue = timeValue.toString('MMM d, yyyy');
-    }
+    //console.log(data);
 
-    data.time = timeValue;
-    //log(data);
-    
-    var t = new Date().getTime();
-    //log(data);
-    //log('Elapsed: '+(t-startTime)/1000);
     this.parsingData = false;
 
-    return data;    
+    return data;
 };

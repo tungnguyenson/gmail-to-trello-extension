@@ -85,6 +85,37 @@ function getGmailObject() {
 
 }
 
+// Inject gmail.js
+var j = document.createElement('script');
+j.src = chrome.extension.getURL('lib/jquery.min.js');
+(document.head || document.documentElement).appendChild(j);
+
+var g = document.createElement('script');
+g.src = chrome.extension.getURL('lib/gmail.js');
+(document.head || document.documentElement).appendChild(g);
+
+var s = document.createElement('script');
+s.src = chrome.extension.getURL('lib/gmail-api-script.js');
+(document.head || document.documentElement).appendChild(s);
+
+
+// Listen, if a Gmail mail is opened
+window.addEventListener("message", function(event) {
+    // We only accept messages from ourselves
+    if (event.source != window)
+        return;
+
+    if (event.data.type && (event.data.type == "GTT_openEmail")) {
+        //console.log("Content script received");
+        //console.log(event.data.emailData);
+
+        app.gmailView.gmailEmailData = event.data.emailData;
+        //console.log(app.gmailView.gmailEmailData);
+    }
+}, false);
+
+
+
 /*
  *  UNIT TESTS GOES HERE. AFFECT TO EVERY PAGES
  */
