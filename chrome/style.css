@@ -1,22 +1,22 @@
 
-.clearfix:before,  
-.clearfix:after {  
-    content: " ";  
-    display: table;  
-}  
-.clearfix:after {  
-    clear: both;  
-}  
+.clearfix:before,
+.clearfix:after {
+    content: " ";
+    display: table;
+}
+.clearfix:after {
+    clear: both;
+}
 /* toolbar holder */
 .iH div {position: static}
 
 #gttPopup {
-    position: absolute; 
+    position: absolute;
     max-height: none;
     right:0;
     min-width: 450px;
     max-width: 800px;
-    -webkit-user-select: none; overflow: hidden; 
+    -webkit-user-select: none; overflow: hidden;
     border-top:2px solid #ccc;/*#0088C3;*/
     border-bottom:2px solid #ccc;
     background: #FEFEFE;
@@ -25,6 +25,11 @@
     z-index: 99998; /*still behind the slider*/
     overflow: visible;
     white-space: normal;
+}
+
+}
+#gttDesc {
+height: 100px; width: 339px; z-index: 1; position: relative; line-height: normal; font-size: 13px; -webkit-transition: none; transition: none; overflow: auto; background: transparent !important;
 }
 
 #gttPopupSlider {
@@ -68,7 +73,7 @@ ul#gttList {float:left;margin:0;padding:0;}
 
 #gttPopup input,#gttPopup select,#gttPopup option {font-size:12px;}
 
-#gttPopup input[type=button] {font-size:14px;padding:5px 18px;color:#fff;background:linear-gradient(to bottom, #24a828 0, #1b7e1e 100%);border:0;border-radius:3px;cursor: pointer}
+#gttPopup input[type=button] {font-size:14px;padding:5px 18px;color:#fff;background:linear-gradient(to top, #24a828 0, #1b7e1e 100%);border:0;border-radius:3px;cursor: pointer}
 #gttPopup input[type=button]:hover {background:linear-gradient(to bottom, #1f9323 0, #166919 100%)}
 #gttPopup input[type=text], #gttPopup textarea {padding:3px;border:1px solid #A1A1A1;border-radius: 3px}
 
