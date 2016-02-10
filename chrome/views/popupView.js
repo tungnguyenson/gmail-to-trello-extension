@@ -48,7 +48,7 @@ GmailToTrello.PopupView.prototype.init = function() {
     <div id="gttPopupSlider"></div> \
     <div class="inner"> \
 	<div class="hdr clearfix"> \
-		<div class="userinfo"><span class="item">&nbsp;&nbsp;GMail to Trello</span> \
+		<div class="userinfo"> \
 		</div> \
         <span class="item">|</span> \
         <a class="item" href="https://trello.com/b/CGU9BYgd/gmail-to-trello-development" target="_blank"><img src="' + chrome.extension.getURL('images/new_icon.gif') + '" /> Features/Bugs</a> \
@@ -65,7 +65,7 @@ GmailToTrello.PopupView.prototype.init = function() {
                    </select> \
                 </dd> \
                 <dt>Board.:</dt> \
-                <dd><select id="gttBoard"><option value="">-</option></select></dd> \
+                <dd><select id="gttBoard"></select></dd> \
                 <dt>List:</dt> \
                 <dd class="clearfix listrow">\
                     <span id="gttListMsg">Pickup a board above</span>\
@@ -348,8 +348,9 @@ GmailToTrello.PopupView.prototype.updateBoards = function() {
     $board.append($('<option value="">Please select ... </option>'));
     for (var i = 0; i < filteredOrgs.length; i++) {
         var orgItem = filteredOrgs[i];
-        if (i > 0 && filteredOrgs.length > 1)
-            $board.append($('<option value="_">-----</option>'));
+        // This is unnessessary because a "please select" option is already existed above
+        // if (i > 0 && filteredOrgs.length > 1)
+        //     $board.append($('<option value="_">-----</option>'));
         for (var j = 0; j < boards.length; j++) {
             if (boards[j].idOrganization == orgItem.id) {
                 var item = boards[j];
