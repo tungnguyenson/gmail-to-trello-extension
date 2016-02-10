@@ -119,12 +119,23 @@ GmailToTrello.Model.prototype.loadTrelloData = function() {
             log('Getting user boards');
             self.trello.boards = null;
             Trello.get('members/me/boards', {fields: "closed,name,idOrganization"}, function(data) {
+                var validData = Array();
                 for (var i = 0; i < data.length; i++) {
                     if (data[i].idOrganization === null)
                         data[i].idOrganization = -1;
+
+                    // Only accept opening boards
+                    if (i==0) {
+                        log(data[i]);
+                    }
+                    if (data[i].closed != true) {
+                        validData.push(data[i]);
+                    }
                 }
+                log('Boards data:');
                 log(data);
-                self.trello.boards = data;
+                log(validData);
+                self.trello.boards = validData;
                 self.checkTrelloDataReady();
             });
         }
