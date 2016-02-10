@@ -98,4 +98,14 @@ GmailToTrello.App.prototype.bindEvents = function() {
 GmailToTrello.App.prototype.initialize = function() {
     this.data.isInitialized = false;
     this.gmailView.detect();
+
+    service = analytics.getService('gmail_to_trello');
+
+    // Get a Tracker using your Google Analytics app Tracking ID.
+    tracker = service.getTracker('UA-8469046-1');
+
+    // Record an "appView" each time the user launches your app or goes to a new
+    // screen within the app.
+    tracker.sendAppView('PopupView');
+
 };

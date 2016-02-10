@@ -1,6 +1,6 @@
 {
   "name": "GMail to Trello",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "manifest_version": 2,
   "description": "A free tool for GMail and Trello integration, allow creating new card from email thread and easily searching back",
   "icons": {
@@ -22,6 +22,7 @@
           "lib/jquery-ui-1.10.3.custom.min.js", 
           "lib/trello.min.js", 
           "lib/date.js", 
+          "lib/google-analytics-bundle.js", 
           "lib/eventTarget.js", 
           "lib/menuControl.js", 
           "lib/waitCounter.js", 
@@ -43,7 +44,9 @@
   "permissions": [
     "tabs", 
     "https://mail.google.com/*",
-    "https://*.trello.com/*"
+    "https://*.trello.com/*",
+    "https://www.google-analytics.com/",
+    "storage"    
   ],
   "options_page": "options.html"
 }
