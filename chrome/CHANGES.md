@@ -4,6 +4,12 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.1.4
+---------------
+- Fix some XSS bugs. Reduce URL permission. Thanks to Vijay for your Pull Request
+- Don't show up closed boards.
+- Fix "Add to card" button UI
+
 Version 2.1.3.8
 ---------------
 - Fix some CSS bugs
