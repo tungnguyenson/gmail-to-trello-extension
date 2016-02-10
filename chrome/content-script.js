@@ -58,14 +58,19 @@ function requestHandler(request, sender, sendResponse) {
     }
 }
 
+// Register Handler
 chrome.extension.onMessage.addListener(requestHandler);
 
 var GmailToTrello = GmailToTrello || {}; // Namespace initialization
 var app = new GmailToTrello.App();
 
+/**
+ * Inject code: for accessing Gmail's GLOBALS object
+ * reference: http://stackoverflow.com/questions/9602022/chrome-extension-retrieving-gmails-original-message
+ */
+
 function getGmailObject() {
-    // Inject code: for accessing Gmail's GLOBALS object
-    // reference: http://stackoverflow.com/questions/9602022/chrome-extension-retrieving-gmails-original-message
+
     document.addEventListener('GTT_connectExtension', function(e) {
         //console.log(e.detail);
         app.data.userEmail = e.detail[10];
@@ -86,6 +91,5 @@ function getGmailObject() {
 }
 
 /*
- *  UNIT TESTS GOES HERE. AFFECT TO EVERY PAGES
+ *  UNIT TESTING GOES HERE. AFFECT TO EVERY PAGES
  */
-
