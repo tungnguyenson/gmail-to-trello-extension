@@ -78,11 +78,12 @@ function getGmailObject() {
     // console.log(app.data);
     });
 
+    /*
     var actualCode_ORIGINAL = ['setTimeout(function() {', 
         'document.dispatchEvent(new CustomEvent("GTT_connectExtension", { ',
         '    detail: GLOBALS',
         '}));}, 0);'].join('\n');
-
+    */
     
     var actualCode = `
         function timeOutFxn() {
