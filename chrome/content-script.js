@@ -15,6 +15,7 @@
  * Turn on/off debug mode with logging
  */
 var logEnabled = false;
+var dateFormat = 'MMM d, yyyy';
 
 /**
  * Variable for debugging purpose only
