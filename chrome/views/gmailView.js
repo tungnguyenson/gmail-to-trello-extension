@@ -18,6 +18,8 @@ GmailToTrello.GmailView = function() {
         /* selectors mapping, modify here when gmail's markup changes */
         toolbarButton: '.G-Ni:first',
         toolBarHolder: '.G-atb',
+        emailName: '.gD',
+        emailAddress: '.go',
         emailSubject: '.hP',
         emailBody: '.adO:first',
         viewport: '.aeJ:first',
@@ -164,6 +166,25 @@ GmailToTrello.GmailView.prototype.parseData = function() {
             $visibleMail = $this;
     });
 
+    // timestamp
+    var $time = jQuery(this.selectors.timestamp, $visibleMail);
+    var timeValue = ($time) ? $time.attr('title') : '';
+    timeValue = timeValue ? timeValue.replace('at', '') : '';
+//    log(timeValue);
+    if (timeValue !== '') {
+        timeValue = Date.parse(timeValue);
+//        log(timeValue);
+        if (timeValue)
+            timeValue = timeValue.toString(dateFormat || 'MMM d, yyyy');
+    }
+
+    data.time = timeValue;
+    //log(data);
+
+    // email name
+    var $emailName = jQuery(this.selectors.emailName, $visibleMail).text().trim();
+    var $emailAddress = jQuery(this.selectors.emailAddress, $visibleMail).text().replace(/[<>]+/g, '').trim();
+
     // email body
     var $emailBody = jQuery(this.selectors.emailBody, $visibleMail);
     var bodyText = $emailBody[0].innerText;
@@ -179,22 +200,8 @@ GmailToTrello.GmailView.prototype.parseData = function() {
         else
             return ' ';
     });
-    data.body = bodyText.trim();
-
-    // timestamp
-    var $time = jQuery(this.selectors.timestamp, $visibleMail);
-    var timeValue = ($time) ? $time.attr('title') : '';
-    timeValue = timeValue ? timeValue.replace('at', '') : '';
-//    log(timeValue);
-    if (timeValue !== '') {
-        timeValue = Date.parse(timeValue);
-//        log(timeValue);
-        if (timeValue)
-            timeValue = timeValue.toString('MMM d, yyyy');
-    }
-
-    data.time = timeValue;
-    //log(data);
+    data.body = '[' + $emailName + '](mailto:' + $emailAddress + ' "Send mail to ' + $emailName + ' at ' + $emailAddress + '") on ' + // FYI (Ace, 10-Jan-2017): [name](url) is markdown syntax
+        timeValue + ":\n\n" + bodyText.trim();
     
     var t = new Date().getTime();
     //log(data);
