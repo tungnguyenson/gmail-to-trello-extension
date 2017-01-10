@@ -5,11 +5,14 @@
 
 <h3>Gmail To Trello Extension Options</h3>
 
-<label for="chk-debug">Enable debug mode: </label> <input type="checkbox" id="chk-debug"/>
+<ul>
+<li> <input type="checkbox" id="debugmode" /> <label for="debugmode">Enable debug mode</label></li>
+<li><label for="dateformat">Date format: </label><input type="text" id="dateformat" value="MMM d, yyyy" />
+	<button id="default">Default</button> </li>
+</ul>
 
-<br>
-<div id="status"></div>
-<br />
+<div id="status" style="color: red">&nbsp;</div>
+
 <button id="save">Save</button>
 </body>
 
