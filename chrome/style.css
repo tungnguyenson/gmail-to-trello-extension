@@ -60,6 +60,7 @@ height: 100px; width: 339px; z-index: 1; position: relative; line-height: normal
 #gttPopup .popupMsg {border:1px solid #EDC967; background: #F9EDB8; padding:5px 10px 15px;margin:10px}
 
 #gttListMsg {background: #F9EDB8;}
+#gttLabelsMsg {background: #F9EDB8;}
 ul#gttList {float:left;margin:0;padding:0;}
 /*
 #gttList li {float:left;margin:0 10px 0 0;padding:5px 10px;list-style: none;border: 1px solid #ccc;border-radius:3px;cursor:pointer;background: #F2F2F2;font-size:11px;}
@@ -67,6 +68,13 @@ ul#gttList {float:left;margin:0;padding:0;}
 #gttPopup .listrow {min-height: 31px}
 #gttList li {float:left;margin:0 10px 5px 0;padding:4px 10px;list-style: none;border-radius:3px;border: 1px solid #ccc;border-top-width:5px;cursor:pointer;background: #F2F2F2;font-size:11px;cursor: pointer;font-weight: bold;color:#666;}
 #gttList li:hover, #gttList li.active, #gttList li.active:hover {border-color:#3086B7;color:#05679E;}
+
+ul#gttLabels {float:left;margin:0;padding:0;}
+/*
+#gttList li {float:left;margin:0 10px 0 0;padding:5px 10px;list-style: none;border: 1px solid #ccc;border-radius:3px;cursor:pointer;background: #F2F2F2;font-size:11px;}
+*/
+#gttLabels li {float:left;margin:0 10px 5px 0;padding:4px 10px;list-style: none;border-radius:3px;border: 1px solid #ccc;border-top-width:5px;cursor:pointer;background: #F2F2F2;font-size:11px;cursor: pointer;font-weight: bold;color:#666;}
+#gttLabels li:hover, #gttLabels li.active, #gttLabels li.active:hover {border-color:#3086B7;color:#05679E;}
 
 #gttPopup dt {width:70px;float:left;text-align:right;padding-right:5px;}
 #gttPopup dd {display:block;margin:8px;margin-left:75px;}

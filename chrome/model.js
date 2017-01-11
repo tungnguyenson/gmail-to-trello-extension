@@ -197,6 +197,19 @@ GmailToTrello.Model.prototype.loadTrelloLists = function(boardId) {
     });
 };
 
+GmailToTrello.Model.prototype.loadTrelloLabels = function(boardId) {
+    log('loadTrelloLabels');
+
+    var self = this;
+    this.trello.labels = null;
+
+    Trello.get('boards/' + boardId + '/labels', {fields: "color,name"}, function(data) {
+        self.trello.labels = data;
+        self.trello.labels.unshift ({color:'gray', name:'none', id:'-1'});
+        self.event.fire('onLoadTrelloLabelsSuccess');
+    });
+};
+
 GmailToTrello.Model.prototype.submit = function() {
     var self = this;
     if (this.newCard === null) {
@@ -246,12 +259,13 @@ GmailToTrello.Model.prototype.submit = function() {
 
     //save settings
     chrome.extension.sendMessage({storage: 'userSettings', value: JSON.stringify({
-            orgId: data.orgId,
-            boardId: data.boardId,
-            listId: data.listId,
-            useBacklink: data.useBacklink,
-            selfAssign: data.selfAssign
-        })});
+        orgId: data.orgId,
+        boardId: data.boardId,
+        listId: data.listId,
+        labelsId: data.labelsId,
+        useBacklink: data.useBacklink,
+        selfAssign: data.selfAssign
+    })});
 
     var idMembers = null;
     if (data.selfAssign) {
@@ -259,12 +273,22 @@ GmailToTrello.Model.prototype.submit = function() {
     }
     //
     //submit data
-    Trello.post('cards', {name: data.title, desc: data.description, idList: data.listId, idMembers:idMembers}, function(data) {
+    var trelloPostableData = {name: data.title, 
+        desc: data.description, 
+        idList: data.listId, idMembers:idMembers
+    };
+
+    // NOTE (Ace, 10-Jan-2017): Can only post valid labels, this can be a comma-delimited list of valid label ids,
+    // right now just supporting one:
+    if (data.labelsId !== '-1') {
+        trelloPostableData.idLabels = data.labelsId;
+    }
+
+    Trello.post('cards', trelloPostableData, function(data) {
         self.event.fire('onSubmitComplete', {data:data});
         log(data);
         //setTimeout(function() {self.popupNode.hide();}, 10000);
-    }
-    );
+    });
 
 //    log(data);
 };
