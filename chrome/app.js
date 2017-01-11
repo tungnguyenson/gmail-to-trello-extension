@@ -45,6 +45,11 @@ GmailToTrello.App.prototype.bindEvents = function() {
         self.popupView.validateData();
     });
     
+    this.data.event.addListener('onLoadTrelloLabelsSuccess', function() {
+        self.popupView.updateLabels();
+        self.popupView.validateData();
+    });
+
     this.data.event.addListener('onSubmitComplete', function(target, params) {
         self.data.newCard.url = params.data.url;
         self.popupView.displaySubmitCompleteForm();
@@ -71,8 +76,10 @@ GmailToTrello.App.prototype.bindEvents = function() {
 
     this.popupView.event.addListener('onBoardChanged', function(target, params) {
         var boardId = params.boardId;
-        if (boardId !== "_" && boardId !== "" && boardId!==null)
+        if (boardId !== "_" && boardId !== "" && boardId!==null) {
             self.data.loadTrelloLists(boardId);
+            self.data.loadTrelloLabels(boardId);
+        }
     });
     
     this.popupView.event.addListener('onSubmit', function() {
@@ -83,8 +90,6 @@ GmailToTrello.App.prototype.bindEvents = function() {
         self.data.gmail = self.gmailView.parseData();
         self.popupView.bindGmailData(self.data.gmail);
     });
-
-
   
     this.gmailView.event.addListener('onDetected', function(){
         self.popupView.$toolBar = self.gmailView.$toolBar;

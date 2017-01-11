@@ -26,13 +26,14 @@ GmailToTrello.PopupView.prototype.init = function() {
 
     // inject a button & a popup
 
-    var strAddCardButtonHtml = "\n\
-<div id=\"gttButton\" class=\"T-I J-J5-Ji ar7 nf T-I-ax7 L3\" data-tooltip=\"Add this card to Trello\">\n\
-    <div aria-haspopup=\"true\" role=\"button\" class=\"J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3\" tabindex=\"0\">\n\
-        <img class=\"f tk3N6e-I-J3\" src=\"" + chrome.extension.getURL('images/icon-13.jpg') + "\">\n\
-        <span class=\"button-text\">Add card</span>\n\
-    </div>\n\
-</div>";
+    var strAddCardButtonHtml = 
+    `<div id="gttButton" class="T-I J-J5-Ji ar7 nf T-I-ax7 L3" data-tooltip="Add this card to Trello">
+    <div aria-haspopup="true" role="button" class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3" tabindex="0">
+        <img class="f tk3N6e-I-J3" src="` + chrome.extension.getURL('images/icon-13.jpg') + `">
+        <span class="button-text">Add card</span>
+    </div>
+    </div>`;
+
 
     /* Sample data:              
      <div id="gttButton" class="T-I J-J5-Ji ar7 nf T-I-ax7 L3" data-tooltip="Add this card to Trello">
@@ -43,49 +44,54 @@ GmailToTrello.PopupView.prototype.init = function() {
      </div>              
      */
 
-    var strPopupHtml = '\
-<div id="gttPopup" class="J-M jQjAxd open" style="display:none"> \
-    <div id="gttPopupSlider"></div> \
-    <div class="inner"> \
-	<div class="hdr clearfix"> \
-		<div class="userinfo"> \
-		</div> \
-        <span class="item">|</span> \
-        <a class="item" href="https://trello.com/b/CGU9BYgd/gmail-to-trello-development" target="_blank"><img src="' + chrome.extension.getURL('images/new_icon.gif') + '" /> Features/Bugs</a> \
-   		<a class="item" href="javascript:void(0)" id="close-button">[x] Close</a> 	\
-	</div> \
-	<div class="popupMsg">Loading...</div> \
-        <div class="content menuInnerContainer" style="display:none"> \
-            <dl> \
-                <dt style="display:none">Orgs. filter:</dt> \
-                <dd style="display:none"> \
-                   <select id="gttOrg"> \
-                      <option value="all">All</option> \
-                      <option value="-1">My Boards</option> \
-                   </select> \
-                </dd> \
-                <dt>Board.:</dt> \
-                <dd><select id="gttBoard"></select></dd> \
-                <dt>List:</dt> \
-                <dd class="clearfix listrow">\
-                    <span id="gttListMsg">Pickup a board above</span>\
-                    <ul id="gttList"></ul>\
-                </dd> \
-                <dt>Title:</dt> \
-                <dd><input type="text" id="gttTitle" /></dd> \
-                <dt>Description:</dt> \
-                <dd><textarea id="gttDesc" style="height:180px;width:300px"></textarea></dd> \
-                <dd>\
-                    <input type="checkbox" checked="checked" id="chkBackLink"/>\
-                    <label for="chkBackLink">Link back to GMail</label>\
-                    <input type="checkbox" checked="checked" id="chkSelfAssign" style="margin-left:30px"> \
-                    <label for="chkSelfAssign">Assign me to this card</label> \
-                </dd> \
-                <dd><input type="button" disabled="true" id="addTrelloCard" value="Add to Trello card"></input></dd> \
-           </dl> \
-       </div> \
-   </div> \
-</div>';
+    var strPopupHtml = `
+    <div id="gttPopup" class="J-M jQjAxd open" style="display:none">
+    <div id="gttPopupSlider"></div>
+    <div class="inner">
+  <div class="hdr clearfix">
+    <div class="userinfo">
+    </div>
+    <span class="item">|</span>
+    <a class="item" href="https://trello.com/b/CGU9BYgd/gmail-to-trello-development" target="_blank" title="Open Gmail-to-Trello Feature/Bug board in a new window">Features/Bugs</a>
+    <a class="item" href="javascript:void(0)" id="close-button" title="Close" style="font-weight:bold; font-size:200%; background-color:lightgray; color:black;">&times;</a>
+    </div>
+  <div class="popupMsg">Loading...</div>
+        <div class="content menuInnerContainer" style="display:none">
+            <dl>
+                <dt style="display:none">Orgs. filter:</dt>
+                <dd style="display:none">
+                   <select id="gttOrg">
+                      <option value="all">All</option>
+                      <option value="-1">My Boards</option>
+                   </select>
+                </dd>
+                <dt>Board:</dt>
+                <dd><select id="gttBoard"></select></dd>
+                <dt>List:</dt>
+                <dd class="clearfix listrow">
+                    <span id="gttListMsg">...please pick a board...</span>
+                    <ul id="gttList"></ul>
+                </dd>
+                <dt>Labels:</dt>
+                <dd class="clearfix listrow">
+                    <span id="gttLabelsMsg">...please pick a board...</span>
+                    <ul id="gttLabels"></ul>
+                </dd>
+                <dt>Title:</dt>
+                <dd><input type="text" id="gttTitle" /></dd>
+                <dt>Description:</dt>
+                <dd><textarea id="gttDesc" style="height:180px;width:300px"></textarea></dd>
+                <dd>
+                    <input type="checkbox" checked="checked" id="chkBackLink"/>
+                    <label for="chkBackLink">Link back to GMail</label>
+                    <input type="checkbox" checked="checked" id="chkSelfAssign" style="margin-left:30px">
+                    <label for="chkSelfAssign">Assign me to this card</label>
+                </dd>
+                <dd><input type="button" disabled="true" id="addTrelloCard" value="Add Trello card"></input></dd>
+           </dl>
+       </div>
+   </div>
+</div>`;
 
     this.$toolBar.append(strAddCardButtonHtml + strPopupHtml);
     this.$addCardButton = jQuery('#gttButton', this.$toolBar);
@@ -206,14 +212,19 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         }
 
         var $list = jQuery('#gttList', self.$popup);
+        var $labels = jQuery('#gttLabels', self.$popup);
         var $listMsg = jQuery('#gttListMsg', self.$popup);
+        var $labelsMsg = jQuery('#gttLabelsMsg', self.$popup);
 
         $list.html('').hide();
+        $labels.html('').hide();
         if (boardId === "_" || boardId === "") {
-            $listMsg.text('Pickup a board above').show();
+            $listMsg.text('...please pick a board...').show();
+            $labelsMsg.text('...please pick a board...').show();
         }
         else {
             $listMsg.text('Loading...').show();
+            $labelsMsg.text('Loading...').show();
         }
 
         self.event.fire('onBoardChanged', {boardId: boardId});
@@ -255,17 +266,19 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
     else {
         $userAvatar = $('<span class="member-avatar">').text(user.username.substr(0, 1).toUpperCase());
     }
-    $('.userinfo', this.$popup).append($('<a class="item">').attr('href', user.url).attr('target', '_blank').append($userAvatar));
-    $('.userinfo', this.$popup).append($('<a class="item">').attr('href', user.url).attr('target', '_blank').append(user.username));
-    $('.userinfo', this.$popup).append($('<span class="item">|</span> <a class="item signOutButton" href="javascript:void(0)">Logout?</a>'));
+    $('.userinfo', this.$popup).append($('<a class="item">').attr('href', user.url).attr('target', '_blank').attr('title', 'Open your Trello homepage').append($userAvatar));
+    $('.userinfo', this.$popup).append($('<a class="item">').attr('href', user.url).attr('target', '_blank').attr('title', 'Open your Trello homepage').append(user.username));
+    $('.userinfo', this.$popup).append($('<span class="item">|</span> <a class="item signOutButton" href="javascript:void(0)" title="Sign out">Sign out</a>'));
 
     jQuery('.signOutButton', this.$popup).click(function() {
-        self.showMessage('Sorry! I have not known yet :(. You may try the following: \
-			<ol><li>Press Ctrl+Shift+Delete to open up "Clear browsing data" window</li> \
-			<li>Choose "Clear data from hosted apps"</li> \
-			<li>Proceed the "Clear browsing data" button</li> \
-			</ol> \
-			<a href="javascript:void(0)" class="hideMsg">Hide me</a>');
+        self.showMessage(`Unimplemented. Try the following:
+			<ol><li>Under the "Chrome" menu</li>
+			<li>Select "Clear Browsing Data..."</li>
+            <li>Check "Clear data from hosted apps"</li>
+			<li>Press "Clear browsing data" button</li>
+			</ol>
+			<a href="javascript:void(0)" class="hideMsg">Hide me</a>`
+            );
         jQuery('.hideMsg').click(function() {
             self.hideMessage();
         });
@@ -343,9 +356,8 @@ GmailToTrello.PopupView.prototype.updateBoards = function() {
 
     var boards = this.data.trello.boards;
 
-
     var $board = jQuery('#gttBoard', this.$popup);
-    $board.append($('<option value="">Please select ... </option>'));
+    $board.append($('<option value="">Select a board...</option>'));
     for (var i = 0; i < filteredOrgs.length; i++) {
         var orgItem = filteredOrgs[i];
         // This is unnessessary because a "please select" option is already existed above
@@ -395,8 +407,7 @@ GmailToTrello.PopupView.prototype.updateLists = function() {
     var settings = this.data.settings;
     var orgId = jQuery('#gttOrg', this.$popup).val();
     var boardId = jQuery('#gttBoard', this.$popup).val();
-    if (settings.orgId && settings.orgId == orgId && settings.boardId && settings.boardId == boardId &&
-            settings.listId) {
+    if (settings.orgId && settings.orgId == orgId && settings.boardId && settings.boardId == boardId && settings.listId) {
         var settingId = settings.listId;
         for (var i = 0; i < lists.length; i++) {
             var item = lists[i];
@@ -410,6 +421,47 @@ GmailToTrello.PopupView.prototype.updateLists = function() {
     else
         //select 1st list item
         jQuery('#gttList li:first').click();
+};
+
+GmailToTrello.PopupView.prototype.updateLabels = function() {
+    var self = this;
+    var labels = this.data.trello.labels;
+    var $gtt = $('#gttLabels', this.$popup);
+
+    for (var i = 0; i < labels.length; i++) {
+        var item = labels[i];
+        if (item.name.length > 0) {
+            $gtt.append($('<li>').attr('value', item.id).attr('style', 'color:' + item.color).append(item.name));
+        }
+    }
+    $gtt.show();
+
+    jQuery('#gttLabelsMsg', this.$popup).hide();
+
+    var labelsControl = new MenuControl('#gttLabels li');
+    labelsControl.event.addListener('onMenuClick', function(e, params) {
+        self.validateData();
+    });
+
+    var settings = this.data.settings;
+    var orgId = jQuery('#gttOrg', this.$popup).val();
+    var boardId = jQuery('#gttBoard', this.$popup).val();
+    if (settings.orgId && settings.orgId == orgId && settings.boardId && settings.boardId == boardId && settings.labelsId) {
+        var settingId = settings.labelsId;
+        for (var i = 0; i < labels.length; i++) {
+            var item = labels[i];
+            if (item.id == settingId) {
+                jQuery('#gttLabels li[value="' + item.id + '"]').click();
+                ;
+                break;
+            }
+        }
+    } else {
+        /* Don't want to select first item with labels.
+        //select 1st list item
+        jQuery('#gttLabels li:first').click();
+        */
+    }
 };
 
 GmailToTrello.PopupView.prototype.stopWaitingHiddenThread = function() {
@@ -478,6 +530,7 @@ GmailToTrello.PopupView.prototype.validateData = function() {
     var orgId = jQuery('#gttOrg', this.$popup).val();
     var boardId = jQuery('#gttBoard', this.$popup).val();
     var listId = jQuery('#gttList li.active', this.$popup).attr('value');
+    var labelsId = jQuery('#gttLabels li.active', this.$popup).attr('value');
     var title = jQuery('#gttTitle', this.$popup).val();
     var description = jQuery('#gttDesc', this.$popup).val();
     var useBacklink = jQuery('#chkBackLink', this.$popup).is(':checked');
@@ -492,6 +545,7 @@ GmailToTrello.PopupView.prototype.validateData = function() {
             orgId: orgId,
             boardId: boardId,
             listId: listId,
+            labelsId: labelsId,
             title: title,
             description: description,
             useBacklink: useBacklink,
@@ -522,7 +576,7 @@ GmailToTrello.PopupView.prototype.displaySubmitCompleteForm = function() {
     var jQueryToRawHtml = function(jQueryObject) {
         return jQueryObject.prop('outerHTML');
     }
-    this.showMessage('A Trello card has been added <br /> <br />' + 
+    this.showMessage('Trello card created: ' + 
         jQueryToRawHtml($('<a>').attr('href', data.url).attr('target', '_blank').append(data.title)));
     this.$popupContent.hide();
 };
