@@ -19,7 +19,7 @@ GmailToTrello.GmailView = function() {
         toolbarButton: '.G-Ni:first',
         toolBarHolder: '.G-atb',
         emailName: '.gD',
-        emailAddress: '.go',
+        emailAddress: '.gD', // Was: '.go', now using same name property
         emailSubject: '.hP',
         emailBody: '.adO:first',
         viewport: '.aeJ:first',
@@ -182,8 +182,8 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     //log(data);
 
     // email name
-    var $emailName = jQuery(this.selectors.emailName, $visibleMail).text().trim();
-    var $emailAddress = jQuery(this.selectors.emailAddress, $visibleMail).text().replace(/[<>]+/g, '').trim();
+    var $emailName = jQuery(this.selectors.emailName, $visibleMail).attr('name').trim();
+    var $emailAddress = jQuery(this.selectors.emailAddress, $visibleMail).attr('email').trim();
 
     // email body
     var $emailBody = jQuery(this.selectors.emailBody, $visibleMail);
@@ -200,7 +200,7 @@ GmailToTrello.GmailView.prototype.parseData = function() {
         else
             return ' ';
     });
-    data.body = '[' + $emailName + '](mailto:' + $emailAddress + ' "Send mail to ' + $emailName + ' at ' + $emailAddress + '") on ' + // FYI (Ace, 10-Jan-2017): [name](url) is markdown syntax
+    data.body = '[' + $emailName + '](mailto:' + $emailAddress + ' "Email ' + $emailName + ' <' + $emailAddress + '>") on ' + // FYI (Ace, 10-Jan-2017): [name](url) is markdown syntax
         timeValue + ":\n\n" + bodyText.trim();
     
     var t = new Date().getTime();
