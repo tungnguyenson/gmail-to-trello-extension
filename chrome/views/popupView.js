@@ -457,10 +457,8 @@ GmailToTrello.PopupView.prototype.updateLabels = function() {
             }
         }
     } else {
-        /* Don't want to select first item with labels.
-        //select 1st list item
+        // First list item for labels is "none", select that if nothing selected (eventually each one should toggle on/off):
         jQuery('#gttLabels li:first').click();
-        */
     }
 };
 
