@@ -1,21 +1,14 @@
 <html>
 <head><title>Gmail To Trello Extension Options</title></head>
-
 <body>
-
 <h3>Gmail To Trello Extension Options</h3>
-
 <ul>
 <li> <input type="checkbox" id="debugmode" /> <label for="debugmode">Enable debug mode</label></li>
-<li><label for="dateformat">Date format: </label><input type="text" id="dateformat" value="MMM d, yyyy" />
-	<button id="default">Default</button> </li>
+<li><label for="dateformat">Date format:</label>
+	<input type="text" id="dateformat" value="MMM d, yyyy" />
+	<button id="default" title="Restore date to default format">Default</button> </li>
 </ul>
-
-<div id="status" style="color: red">&nbsp;</div>
-
-<button id="save">Save</button>
+<button id="save">Save</button> <span id="status" style="color: red">&nbsp;</span>
 </body>
-
 <script src="options.js"></script>
-
 </html>

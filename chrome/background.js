@@ -1,5 +1,3 @@
-var DEBUG_MODE = true;
-
 /**
  * Detect GMail's URL everytimes a tab is reloaded or openned
  */
@@ -58,7 +56,10 @@ function checkForValidUrl(tab) {
 /**
  * Call console.log if in DEBUG mode only
  */
-function log(obj) {
-    if (DEBUG_MODE)
-        console.log(obj);
+function log(data) {
+    chrome.storage.sync.get('debugMode', function(response) {
+        if (response.debugMode) {
+            console.log(data);
+        }
+    });
 }
