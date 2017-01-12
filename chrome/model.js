@@ -19,27 +19,13 @@ GmailToTrello.Model.prototype.init = function() {
     this.isInitialized = true;
 
     // load user settings
-    chrome.extension.sendMessage({storage: 'userSettings'}, function(response) {
-        log('GTT::settings:');
-        if (response.hasOwnProperty("storage"))
-            self.settings = JSON.parse(response.storage);
-        if (self.settings.hasOwnProperty('debugMode') && self.settings.debugMode) { 
-            logEnabled = true;
-        }
-        if (self.settings.hasOwnProperty('dateFormat') && self.settings.dateFormat) {
-            dateFormat = self.settings.dateFormat;
-        }
-        if (self.settings.orgId == '-1')
-            self.settings.orgId = 'all';
-        log('Here are user settings:');
-        log(self.settings);
-    });
+    if (self.settings.orgId == '-1')
+        self.settings.orgId = 'all';
 
     // init Trello
     this.initTrello();
 
 };
-
 
 GmailToTrello.Model.prototype.initTrello = function() {
     log("GTT::initTrelloData()");

@@ -1,7 +1,8 @@
 var GmailToTrello = GmailToTrello || {};
 
 GmailToTrello.GmailView = function() {
-    
+    var self = this;
+
     this.LAYOUT_DEFAULT = 0;
     this.LAYOUT_SPLIT   = 1;
     this.layoutMode = this.LAYOUT_DEFAULT;
@@ -13,7 +14,6 @@ GmailToTrello.GmailView = function() {
 
     this.parsingData = false;
 
-    
     this.selectors = {
         /* selectors mapping, modify here when gmail's markup changes */
         toolbarButton: '.G-Ni:first',
@@ -29,7 +29,13 @@ GmailToTrello.GmailView = function() {
         emailInThreads: '.kv,.h7',
         timestamp: '.gH .gK .g3:first'
     };
-    
+
+    this.dateFormat = 'MMM d, yyyy';
+
+    chrome.storage.sync.get('dateFormat', function(response) {
+        // Have to use variable self pointing to parent's "this" otherwise "this" means local context:
+        self.dateFormat = response.dateFormat || 'MMM d, yyyy';
+    });
 };
 
 GmailToTrello.GmailView.prototype.detectToolbar = function() {
@@ -166,21 +172,6 @@ GmailToTrello.GmailView.prototype.parseData = function() {
             $visibleMail = $this;
     });
 
-    // timestamp
-    var $time = jQuery(this.selectors.timestamp, $visibleMail);
-    var timeValue = ($time) ? $time.attr('title') : '';
-    timeValue = timeValue ? timeValue.replace('at', '') : '';
-//    log(timeValue);
-    if (timeValue !== '') {
-        timeValue = Date.parse(timeValue);
-//        log(timeValue);
-        if (timeValue)
-            timeValue = timeValue.toString(dateFormat || 'MMM d, yyyy');
-    }
-
-    data.time = timeValue;
-    //log(data);
-
     // email name
     var $emailName = jQuery(this.selectors.emailName, $visibleMail).attr('name').trim();
     var $emailAddress = jQuery(this.selectors.emailAddress, $visibleMail).attr('email').trim();
@@ -188,10 +179,6 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     // email body
     var $emailBody = jQuery(this.selectors.emailBody, $visibleMail);
     var bodyText = $emailBody[0].innerText;
-    //data.body = bodyText.trim();
-    //var bodyText = $emailBody.text();
-    //log(bodyText);
-    //remove spaces
     bodyText = bodyText.replace(/\s{2,}/g, function(str) {
         if (str.indexOf("\n\n\n") !== false)
             return "\n\n";
@@ -200,13 +187,24 @@ GmailToTrello.GmailView.prototype.parseData = function() {
         else
             return ' ';
     });
+
+    // timestamp
+    var $time = jQuery(this.selectors.timestamp, $visibleMail);
+    var timeValue = ($time) ? $time.attr('title') : '';
+    timeValue = timeValue ? timeValue.replace('at', '') : '';
+    if (timeValue !== '') {
+        timeValue = Date.parse(timeValue);
+    }
+
+    data.time = timeValue ? timeValue.toString(this.dateFormat || 'MMM d, yyyy') : '';
+
     data.body = '[' + $emailName + '](mailto:' + $emailAddress + ' "Email ' + $emailName + ' <' + $emailAddress + '>") on ' + // FYI (Ace, 10-Jan-2017): [name](url) is markdown syntax
-        timeValue + ":\n\n" + bodyText.trim();
+        data.time + ":\n\n" + bodyText.trim();
     
     var t = new Date().getTime();
-    //log(data);
+    
     //log('Elapsed: '+(t-startTime)/1000);
     this.parsingData = false;
 
-    return data;    
+    return data;
 };

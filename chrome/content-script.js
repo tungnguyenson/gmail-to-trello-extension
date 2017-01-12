@@ -12,26 +12,21 @@
  */
 
 /**
- * Turn on/off debug mode with logging
- */
-var logEnabled = false;
-var dateFormat = 'MMM d, yyyy';
-
-/**
  * Variable for debugging purpose only
  */
 var globalInit = false;
-
 
 /**
  * Global log. A wrapper for console.log, depend on logEnabled flag
  * @param  {any} data data to write log
  */
 function log(data) {
-    if (logEnabled)
-        console.log(data);
-};
-
+    chrome.storage.sync.get('debugMode', function(response) {
+        if (response.debugMode) {
+            console.log(data);
+        }
+    });
+}
 
 /**
  * Handle request from background.js
