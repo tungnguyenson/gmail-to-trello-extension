@@ -27,7 +27,7 @@ GmailToTrello.PopupView.prototype.init = function() {
     // inject a button & a popup
 
     var strAddCardButtonHtml = 
-    `<div id="gttButton" class="T-I J-J5-Ji ar7 nf T-I-ax7 L3" data-tooltip="Add this card to Trello">
+    `<div id="gttButton" class="T-I J-J5-Ji ar7 nf T-I-ax7 L3" data-tooltip="Add this email as a Trello card">
     <div aria-haspopup="true" role="button" class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3" tabindex="0">
         <img class="f tk3N6e-I-J3" src="` + chrome.extension.getURL('images/icon-13.jpg') + `">
         <span class="button-text">Add card</span>
@@ -53,7 +53,7 @@ GmailToTrello.PopupView.prototype.init = function() {
     </div>
     <span class="item">|</span>
     <a class="item" href="https://trello.com/b/CGU9BYgd/gmail-to-trello-development" target="_blank" title="Open Gmail-to-Trello Feature/Bug board in a new window">Features/Bugs</a>
-    <a class="item" href="javascript:void(0)" id="close-button" title="Close" style="font-weight:bold; font-size:200%; background-color:lightgray; color:black;">&times;</a>
+    <a class="item" href="javascript:void(0)" id="close-button" title="Close">&times;</a>
     </div>
   <div class="popupMsg">Loading...</div>
         <div class="content menuInnerContainer" style="display:none">
@@ -277,7 +277,7 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
             <li>Check "Clear data from hosted apps"</li>
 			<li>Press "Clear browsing data" button</li>
 			</ol>
-			<a href="javascript:void(0)" class="hideMsg">Hide me</a>`
+			<input type="button" class="hideMsg" value="Okay" title="Dismiss message"></input></dd>`
             );
         jQuery('.hideMsg').click(function() {
             self.hideMessage();
@@ -535,8 +535,8 @@ GmailToTrello.PopupView.prototype.validateData = function() {
     var selfAssign = jQuery('#chkSelfAssign', this.$popup).is(':checked');
     var timeStamp = jQuery('.gH .gK .g3:first', this.$visibleMail).attr('title');
 
-    var validateStatus = (boardId && listId && title);
-    log('validateData: ' + boardId + ' - ' + listId);
+    var validateStatus = (boardId && listId && labelsId && title);
+    log('validateData: ' + boardId + ' - ' + listId + ' - ' + labelsId + ' - ' + title);
 
     if (validateStatus) {
         newCard = {
