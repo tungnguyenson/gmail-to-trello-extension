@@ -83,8 +83,10 @@ GmailToTrello.Model.prototype.loadTrelloData = function() {
     // get user's info
     log('Getting user info');
     Trello.get('members/me', {}, function(data) {
-        data.avatarUrl = data.avatarSource === 'upload' ? 'https://trello-avatars.s3.amazonaws.com/' + data.avatarHash + '/30.png' : null;
-        //log(data);
+        data.avatarUrl = null;
+        if (data.avatarSource !== 'none' && data.avatarHash.length > 0) {
+            data.avatarUrl = 'https://trello-avatars.s3.amazonaws.com/' + data.avatarHash + '/30.png';
+        }
         self.trello.user = data;
 
         if (!data || !data.hasOwnProperty('id'))

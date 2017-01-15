@@ -92,11 +92,12 @@ GmailToTrello.PopupView.prototype.init = function() {
        </div>
    </div>
 </div>`;
-
+    
     this.$toolBar.append(strAddCardButtonHtml + strPopupHtml);
     this.$addCardButton = jQuery('#gttButton', this.$toolBar);
     this.$popup = jQuery('#gttPopup', this.$toolBar);
-
+    jQuery('#gttPopup').draggable();
+    
     this.$popupMessage = jQuery('.popupMsg', this.$popup);
     this.$popupContent = jQuery('.content', this.$popup);
     this.$popupChkGmail = jQuery('#chkBackLink', this.$popup);
@@ -168,7 +169,7 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
 
     /** Popup's behavior **/
 
-    //slider
+    //slider (blue bar on left side of dialog to resize)
     var $slider = jQuery("#gttPopupSlider", this.$popup);
     var constraintRight = jQuery(window).width() - this.MIN_WIDTH;
 
