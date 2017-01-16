@@ -40,7 +40,7 @@ function checkForValidUrl(tab) {
                 //Selected tab id
                 tab.id,
                 //Params inside a object data
-                        {message: "initialize"},
+                {message: "initialize"},
                 //Optional callback function
                 function(response) {
                     //console.log(response);
