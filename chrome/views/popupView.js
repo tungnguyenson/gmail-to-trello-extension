@@ -8,6 +8,7 @@ GmailToTrello.PopupView = function() {
     this.data = null;
 
     this.MIN_WIDTH = 450;
+    this.MAX_WIDTH = 1400;
 
     // process
     this.waitingHiddenThread = false;
@@ -96,29 +97,35 @@ GmailToTrello.PopupView.prototype.init = function() {
     this.$toolBar.append(strAddCardButtonHtml + strPopupHtml);
     this.$addCardButton = jQuery('#gttButton', this.$toolBar);
     this.$popup = jQuery('#gttPopup', this.$toolBar);
-    jQuery('#gttPopup').draggable();
+    this.$popup.draggable();
     
     this.$popupMessage = jQuery('.popupMsg', this.$popup);
     this.$popupContent = jQuery('.content', this.$popup);
     this.$popupChkGmail = jQuery('#chkBackLink', this.$popup);
     this.$popupChkSelfAssign = jQuery('#chkSelfAssign', this.$popup);
 
-    //resize popup window
-    var parentWidth = this.$toolBarHolder[0].clientWidth;
+    
+    // NOTE (Ace, 15-Jan-2017): Set the initial width by measuring from the left corner of the
+    // "Add card" button to the edge of the window and then center that under the "Add card" button:
+    var addCardLeft = this.$addCardButton.position().left;
+    var addCardCenter = addCardLeft + (this.$addCardButton.outerWidth() / 2);
+    
+    var parent = jQuery(document.documentElement);
+    var parentRight = parent.position().left + parent.outerWidth();
 
-    //log('resizing...');
-    var left = this.$addCardButton.position().left; //related to its parent
-    var minLeft = parentWidth - this.MIN_WIDTH + 1; // 
-    if (left > minLeft)
-        left = minLeft;
+    // We'll make our popup twice as wide as the button to the end of the window up to MAX_WIDTH:
+    var newPopupWidth = 2*(parentRight - addCardLeft);
+    if (newPopupWidth < this.MIN_WIDTH) {
+        newPopupWidth = this.MIN_WIDTH;
+    } else if (newPopupWidth > this.MAX_WIDTH) {
+        newPopupWidth = this.MAX_WIDTH;
+    }
+    this.$popup.css('width', newPopupWidth + 'px');
 
-//    log(this.$toolBarHolder[0]);
-    //log('parentWidth: '+parentWidth);
-    //log('minLeft: '+minLeft);
-    //log('defaultLeft: '+this.$addCardButton.position().left);
-    //log('final left: '+left);
+    var newPopupLeft = addCardCenter - (newPopupWidth / 2);
 
-    //this.$popup.css('left', left + 'px');
+    this.$popup.css('left', newPopupLeft + 'px')
+
     this.onResize();
 
     this.bindEvents();
@@ -158,6 +165,7 @@ GmailToTrello.PopupView.prototype.loadSettings = function() {
 
 };
 
+// NOTE (Ace, 15-Jan-2017): This resizes all the text areas to match the width of the popup:
 GmailToTrello.PopupView.prototype.onResize = function() {
     var textWidth = this.$popup.width() - 111;
     jQuery('input[type=text],textarea', this.$popup).css('width', textWidth + 'px');
@@ -273,10 +281,10 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
 
     jQuery('.signOutButton', this.$popup).click(function() {
         self.showMessage(`Unimplemented. Try the following:
-			<ol><li>Under the "Chrome" menu</li>
+			<ol><li>Under menu "Chrome":</li>
 			<li>Select "Clear Browsing Data..."</li>
             <li>Check "Clear data from hosted apps"</li>
-			<li>Press "Clear browsing data" button</li>
+			<li>Press button "Clear browsing data"</li>
 			</ol>
 			<input type="button" class="hideMsg" value="Okay" title="Dismiss message"></input></dd>`
             );
@@ -295,7 +303,7 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
         $org.append($('<option>').attr('value', item.id).append(item.displayName));
     }
     $org.val('all');
-/*
+/* NOTE (Ace, 15-Jan-2017): This sets Org to 'All' and lists all boards for all orgs. Uncomment if you want org selection:
     if (this.data.settings.orgId) {
         var settingId = this.data.settings.orgId;
         for (var i = 0; i < data.trello.orgs.length; i++) {
