@@ -18,6 +18,7 @@ GmailToTrello.PopupView = function() {
 
 GmailToTrello.PopupView.prototype.init = function() {
     log('GTT::view::initializing...');
+    var self = this;
 
     //check if already init
     if (this.detectPopup()) 
@@ -32,16 +33,6 @@ GmailToTrello.PopupView.prototype.init = function() {
         <span class="button-text">Add card</span>
     </div>
     </div>`;
-
-
-    /* Sample data:              
-     <div id="gttButton" class="T-I J-J5-Ji ar7 nf T-I-ax7 L3" data-tooltip="Add this card to Trello">
-     <div aria-haspopup="true" role="button" class="J-J5-Ji W6eDmd L3 J-Zh-I J-J5-Ji Bq L3" tabindex="0">
-     <img class="f tk3N6e-I-J3" src="chrome-extension://dmphibjhlehaljceeocbdeoaedkknipg/images/icon-13.jpg">
-     <span class="button-text">Add card</span>
-     </div>
-     </div>              
-     */
 
     var strPopupHtml = `
     <div id="gttPopup" class="J-M jQjAxd open" style="display:none">
@@ -95,6 +86,21 @@ GmailToTrello.PopupView.prototype.init = function() {
     this.$toolBar.append(strAddCardButtonHtml + strPopupHtml);
     this.$addCardButton = $('#gttButton', this.$toolBar);
     this.$popup = $('#gttPopup', this.$toolBar);
+    this.$popup.resizable({
+        maxHeight: self.MAX_WIDTH,
+        maxWidth: self.MAX_WIDTH,
+        minHeight: 150,
+        minWidth: self.MIN_WIDTH,
+        stop: function(event, ui) {
+            var constraintRight = $(window).width() - self.MIN_WIDTH;
+            var distance = ui.position.left - ui.originalPosition.left;
+            self.$popup.css('width', self.$popup.width()-distance+'px');
+            $slider.css('left', '0');
+            //self.$popup.css('left', (self.$popup.position().left + distance) + 'px');
+            //$slider.css('left', ui.originalPosition.left + 'px');
+            self.onResize();
+        }
+    });
     this.$popup.draggable();
     
     this.$popupMessage = $('.popupMsg', this.$popup);
