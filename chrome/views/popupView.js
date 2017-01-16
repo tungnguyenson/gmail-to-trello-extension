@@ -86,6 +86,7 @@ GmailToTrello.PopupView.prototype.init = function() {
     this.$toolBar.append(strAddCardButtonHtml + strPopupHtml);
     this.$addCardButton = $('#gttButton', this.$toolBar);
     this.$popup = $('#gttPopup', this.$toolBar);
+    /* TODO (Ace, 16-Jan-2017): jQueryUI has a more elegant lower-corner resize experience, this is the start:
     this.$popup.resizable({
         maxHeight: self.MAX_WIDTH,
         maxWidth: self.MAX_WIDTH,
@@ -101,6 +102,7 @@ GmailToTrello.PopupView.prototype.init = function() {
             self.onResize();
         }
     });
+    */
     this.$popup.draggable();
     
     this.$popupMessage = $('.popupMsg', this.$popup);
