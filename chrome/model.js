@@ -193,7 +193,8 @@ GmailToTrello.Model.prototype.loadTrelloLabels = function(boardId) {
 
     Trello.get('boards/' + boardId + '/labels', {fields: "color,name"}, function(data) {
         self.trello.labels = data;
-        self.trello.labels.unshift ({color:'gray', name:'none', id:'-1'});
+        // If you want to add a "none" label, do:
+        // self.trello.labels.unshift ({color:'gray', name:'none', id:'-1'});
         self.event.fire('onLoadTrelloLabelsSuccess');
     });
 };
@@ -266,9 +267,8 @@ GmailToTrello.Model.prototype.submit = function() {
         idList: data.listId, idMembers:idMembers
     };
 
-    // NOTE (Ace, 10-Jan-2017): Can only post valid labels, this can be a comma-delimited list of valid label ids,
-    // right now just supporting one:
-    if (data.labelsId !== '-1') {
+    // NOTE (Ace, 10-Jan-2017): Can only post valid labels, this can be a comma-delimited list of valid label ids, will err 400 if any label id unknown:
+    if (data.labelsId !== '-1') { // -1 = none, not a valid label
         trelloPostableData.idLabels = data.labelsId;
     }
 
