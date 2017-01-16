@@ -72,6 +72,7 @@ height: 100px; width: 339px; z-index: 1; position: relative; line-height: normal
 }
 
 #gttPopup .popupMsg {border:1px solid #EDC967; background: #F9EDB8; padding:5px 10px 15px; margin:10px}
+#gttPopup #resize-icon {position: relative; bottom: 24px; right: 24px;}
 
 #gttListMsg {background: #F9EDB8;}
 #gttLabelsMsg {background: #F9EDB8;}
