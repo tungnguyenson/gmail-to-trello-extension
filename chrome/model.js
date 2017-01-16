@@ -268,7 +268,7 @@ GmailToTrello.Model.prototype.submit = function() {
     };
 
     // NOTE (Ace, 10-Jan-2017): Can only post valid labels, this can be a comma-delimited list of valid label ids, will err 400 if any label id unknown:
-    if (data.labelsId !== '-1') { // -1 = none, not a valid label
+    if (data.labelsId.length > 1 && data.labelsId.indexOf('-1') === -1) { // Will 400 if we post invalid ids (such as -1):
         trelloPostableData.idLabels = data.labelsId;
     }
 
