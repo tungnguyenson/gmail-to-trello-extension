@@ -141,6 +141,70 @@ GmailToTrello.GmailView.prototype.detect = function() {
 
 };
 
+GmailToTrello.GmailView.prototype.replaceHtml = function(text, delimiter, param, replacement) {
+    if (text.length < 1) {
+        log("replaceHtml requires text");
+        return;
+    } else if (delimiter.length < 1) {
+        log("replaceHtml requires delimiter");
+        return;
+    }
+
+    replacement = replacement || ''; // Assure it's not undefined
+    param = param || ''; // Assure it's not undefined
+
+    var re = new RegExp("<" + delimiter + "\\s*?" + param + "[^>]*?>([^<]*?)", "gi");
+    var re_end = new RegExp("<\/" + delimiter + "[^>]*?>")
+
+    var newText = text.replace(re, replacement);
+    text = newText;
+    newText = text.replace(re_end, replacement.length < 2 ? replacement : '');
+    return newText;
+}
+
+GmailToTrello.GmailView.prototype.htmlToMarkdown = function(text) {
+    var newText;
+    newText = this.replaceHtml(text, 'div', '', '');
+    text = newText;
+    newText = this.replaceHtml(text, 'span', '', '');
+    text = newText;
+    newText = this.replaceHtml(text, 'br', '', '\n');
+    text = newText;
+    newText = this.replaceHtml(text, 'b', '', '*');
+    text = newText;
+    newText = this.replaceHtml(text, 'li', '', ' * $1');
+    text = newText;
+    newText = this.replaceHtml(text, 'a', '[^>]*?href\\s*=\\s*"([^"]+)"', '[$2]($1)');
+    text = newText;
+    newText = this.replaceHtml(text, '\\w+', '', '');
+    text = newText;
+    newText = this.replaceHtml(text, '\/[^>]*?>', '', '');
+    text = newText;
+
+    $.each({
+        '&amp;': '&', 
+        '&lt;': '<',
+        '&gt;': '>',
+        '&quot;': '"',
+        '&nbsp;': ' '
+        }, function (key, value) {
+            var re = new RegExp(key, "gi");
+            newText = text.replace(re, value);
+            text = newText;
+    });
+    newText = text.replace(/\s{2,}/g, function(str) {
+        if (str.indexOf("\n\n\n") !== false)
+            return "\n\n";
+        else if (str.indexOf("\n") !== false)
+            return "\n";
+        else
+            return ' ';
+    });
+    text = newText;
+
+    return text;
+}
+
 GmailToTrello.GmailView.prototype.parseData = function() {
     log('Gtt::parsing data...');
     if (this.parsingData)
@@ -151,45 +215,35 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     var data = {};
 
     // subject
-    this.$emailSubject = jQuery(this.selectors.emailSubject, this.$root);
+    this.$emailSubject = $(this.selectors.emailSubject, this.$root);
     data.subject = this.$emailSubject.text().trim();
 
     // find active email
     if (this.layoutMode === this.LAYOUT_SPLIT)
-        $viewport = jQuery(this.selectors.viewportSplit, this.$root);
+        $viewport = $(this.selectors.viewportSplit, this.$root);
     else 
-        $viewport = jQuery(this.selectors.viewport, this.$root);
+        $viewport = $(this.selectors.viewport, this.$root);
     log($viewport);
     var y0 = $viewport.offset().top;
     //log(y0);
     var $visibleMail = null;
     // parse expanded emails again
-    jQuery(this.selectors.expandedEmails, this.$root).each(function() {
-//        log(this);
-//        log(this.offsetTop + ':'+jQuery(this).offset().top);
-        $this = jQuery(this);
+    $(this.selectors.expandedEmails, this.$root).each(function() {
+        var $this = $(this);
         if ($visibleMail === null && $this.offset().top >= y0)
             $visibleMail = $this;
     });
 
     // email name
-    var $emailName = jQuery(this.selectors.emailName, $visibleMail).attr('name').trim();
-    var $emailAddress = jQuery(this.selectors.emailAddress, $visibleMail).attr('email').trim();
+    var $emailName = $(this.selectors.emailName, $visibleMail).attr('name').trim();
+    var $emailAddress = $(this.selectors.emailAddress, $visibleMail).attr('email').trim();
 
     // email body
-    var $emailBody = jQuery(this.selectors.emailBody, $visibleMail);
-    var bodyText = $emailBody[0].innerText;
-    bodyText = bodyText.replace(/\s{2,}/g, function(str) {
-        if (str.indexOf("\n\n\n") !== false)
-            return "\n\n";
-        else if (str.indexOf("\n") !== false)
-            return "\n";
-        else
-            return ' ';
-    });
+    var $emailBody = $(this.selectors.emailBody, $visibleMail);
+    var bodyText = this.htmlToMarkdown($emailBody[0].innerHTML);
 
     // timestamp
-    var $time = jQuery(this.selectors.timestamp, $visibleMail);
+    var $time = $(this.selectors.timestamp, $visibleMail);
     var timeValue = ($time) ? $time.attr('title') : '';
     timeValue = timeValue ? timeValue.replace('at', '') : '';
     if (timeValue !== '') {
