@@ -292,7 +292,7 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
             <li>Check "Clear data from hosted apps"</li>
 			<li>Press button "Clear browsing data"</li>
 			</ol>
-			<button class="hideMsg" title="Dismiss message">Done</input>`
+			<button class="hideMsg" title="Dismiss message">Done</button>`
             );
     });
 
@@ -616,7 +616,7 @@ GmailToTrello.PopupView.prototype.displaySubmitCompleteForm = function() {
             .attr('href', data.url)
             .attr('target', '_blank')
             .append(data.title))
-        + '<p><input type="button" class="hideMsg" value="Done" title="Dismiss message"></input></p>'
+        + '<br /><br /><button class="hideMsg" title="Dismiss message">Done</button>'
     );
 
     this.$popupContent.hide();

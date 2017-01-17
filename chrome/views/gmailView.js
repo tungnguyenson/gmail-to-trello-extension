@@ -141,68 +141,80 @@ GmailToTrello.GmailView.prototype.detect = function() {
 
 };
 
-GmailToTrello.GmailView.prototype.replaceHtml = function(text, delimiter, param, replacement) {
-    if (text.length < 1) {
-        log("replaceHtml requires text");
-        return;
-    } else if (delimiter.length < 1) {
-        log("replaceHtml requires delimiter");
+GmailToTrello.GmailView.prototype.markdownify = function($emailBody) {
+    if ($emailBody.length < 1) {
+        log('markdownify requires emailBody');
         return;
     }
+    var body = $emailBody.innerText;
+    var $html = $emailBody.innerHTML;
 
-    replacement = replacement || ''; // Assure it's not undefined
-    param = param || ''; // Assure it's not undefined
-
-    var re = new RegExp("<" + delimiter + "\\s*?" + param + "[^>]*?>([^<]*?)", "gi");
-    var re_end = new RegExp("<\/" + delimiter + "[^>]*?>")
-
-    var newText = text.replace(re, replacement);
-    text = newText;
-    newText = text.replace(re_end, replacement.length < 2 ? replacement : '');
-    return newText;
-}
-
-GmailToTrello.GmailView.prototype.htmlToMarkdown = function(text) {
-    var newText;
-    newText = this.replaceHtml(text, 'div', '', '');
-    text = newText;
-    newText = this.replaceHtml(text, 'span', '', '');
-    text = newText;
-    newText = this.replaceHtml(text, 'br', '', '\n');
-    text = newText;
-    newText = this.replaceHtml(text, 'b', '', '*');
-    text = newText;
-    newText = this.replaceHtml(text, 'li', '', ' * $1');
-    text = newText;
-    newText = this.replaceHtml(text, 'a', '[^>]*?href\\s*=\\s*"([^"]+)"', '[$2]($1)');
-    text = newText;
-    newText = this.replaceHtml(text, '\\w+', '', '');
-    text = newText;
-    newText = this.replaceHtml(text, '\/[^>]*?>', '', '');
-    text = newText;
-
-    $.each({
-        '&amp;': '&', 
-        '&lt;': '<',
-        '&gt;': '>',
-        '&quot;': '"',
-        '&nbsp;': ' '
-        }, function (key, value) {
-            var re = new RegExp(key, "gi");
-            newText = text.replace(re, value);
-            text = newText;
+    // links:
+    // a -> [text](html)
+    $('a', $html).each(function(index, value) {
+        var text = $(this).text();
+        var uri = $(this).attr("href");
+        var re = new RegExp(text, "gi");
+        var replaced = body.replace(re, "[" + text + "](" + uri + ' "' + text + ' via ' + uri + '")');
+        body = replaced;
     });
-    newText = text.replace(/\s{2,}/g, function(str) {
-        if (str.indexOf("\n\n\n") !== false)
+
+    /* DISABLED (Ace, 16-Jan-2017): Images kinda make a mess, until requested lets not markdownify them:
+    // images:
+    // img -> ![alt_text](html)
+    $('img', $html).each(function(index, value) {
+        var text = $(this).attr("alt") || '<no-text>';
+        var uri = $(this).attr("src") || '<no-uri>';
+        var re = new RegExp(text, "gi");
+        var replaced = body.replace(re, "![" + text + "](" + uri + ' "' + text + ' via ' + uri + '"');
+        body = replaced;
+    });
+    */
+
+    // bullet lists:
+    // li -> " * "
+    $('li', $html).each(function(index, value) {
+        var text = $(this).text();
+        var re = new RegExp(text, "gi");
+        var replaced = body.replace(re, "\n * " + text + "\n");
+        body = replaced;
+    });
+
+    // headers:
+    // H1 -> #
+    // H2 -> ##
+    // H3 -> ###
+    // H4 -> ####
+    // H5 -> #####
+    // H6 -> ######
+     $(':header', $html).each(function(index, value) {
+        var text = $(this).text();
+        var nodeName = $(this).prop("nodeName") || "";
+        var re = new RegExp(text, "gi");
+        var x = '0' + nodeName.substr(-1);
+        var replaced = body.replace(re, "\n" + ('#'.repeat(x)) + " " + text + "\n");
+        body = replaced;
+    });
+
+    // bold: b -> **text**
+     $('b', $html).each(function(index, value) {
+        var text = $(this).text();
+        var re = new RegExp(text, "gi");
+        var replaced = body.replace(re, " **" + text + "** ");
+        body = replaced;
+    });
+
+    // minimize newlines:
+    var replaced = body.replace(/\s{2,}/g, function(str) {
+        if (str.indexOf("\n\n\n") !== -1)
             return "\n\n";
-        else if (str.indexOf("\n") !== false)
+        else if (str.indexOf("\n") !== -1)
             return "\n";
         else
             return ' ';
     });
-    text = newText;
 
-    return text;
+    return replaced;
 }
 
 GmailToTrello.GmailView.prototype.parseData = function() {
@@ -240,7 +252,7 @@ GmailToTrello.GmailView.prototype.parseData = function() {
 
     // email body
     var $emailBody = $(this.selectors.emailBody, $visibleMail);
-    var bodyText = this.htmlToMarkdown($emailBody[0].innerHTML);
+    var bodyText = this.markdownify($emailBody[0]);
 
     // timestamp
     var $time = $(this.selectors.timestamp, $visibleMail);
