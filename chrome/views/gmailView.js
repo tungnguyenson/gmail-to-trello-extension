@@ -190,8 +190,8 @@ GmailToTrello.GmailView.prototype.markdownify = function($emailBody) {
      $(':header', $html).each(function(index, value) {
         var text = $(this).text();
         var nodeName = $(this).prop("nodeName") || "";
-        var re = new RegExp(text, "gi");
         var x = '0' + nodeName.substr(-1);
+        var re = new RegExp(text, "gi");
         var replaced = body.replace(re, "\n" + ('#'.repeat(x)) + " " + text + "\n");
         body = replaced;
     });
