@@ -141,6 +141,82 @@ GmailToTrello.GmailView.prototype.detect = function() {
 
 };
 
+GmailToTrello.GmailView.prototype.markdownify = function($emailBody) {
+    if ($emailBody.length < 1) {
+        log('markdownify requires emailBody');
+        return;
+    }
+    var body = $emailBody.innerText;
+    var $html = $emailBody.innerHTML;
+
+    // links:
+    // a -> [text](html)
+    $('a', $html).each(function(index, value) {
+        var text = $(this).text();
+        var uri = $(this).attr("href");
+        var re = new RegExp(text, "gi");
+        var replaced = body.replace(re, "[" + text + "](" + uri + ' "' + text + ' via ' + uri + '")');
+        body = replaced;
+    });
+
+    /* DISABLED (Ace, 16-Jan-2017): Images kinda make a mess, until requested lets not markdownify them:
+    // images:
+    // img -> ![alt_text](html)
+    $('img', $html).each(function(index, value) {
+        var text = $(this).attr("alt") || '<no-text>';
+        var uri = $(this).attr("src") || '<no-uri>';
+        var re = new RegExp(text, "gi");
+        var replaced = body.replace(re, "![" + text + "](" + uri + ' "' + text + ' via ' + uri + '"');
+        body = replaced;
+    });
+    */
+
+    // bullet lists:
+    // li -> " * "
+    $('li', $html).each(function(index, value) {
+        var text = $(this).text();
+        var re = new RegExp(text, "gi");
+        var replaced = body.replace(re, "\n * " + text + "\n");
+        body = replaced;
+    });
+
+    // headers:
+    // H1 -> #
+    // H2 -> ##
+    // H3 -> ###
+    // H4 -> ####
+    // H5 -> #####
+    // H6 -> ######
+     $(':header', $html).each(function(index, value) {
+        var text = $(this).text();
+        var nodeName = $(this).prop("nodeName") || "";
+        var x = '0' + nodeName.substr(-1);
+        var re = new RegExp(text, "gi");
+        var replaced = body.replace(re, "\n" + ('#'.repeat(x)) + " " + text + "\n");
+        body = replaced;
+    });
+
+    // bold: b -> **text**
+     $('b', $html).each(function(index, value) {
+        var text = $(this).text();
+        var re = new RegExp(text, "gi");
+        var replaced = body.replace(re, " **" + text + "** ");
+        body = replaced;
+    });
+
+    // minimize newlines:
+    var replaced = body.replace(/\s{2,}/g, function(str) {
+        if (str.indexOf("\n\n\n") !== -1)
+            return "\n\n";
+        else if (str.indexOf("\n") !== -1)
+            return "\n";
+        else
+            return ' ';
+    });
+
+    return replaced;
+}
+
 GmailToTrello.GmailView.prototype.parseData = function() {
     log('Gtt::parsing data...');
     if (this.parsingData)
@@ -151,45 +227,35 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     var data = {};
 
     // subject
-    this.$emailSubject = jQuery(this.selectors.emailSubject, this.$root);
+    this.$emailSubject = $(this.selectors.emailSubject, this.$root);
     data.subject = this.$emailSubject.text().trim();
 
     // find active email
     if (this.layoutMode === this.LAYOUT_SPLIT)
-        $viewport = jQuery(this.selectors.viewportSplit, this.$root);
+        $viewport = $(this.selectors.viewportSplit, this.$root);
     else 
-        $viewport = jQuery(this.selectors.viewport, this.$root);
+        $viewport = $(this.selectors.viewport, this.$root);
     log($viewport);
     var y0 = $viewport.offset().top;
     //log(y0);
     var $visibleMail = null;
     // parse expanded emails again
-    jQuery(this.selectors.expandedEmails, this.$root).each(function() {
-//        log(this);
-//        log(this.offsetTop + ':'+jQuery(this).offset().top);
-        $this = jQuery(this);
+    $(this.selectors.expandedEmails, this.$root).each(function() {
+        var $this = $(this);
         if ($visibleMail === null && $this.offset().top >= y0)
             $visibleMail = $this;
     });
 
     // email name
-    var $emailName = jQuery(this.selectors.emailName, $visibleMail).attr('name').trim();
-    var $emailAddress = jQuery(this.selectors.emailAddress, $visibleMail).attr('email').trim();
+    var $emailName = $(this.selectors.emailName, $visibleMail).attr('name').trim();
+    var $emailAddress = $(this.selectors.emailAddress, $visibleMail).attr('email').trim();
 
     // email body
-    var $emailBody = jQuery(this.selectors.emailBody, $visibleMail);
-    var bodyText = $emailBody[0].innerText;
-    bodyText = bodyText.replace(/\s{2,}/g, function(str) {
-        if (str.indexOf("\n\n\n") !== false)
-            return "\n\n";
-        else if (str.indexOf("\n") !== false)
-            return "\n";
-        else
-            return ' ';
-    });
+    var $emailBody = $(this.selectors.emailBody, $visibleMail);
+    var bodyText = this.markdownify($emailBody[0]);
 
     // timestamp
-    var $time = jQuery(this.selectors.timestamp, $visibleMail);
+    var $time = $(this.selectors.timestamp, $visibleMail);
     var timeValue = ($time) ? $time.attr('title') : '';
     timeValue = timeValue ? timeValue.replace('at', '') : '';
     if (timeValue !== '') {
