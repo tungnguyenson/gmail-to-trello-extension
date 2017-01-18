@@ -1,6 +1,6 @@
 {
   "name": "GMail to Trello",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "manifest_version": 2,
   "description": "A free tool for GMail and Trello integration, allow creating new card from email thread and easily searching back",
   "icons": {
