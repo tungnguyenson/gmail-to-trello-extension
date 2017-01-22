@@ -154,22 +154,24 @@ GmailToTrello.GmailView.prototype.markdownify = function($emailBody) {
     // a -> [text](html)
     $('a', $html).each(function(index, value) {
         var text = $(this).text();
-        var replace = text;
-        var uri = $(this).attr("href");
-        var comment = ' "' + text + ' via ' + uri + '"';
-        if (seen_already[text] !== 1) {
-            seen_already[text] = 1;
-            if (text == uri) {
-                comment = ' "Open ' + uri + '"';
-                var re = RegExp("^\\w+:\/\/([\\w\\.]+).*?([\\w\\.]+)$");
-                var matched = text.match(re);
-                if (matched.length > 1) {
-                    replace = matched[1] + ':' + matched[2]; // Make a nicer looking visible text. [0] = text
+        if (text.length > 4) { // Only replace links that have a chance of being unique in the text (x.dom):
+            var replace = text;
+            var uri = $(this).attr("href");
+            var comment = ' "' + text + ' via ' + uri + '"';
+            if (seen_already[text] !== 1) {
+                seen_already[text] = 1;
+                if (text == uri) {
+                    comment = ' "Open ' + uri + '"';
+                    var re = RegExp("^\\w+:\/\/([\\w\\.]+).*?([\\w\\.]+)$");
+                    var matched = text.match(re);
+                    if (matched.length > 1) {
+                        replace = matched[1] + ':' + matched[2]; // Make a nicer looking visible text. [0] = text
+                    }
                 }
+                var re = new RegExp(text, "gi");
+                var replaced = body.replace(re, "[" + replace + "](" + uri + comment + ')');
+                body = replaced;
             }
-            var re = new RegExp(text, "gi");
-            var replaced = body.replace(re, "[" + replace + "](" + uri + comment + ')');
-            body = replaced;
         }
     });
 
