@@ -67,6 +67,8 @@ GmailToTrello.PopupView.prototype.init = function() {
                     <span id="gttLabelsMsg">...please pick a board...</span>
                     <ul id="gttLabels"></ul>
                 </dd>
+                <dt>Due Date:</dt>
+                <dd><input type="datetime-local" id="gttDueDate" /></dd>
                 <dt>Title:</dt>
                 <dd><input type="text" id="gttTitle" /></dd>
                 <dt>Description:</dt>
@@ -107,8 +109,8 @@ GmailToTrello.PopupView.prototype.init = function() {
     
     this.$popupMessage = $('.popupMsg', this.$popup);
     this.$popupContent = $('.content', this.$popup);
-    this.$popupChkGmail = $('#chkBackLink', this.$popup);
-    this.$popupChkSelfAssign = $('#chkSelfAssign', this.$popup);
+    // NOTE (Ace, 21-Jan-2017): Never used? --> this.$popupChkGmail = $('#chkBackLink', this.$popup);
+    // NOTE (Ace, 21-Jan-2017): Never used? --> this.$popupChkSelfAssign = $('#chkSelfAssign', this.$popup);
 
     
     // NOTE (Ace, 15-Jan-2017): Set the initial width by measuring from the left corner of the
@@ -319,6 +321,7 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
 */
     this.updateBoards();
 
+    /* UNUSED? (Ace, 21-Jan-2017):
     if (data.settings.hasOwnProperty('useBacklink')) {
         $('#chkBackLink', this.$popup).prop('checked', data.settings.useBacklink);
     }
@@ -326,7 +329,7 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
     if (data.settings.hasOwnProperty('selfAssign')) {
         $('#chkSelfAssign', this.$popup).prop('checked', data.settings.selfAssign);
     }
-
+    */
 };
 
 GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
@@ -545,7 +548,7 @@ GmailToTrello.PopupView.prototype.bindEventHiddenEmails = function() {
             }, 1000);
         }
     });
-    /* OBSOLETE/UNUSED (Ace, 16-Jan-2017):
+    /* UNUSED? (Ace, 16-Jan-2017):
     $(this.selectors.hiddenEmails).click(function() {
     log(this.classList);
         if (!self.dataDirty)
@@ -560,6 +563,7 @@ GmailToTrello.PopupView.prototype.validateData = function() {
     var orgId = $('#gttOrg', this.$popup).val();
     var boardId = $('#gttBoard', this.$popup).val();
     var listId = $('#gttList li.active', this.$popup).attr('trello-list-id');
+    var dueDate = $('#gttDueDate', this.$popup).val();
     var title = $('#gttTitle', this.$popup).val();
     var description = $('#gttDesc', this.$popup).val();
     var useBacklink = $('#chkBackLink', this.$popup).is(':checked');
@@ -580,6 +584,7 @@ GmailToTrello.PopupView.prototype.validateData = function() {
             boardId: boardId,
             listId: listId,
             labelsId: labelsId,
+            dueDate: dueDate,
             title: title,
             description: description,
             useBacklink: useBacklink,

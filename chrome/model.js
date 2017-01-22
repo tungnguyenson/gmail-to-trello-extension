@@ -252,6 +252,7 @@ GmailToTrello.Model.prototype.submit = function() {
         boardId: data.boardId,
         listId: data.listId,
         labelsId: data.labelsId,
+        dueDate: data.dueDate,
         useBacklink: data.useBacklink,
         selfAssign: data.selfAssign
     })});
@@ -270,6 +271,12 @@ GmailToTrello.Model.prototype.submit = function() {
     // NOTE (Ace, 10-Jan-2017): Can only post valid labels, this can be a comma-delimited list of valid label ids, will err 400 if any label id unknown:
     if (data.labelsId.length > 1 && data.labelsId.indexOf('-1') === -1) { // Will 400 if we post invalid ids (such as -1):
         trelloPostableData.idLabels = data.labelsId;
+    }
+
+    if (data.dueDate.length > 1) { // Will 400 if not valid date:
+        trelloPostableData.due = new Date(data.dueDate.replace('T', ' ').replace('-','/')).toISOString();
+        /* Replaces work around quirk in Date object, see: http://stackoverflow.com/questions/28234572/
+        html5-datetime-local-chrome-how-to-input-datetime-in-current-time-zone */
     }
 
     Trello.post('cards', trelloPostableData, function(data) {
