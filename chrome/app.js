@@ -50,13 +50,30 @@ GmailToTrello.App.prototype.bindEvents = function() {
         self.popupView.validateData();
     });
 
-    this.data.event.addListener('onSubmitComplete', function(target, params) {
+    this.data.event.addListener('onCardSubmitComplete', function(target, params) {
         self.data.newCard.url = params.data.url;
-        self.popupView.displaySubmitCompleteForm();
+        self.data.newCard.id = params.data.id;
+        self.data.event.fire('onSubmitAttachments', {data:self.data, attachments:params.attachments});
+    });
+
+    this.data.event.addListener('onSubmitAttachments', function(target, params) {
+        var attach1;
+
+        while (attach1 = params.attachments.shift() && attach1.checked !== true) {
+            /* intentionally blank */
+        }
+        
+        if (attach1) {
+            // self.Model.submitAttachments(params.data.newCard.id, params.attachments);
+            Trello.post('cards/' + params.data.newCard.id + '/attachments', attach1, function(data) {
+                params.data.event.fire('onSubmitAttachments', {data:params.data, attachments:params.attachments});
+            });
+        } else {
+            self.popupView.displaySubmitCompleteForm();
+        }
     });
 
     /*** PopupView's events binding ***/
-
 
     this.popupView.event.addListener('onPopupVisible', function() {
         var data = self.data;

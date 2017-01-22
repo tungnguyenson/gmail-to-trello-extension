@@ -253,6 +253,9 @@ GmailToTrello.Model.prototype.submit = function() {
         listId: data.listId,
         labelsId: data.labelsId,
         dueDate: data.dueDate,
+        title: data.title,
+        desc: data.description,
+        attachments: data.attachments,
         useBacklink: data.useBacklink,
         selfAssign: data.selfAssign
     })});
@@ -280,7 +283,7 @@ GmailToTrello.Model.prototype.submit = function() {
     }
 
     Trello.post('cards', trelloPostableData, function(data) {
-        self.event.fire('onSubmitComplete', {data:data});
+        self.event.fire('onCardSubmitComplete', {data:data, attachments:self.newCard.attachments});
         log(data);
         //setTimeout(function() {self.popupNode.hide();}, 10000);
     });

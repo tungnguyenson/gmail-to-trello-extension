@@ -22,6 +22,7 @@ GmailToTrello.GmailView = function() {
         emailAddress: '.gD', // Was: '.go', now using same name property
         emailSubject: '.hP',
         emailBody: '.adO:first',
+        emailAttachments: '.aZo', // Was: '.aQy',
         viewport: '.aeJ:first',
         viewportSplit: '.aNW:first', //reading panel
         expandedEmails: '.h7',
@@ -141,11 +142,16 @@ GmailToTrello.GmailView.prototype.detect = function() {
 
 };
 
+GmailToTrello.GmailView.prototype.escapeRegExp = function (str) {
+    return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+}
+
 GmailToTrello.GmailView.prototype.markdownify = function($emailBody) {
     if ($emailBody.length < 1) {
         log('markdownify requires emailBody');
         return;
     }
+    var self = this;
     var body = $emailBody.innerText;
     var $html = $emailBody.innerHTML;
 
@@ -168,7 +174,7 @@ GmailToTrello.GmailView.prototype.markdownify = function($emailBody) {
                         replace = matched[1] + ':' + matched[2]; // Make a nicer looking visible text. [0] = text
                     }
                 }
-                var re = new RegExp(text, "gi");
+                var re = new RegExp(self.escapeRegExp(text), "gi");
                 var replaced = body.replace(re, "[" + replace + "](" + uri + comment + ')');
                 body = replaced;
             }
@@ -191,7 +197,7 @@ GmailToTrello.GmailView.prototype.markdownify = function($emailBody) {
     // li -> " * "
     $('li', $html).each(function(index, value) {
         var text = $(this).text();
-        var re = new RegExp(text, "gi");
+        var re = new RegExp(self.escapeRegExp(text), "gi");
         var replaced = body.replace(re, "\n * " + text + "\n");
         body = replaced;
     });
@@ -207,7 +213,7 @@ GmailToTrello.GmailView.prototype.markdownify = function($emailBody) {
         var text = $(this).text();
         var nodeName = $(this).prop("nodeName") || "";
         var x = '0' + nodeName.substr(-1);
-        var re = new RegExp(text, "gi");
+        var re = new RegExp(self.escapeRegExp(text), "gi");
         var replaced = body.replace(re, "\n" + ('#'.repeat(x)) + " " + text + "\n");
         body = replaced;
     });
@@ -215,7 +221,7 @@ GmailToTrello.GmailView.prototype.markdownify = function($emailBody) {
     // bold: b -> **text**
      $('b', $html).each(function(index, value) {
         var text = $(this).text();
-        var re = new RegExp(text, "gi");
+        var re = new RegExp(self.escapeRegExp(text), "gi");
         var replaced = body.replace(re, " **" + text + "** ");
         body = replaced;
     });
@@ -265,6 +271,16 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     // email name
     var $emailName = $(this.selectors.emailName, $visibleMail).attr('name').trim();
     var $emailAddress = $(this.selectors.emailAddress, $visibleMail).attr('email').trim();
+    var emailAttachments = $(this.selectors.emailAttachments, $visibleMail).map( function() {
+        var item = $(this).attr('download_url');
+        if (item.length > 0) {
+            var attachment = item.match(/^([^:]+)\s*:\s*([^:]+)\s*:\s*(.+)$/);
+            if (attachment.length > 3) {
+                return {'mimeType': attachment[1], 'name': decodeURIComponent(attachment[2]), 'url': attachment[3], 'checked': 'false'}; // [0] is the whole string
+            }
+        }
+    });
+    // var $emailAttachments = $(this.selectors.emailAttachments, $visibleMail).attr('download_url');
 
     // email body
     var $emailBody = $(this.selectors.emailBody, $visibleMail);
@@ -283,6 +299,8 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     data.body = '[' + $emailName + '](mailto:' + $emailAddress + ' "Email ' + $emailName + ' <' + $emailAddress + '>") on ' + // FYI (Ace, 10-Jan-2017): [name](url) is markdown syntax
         data.time + ":\n\n" + bodyText.trim();
     
+    data.attachments = emailAttachments;
+
     var t = new Date().getTime();
     
     //log('Elapsed: '+(t-startTime)/1000);
