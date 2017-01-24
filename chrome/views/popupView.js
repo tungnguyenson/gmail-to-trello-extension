@@ -323,28 +323,32 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
 */
     this.updateBoards();
 
-    /* UNUSED? (Ace, 21-Jan-2017):
+    // UNUSED? (Ace, 21-Jan-2017):
     if (data.settings.hasOwnProperty('useBacklink')) {
         $('#chkBackLink', this.$popup).prop('checked', data.settings.useBacklink);
     }
 
+    // UNUSED? (Ace, 21-Jan-2017):
     if (data.settings.hasOwnProperty('selfAssign')) {
         $('#chkSelfAssign', this.$popup).prop('checked', data.settings.selfAssign);
     }
-    */
 };
-
+    
 GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
     //auto bind gmail data
     $('#gttTitle', this.$popup).val(data.subject);
     $('#gttDesc', this.$popup).val(data.body);
     var attachments = '<dl>';
     $.each(data.attachments, function(iter, item) {
-        var url = encodeURIComponent(item.url);
-        attachments += '<dt><input type="checkbox" checked="checked" id="' + url + '" /></dt>\n'
-                    +  '<dd mimetype="' + item.mimetype + '" '
-	            +  'name="' + item.name + '" '
-	            +  'url="' + url + '"><label for="' + url + '">' + item.name + "</label></dd>\n";
+        var dict = {
+          'id': item.url,
+          'url': item.url,
+          'name': item.name,
+          'mimeType': item.mimeType
+        };
+        attachments += chrome.extension.replacer (
+          '<dt><input type="checkbox" checked="checked" id="%id%" mimeType="%mimeType%" name="%name%" url="%url%" /></dt><dd><label for="%id%">%name%</label></dd>\n',
+        dict);
     });
     attachments += '</dl>';
     $('#gttAttachments', this.$popup).html(attachments);

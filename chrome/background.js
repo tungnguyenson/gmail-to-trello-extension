@@ -25,6 +25,36 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 });
 
 /**
+ * Correctly escape RegExp
+ */
+chrome.extension.prototype.escapeRegExp = function (str) {
+    return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+}
+
+/**
+ * Utility routine to replace variables
+ */
+chrome.extension.prototype.replacer = function(text, dict) {
+  var self = this;
+  
+  if (!text || text.length < 1) {
+    console.log('Require text!');
+    return;
+  } else if (!dict || dict.length < 2) {
+    console.log('Require dictionary!');
+    return;
+  }
+  
+  $.each(dict, function (key, value) {
+    var re = new RegExp('%' + self.escapeRegExp(key) + '%', "gi");
+    var new_text = text.replace(re, value);
+    text = new_text;
+  }
+  
+  return text;
+} 
+ 
+/**
  * Check if current URL is on Gmail
  * @param  https://developer.chrome.com/extensions/tabs#type-Tab tab Tab to check
  * @return bool     Return True if you're on Gmail
