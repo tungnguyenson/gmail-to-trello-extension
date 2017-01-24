@@ -178,7 +178,7 @@ GmailToTrello.PopupView.prototype.loadSettings = function() {
 // NOTE (Ace, 15-Jan-2017): This resizes all the text areas to match the width of the popup:
 GmailToTrello.PopupView.prototype.onResize = function() {
     var textWidth = this.$popup.width() - 111;
-    $('input[type=text],textarea,#gttAttachments', this.$popup).css('width', textWidth + 'px');
+    $('input[type=text],textarea,.gttAttachments', this.$popup).css('width', textWidth + 'px');
 };
 
 GmailToTrello.PopupView.prototype.bindEvents = function() {
