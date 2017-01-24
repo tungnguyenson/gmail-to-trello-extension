@@ -133,13 +133,12 @@ GmailToTrello.App.prototype.initialize = function() {
 
 };
 
-GmailToTrello.
 /**
  * Correctly escape RegExp
  */
 GmailToTrello.App.prototype.escapeRegExp = function (str) {
     return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
-}
+};
 
 /**
  * Utility routine to replace variables
@@ -162,4 +161,4 @@ GmailToTrello.App.prototype.replacer = function(text, dict) {
   });
   
   return text;
-} 
+};
