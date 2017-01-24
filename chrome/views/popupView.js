@@ -80,8 +80,8 @@ GmailToTrello.PopupView.prototype.init = function() {
                     <input type="checkbox" checked="checked" id="chkSelfAssign" style="margin-left:30px">
                     <label for="chkSelfAssign">Assign me to this card</label>
                 </dd>
-                <dt>Attach:</dt>
-                <div id="gttAttachments" />
+                <!-- IN PROGRESS: <dt>Attach:</dt> -->
+                <!-- IN PROGRESS: <div id="gttAttachments" /> -->
                 <dd><input type="button" disabled="true" id="addTrelloCard" value="Add Trello card"></input></dd>
            </dl>
        </div>
