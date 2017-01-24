@@ -587,7 +587,7 @@ GmailToTrello.PopupView.prototype.validateData = function() {
     $.each($attachments, function() {
 	 var url = $(this).attr('url');
 	 var name = $(this).attr('name');
-	 var mimetype = $(this).attr('mimeType');
+	 var mimeType = $(this).attr('mimeType');
 	 var checked = $('input[type="checkbox"]:first', this).is(':checked');
 	 attachments.push({
 	    'mimeType': mimeType,
