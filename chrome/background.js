@@ -23,7 +23,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
         sendResponse({});
     }
 });
-
+ 
 /**
  * Check if current URL is on Gmail
  * @param  https://developer.chrome.com/extensions/tabs#type-Tab tab Tab to check

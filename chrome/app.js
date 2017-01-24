@@ -4,9 +4,9 @@
 var GmailToTrello = GmailToTrello || {}; // Namespace initialization
 
 GmailToTrello.App = function() {
-    this.popupView = new GmailToTrello.PopupView();
-    this.gmailView = new GmailToTrello.GmailView();
-    this.data = new GmailToTrello.Model();
+    this.popupView = new GmailToTrello.PopupView(this);
+    this.gmailView = new GmailToTrello.GmailView(this);
+    this.data = new GmailToTrello.Model(this);
     
     this.bindEvents();
 };
@@ -50,13 +50,31 @@ GmailToTrello.App.prototype.bindEvents = function() {
         self.popupView.validateData();
     });
 
-    this.data.event.addListener('onSubmitComplete', function(target, params) {
+    this.data.event.addListener('onCardSubmitComplete', function(target, params) {
         self.data.newCard.url = params.data.url;
-        self.popupView.displaySubmitCompleteForm();
+        self.data.newCard.id = params.data.id;
+        self.data.event.fire('onSubmitAttachments', {data:self.data, attachments:params.attachments});
+    });
+
+    this.data.event.addListener('onSubmitAttachments', function(target, params) {
+        var attach1;
+
+        while (attach1 = params.attachments.shift() && attach1 && attach1.hasOwnProperty('checked') && attach1.checked !== true) {
+            /* intentionally blank */
+        }
+        
+        if (attach1) {
+            var trello_attach = {'mimeType': attach1.mimeType, 'name': attach1.name, 'url': attach1.url};
+            // self.Model.submitAttachments(params.data.newCard.id, params.attachments);
+            Trello.post('cards/' + params.data.newCard.id + '/attachments', trello_attach, function(data) {
+                params.data.event.fire('onSubmitAttachments', {data:params.data, attachments:params.attachments});
+            });
+        } else {
+            self.popupView.displaySubmitCompleteForm();
+        }
     });
 
     /*** PopupView's events binding ***/
-
 
     this.popupView.event.addListener('onPopupVisible', function() {
         var data = self.data;
@@ -113,4 +131,34 @@ GmailToTrello.App.prototype.initialize = function() {
     // screen within the app.
     tracker.sendAppView('PopupView');
 
+};
+
+/**
+ * Correctly escape RegExp
+ */
+GmailToTrello.App.prototype.escapeRegExp = function (str) {
+    return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+};
+
+/**
+ * Utility routine to replace variables
+ */
+GmailToTrello.App.prototype.replacer = function(text, dict) {
+  var self = this;
+  
+  if (!text || text.length < 1) {
+    console.log('Require text!');
+    return;
+  } else if (!dict || dict.length < 2) {
+    console.log('Require dictionary!');
+    return;
+  }
+  
+  $.each(dict, function (key, value) {
+    var re = new RegExp('%' + self.escapeRegExp(key) + '%', "gi");
+    var new_text = text.replace(re, value);
+    text = new_text;
+  });
+  
+  return text;
 };

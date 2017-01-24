@@ -1,12 +1,13 @@
 var GmailToTrello = GmailToTrello || {};
 
-GmailToTrello.Model = function() {
+GmailToTrello.Model = function(parent) {
     this.trello = {
         apiKey: 'c50413b23ee49ca49a5c75ccf32d0459',
         user: null,
         orgs: null,
         boards: null
     };
+    this.parent = parent;
     this.settings = {};
     this.isInitialized = false;
     this.event = new EventTarget();
@@ -253,6 +254,9 @@ GmailToTrello.Model.prototype.submit = function() {
         listId: data.listId,
         labelsId: data.labelsId,
         dueDate: data.dueDate,
+        title: data.title,
+        desc: data.description,
+        attachments: data.attachments,
         useBacklink: data.useBacklink,
         selfAssign: data.selfAssign
     })});
@@ -280,7 +284,7 @@ GmailToTrello.Model.prototype.submit = function() {
     }
 
     Trello.post('cards', trelloPostableData, function(data) {
-        self.event.fire('onSubmitComplete', {data:data});
+        self.event.fire('onCardSubmitComplete', {data:data, attachments:self.newCard.attachments});
         log(data);
         //setTimeout(function() {self.popupNode.hide();}, 10000);
     });
