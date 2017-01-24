@@ -80,7 +80,7 @@ GmailToTrello.PopupView.prototype.init = function() {
                     <label for="chkSelfAssign">Assign me to this card</label>
                 </dd>
                 <dt>Attach:</dt>
-                <dd id="gttAttachments" style="height:100px;width:300px"></dd>
+                <dd id="gttAttachments"></dd>
                 <dd><input type="button" disabled="true" id="addTrelloCard" value="Add Trello card"></input></dd>
            </dl>
        </div>
