@@ -64,7 +64,7 @@ GmailToTrello.App.prototype.bindEvents = function() {
         }
         
         if (attach1) {
-            var trello_attach = {'mimetype': attach1.mimetype, 'name': attach1.name, 'url': attach1.url};
+            var trello_attach = {'mimeType': attach1.mimeType, 'name': attach1.name, 'url': attach1.url};
             // self.Model.submitAttachments(params.data.newCard.id, params.attachments);
             Trello.post('cards/' + params.data.newCard.id + '/attachments', trello_attach, function(data) {
                 params.data.event.fire('onSubmitAttachments', {data:params.data, attachments:params.attachments});

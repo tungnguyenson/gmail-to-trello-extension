@@ -585,16 +585,16 @@ GmailToTrello.PopupView.prototype.validateData = function() {
     var attachments = [];
 	
     $.each($attachments, function() {
-	var url = $(this).attr('url');
-	var name = $(this).attr('name');
-	var mimetype = $(this).attr('mimetype');
-	var checked = $('input[type="checkbox"]:first', this).is(':checked');
-	attachments.push({
-	    'mimetype': mimetype,
+	 var url = $(this).attr('url');
+	 var name = $(this).attr('name');
+	 var mimetype = $(this).attr('mimeType');
+	 var checked = $('input[type="checkbox"]:first', this).is(':checked');
+	 attachments.push({
+	    'mimeType': mimeType,
 	    'name': name,
 	    'url': url,
 	    'checked': checked
-	});
+	  });
     });
 
     var validateStatus = (boardId && listId && title); // Labels are not required
