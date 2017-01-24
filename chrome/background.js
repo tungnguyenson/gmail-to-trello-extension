@@ -49,7 +49,7 @@ chrome.extension.prototype.replacer = function(text, dict) {
     var re = new RegExp('%' + self.escapeRegExp(key) + '%', "gi");
     var new_text = text.replace(re, value);
     text = new_text;
-  }
+  });
   
   return text;
 } 
