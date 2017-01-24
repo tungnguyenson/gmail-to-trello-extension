@@ -59,7 +59,7 @@ GmailToTrello.App.prototype.bindEvents = function() {
     this.data.event.addListener('onSubmitAttachments', function(target, params) {
         var attach1;
 
-        while (attach1 = params.attachments.shift() && attach1.checked !== true) {
+        while (attach1 = params.attachments.shift() && attach1 && attach1.hasOwnProperty('checked') && attach1.checked !== true) {
             /* intentionally blank */
         }
         
