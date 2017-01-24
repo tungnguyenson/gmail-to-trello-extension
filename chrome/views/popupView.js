@@ -522,10 +522,6 @@ GmailToTrello.PopupView.prototype.bindEventHiddenEmails = function() {
         self.dataDirty = true;
     });
 
-    $('#gttAttachments', this.$popup).change(function() {
-        self.dataDirty = true;
-    });
-
     log('debug hidden threads');
     this.$expandedEmails.parent().find('> .kx,> .kv,> .kQ,> .h7').click(function() {
         if (self.$popup.css('display') === 'none')
@@ -585,15 +581,20 @@ GmailToTrello.PopupView.prototype.validateData = function() {
             return val;
         }).get().join();
 
+    var $attachments = $('#gttAttachments dd', self.$popup);
     var attachments = [];
-
-    if (this.data && this.data.newCard && this.data.newCard.attachments) {
-        attachments = this.data.newCard.attachments;
-    }
-
-    $.each(attachments, function(iter, item) {
-        var id = encodeURIComponent(item.url);
-        item.checked = $('#gttAttachments input:checkbox[id="'+ id + '"]', self.$popup).is(':checked');
+	
+    $.each($attachments, function() {
+	var url = $(this).attr('url');
+	var name = $(this).attr('name');
+	var mimetype = $(this).attr('mimetype');
+	var checked = $('input:checkbox', this).is(':checked');
+	attachments.push({
+	    'mimetype': mimetype,
+	    'name': name,
+	    'url': url,
+	    'checked': checked
+	});
     });
 
     var validateStatus = (boardId && listId && title); // Labels are not required
