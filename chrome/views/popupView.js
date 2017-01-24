@@ -80,7 +80,7 @@ GmailToTrello.PopupView.prototype.init = function() {
                     <label for="chkSelfAssign">Assign me to this card</label>
                 </dd>
                 <dt>Attach:</dt>
-                <dd class="gttAttachments"></dd>
+                <div id="gttAttachments" />
                 <dd><input type="button" disabled="true" id="addTrelloCard" value="Add Trello card"></input></dd>
            </dl>
        </div>
@@ -178,7 +178,7 @@ GmailToTrello.PopupView.prototype.loadSettings = function() {
 // NOTE (Ace, 15-Jan-2017): This resizes all the text areas to match the width of the popup:
 GmailToTrello.PopupView.prototype.onResize = function() {
     var textWidth = this.$popup.width() - 111;
-    $('input[type=text],textarea,.gttAttachments', this.$popup).css('width', textWidth + 'px');
+    $('input[type=text],textarea,#gttAttachments', this.$popup).css('width', textWidth + 'px');
 };
 
 GmailToTrello.PopupView.prototype.bindEvents = function() {
@@ -342,7 +342,9 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
     $.each(data.attachments, function(iter, item) {
         var url = encodeURIComponent(item.url);
         attachments += '<dt><input type="checkbox" checked="checked" id="' + url + '" /></dt>\n'
-                    +  '<dd><label for="' + url + '">' + item.name + "</label></dd>\n";
+                    +  '<dd mimetype="' + item.mimetype + '" '
+	            +  'name="' + item.name + '" '
+	            +  'url="' + url + '"><label for="' + url + '">' + item.name + "</label></dd>\n";
     });
     attachments += '</dl>';
     $('#gttAttachments', this.$popup).html(attachments);
