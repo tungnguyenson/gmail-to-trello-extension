@@ -276,7 +276,7 @@ GmailToTrello.GmailView.prototype.parseData = function() {
         if (item.length > 0) {
             var attachment = item.match(/^([^:]+)\s*:\s*([^:]+)\s*:\s*(.+)$/);
             if (attachment.length > 3) {
-                return {'mimeType': attachment[1], 'name': decodeURIComponent(attachment[2]), 'url': attachment[3], 'checked': 'false'}; // [0] is the whole string
+                return {'mimeType': attachment[1], 'name': decodeURIComponent(attachment[2]), 'url': encodeURIComponent(attachment[3]), 'checked': 'false'}; // [0] is the whole string
             }
         }
     });
