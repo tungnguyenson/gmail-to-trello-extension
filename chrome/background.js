@@ -27,14 +27,14 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 /**
  * Correctly escape RegExp
  */
-chrome.extension.prototype.escapeRegExp = function (str) {
+chrome.extension.escapeRegExp = function (str) {
     return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
 }
 
 /**
  * Utility routine to replace variables
  */
-chrome.extension.prototype.replacer = function(text, dict) {
+chrome.extension.replacer = function(text, dict) {
   var self = this;
   
   if (!text || text.length < 1) {
