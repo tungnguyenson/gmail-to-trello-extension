@@ -1,7 +1,9 @@
 var GmailToTrello = GmailToTrello || {};
 
-GmailToTrello.GmailView = function() {
+GmailToTrello.GmailView = function(parent) {
     var self = this;
+    
+    this.parent = parent;
 
     this.LAYOUT_DEFAULT = 0;
     this.LAYOUT_SPLIT   = 1;

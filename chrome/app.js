@@ -4,9 +4,9 @@
 var GmailToTrello = GmailToTrello || {}; // Namespace initialization
 
 GmailToTrello.App = function() {
-    this.popupView = new GmailToTrello.PopupView();
-    this.gmailView = new GmailToTrello.GmailView();
-    this.data = new GmailToTrello.Model();
+    this.popupView = new GmailToTrello.PopupView(this);
+    this.gmailView = new GmailToTrello.GmailView(this);
+    this.data = new GmailToTrello.Model(this);
     
     this.bindEvents();
 };

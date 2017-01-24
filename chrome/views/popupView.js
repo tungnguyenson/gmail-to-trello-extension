@@ -1,7 +1,8 @@
 var GmailToTrello = GmailToTrello || {};
 
-GmailToTrello.PopupView = function() {
+GmailToTrello.PopupView = function(parent) {
 
+    this.parent = parent;
     this.event = new EventTarget();
     this.isInitialized = false;
 
@@ -347,7 +348,7 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
           'name': item.name,
           'mimeType': item.mimeType
         };
-        attachments += self.replacer (
+        attachments += self.parent.ßreplacer (
           '<dt><input type="checkbox" checked="checked" id="%id%" mimeType="%mimeType%" name="%name%" url="%url%" /></dt><dd><label for="%id%">%name%</label></dd>\n',
         dict);
     });
