@@ -132,3 +132,34 @@ GmailToTrello.App.prototype.initialize = function() {
     tracker.sendAppView('PopupView');
 
 };
+
+GmailToTrello.
+/**
+ * Correctly escape RegExp
+ */
+GmailToTrello.App.prototype.escapeRegExp = function (str) {
+    return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+}
+
+/**
+ * Utility routine to replace variables
+ */
+GmailToTrello.App.prototype.replacer = function(text, dict) {
+  var self = this;
+  
+  if (!text || text.length < 1) {
+    console.log('Require text!');
+    return;
+  } else if (!dict || dict.length < 2) {
+    console.log('Require dictionary!');
+    return;
+  }
+  
+  $.each(dict, function (key, value) {
+    var re = new RegExp('%' + self.escapeRegExp(key) + '%', "gi");
+    var new_text = text.replace(re, value);
+    text = new_text;
+  });
+  
+  return text;
+} 

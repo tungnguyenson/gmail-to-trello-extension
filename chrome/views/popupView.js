@@ -335,6 +335,7 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
 };
     
 GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
+    var self = this;
     //auto bind gmail data
     $('#gttTitle', this.$popup).val(data.subject);
     $('#gttDesc', this.$popup).val(data.body);
@@ -346,7 +347,7 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
           'name': item.name,
           'mimeType': item.mimeType
         };
-        attachments += chrome.extension.replacer (
+        attachments += self.replacer (
           '<dt><input type="checkbox" checked="checked" id="%id%" mimeType="%mimeType%" name="%name%" url="%url%" /></dt><dd><label for="%id%">%name%</label></dd>\n',
         dict);
     });
