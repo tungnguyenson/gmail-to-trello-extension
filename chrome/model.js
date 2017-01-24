@@ -1,12 +1,13 @@
 var GmailToTrello = GmailToTrello || {};
 
-GmailToTrello.Model = function() {
+GmailToTrello.Model = function(parent) {
     this.trello = {
         apiKey: 'c50413b23ee49ca49a5c75ccf32d0459',
         user: null,
         orgs: null,
         boards: null
     };
+    this.parent = parent;
     this.settings = {};
     this.isInitialized = false;
     this.event = new EventTarget();
