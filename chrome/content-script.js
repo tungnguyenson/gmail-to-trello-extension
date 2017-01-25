@@ -91,13 +91,13 @@ function getGmailObject() {
        + '         userEmail = window.opener.GLOBALS[10];'
        + '  };'
        + 'var GTT_event = new CustomEvent ("GTT_connectExtension", { "detail": { "userEmail": userEmail } });'
-       + '   document.dispatchEvent(GTT_event);
+       + '   document.dispatchEvent(GTT_event);'
        + '};'
        + 'setTimeout(timeOutFxn, 0);';
     
     var script = document.createElement('script');
     script.textContent = actualCode;
-    (document.head||document.documentElement).appendChild(script);
+    (document.head || document.documentElement).appendChild(script);
     script.parentNode.removeChild(script);
  
 }
