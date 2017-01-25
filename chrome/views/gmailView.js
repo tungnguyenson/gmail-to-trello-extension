@@ -106,7 +106,9 @@ GmailToTrello.GmailView.prototype.detectEmailOpenningMode = function() {
     var self = this;
     this.$expandedEmails = this.$root.find(this.selectors.expandedEmails);
     
-    var result = this.$toolBar && this.$toolBarHolder && this.$toolBar.length > 0 && this.$expandedEmails.length > 0 && this.$toolBarHolder !== null;
+    var result = this.$toolBar && this.$toolBar.length > 0
+              && this.$expandedEmails && this.$expandedEmails.length > 0
+              && this.$toolBarHolder && this.$toolBarHolder !== null;
     if (result) {
         log('Gtt::Detected an email is openning');
         log(this.$expandedEmails);
@@ -149,7 +151,7 @@ GmailToTrello.GmailView.prototype.escapeRegExp = function (str) {
 }
 
 GmailToTrello.GmailView.prototype.markdownify = function($emailBody) {
-    if ($emailBody.length < 1) {
+    if (!$emailBody || $emailBody.length < 1) {
         log('markdownify requires emailBody');
         return;
     }
@@ -162,7 +164,7 @@ GmailToTrello.GmailView.prototype.markdownify = function($emailBody) {
     // a -> [text](html)
     $('a', $html).each(function(index, value) {
         var text = $(this).text();
-        if (text.length > 4) { // Only replace links that have a chance of being unique in the text (x.dom):
+        if (text && text.length > 4) { // Only replace links that have a chance of being unique in the text (x.dom):
             var replace = text;
             var uri = $(this).attr("href");
             var comment = ' "' + text + ' via ' + uri + '"';
@@ -172,7 +174,7 @@ GmailToTrello.GmailView.prototype.markdownify = function($emailBody) {
                     comment = ' "Open ' + uri + '"';
                     var re = RegExp("^\\w+:\/\/([\\w\\.]+).*?([\\w\\.]+)$");
                     var matched = text.match(re);
-                    if (matched.length > 1) {
+                    if (matched && matched.length > 1) {
                         replace = matched[1] + ':' + matched[2]; // Make a nicer looking visible text. [0] = text
                     }
                 }
@@ -275,9 +277,9 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     var $emailAddress = $(this.selectors.emailAddress, $visibleMail).attr('email').trim();
     var emailAttachments = $(this.selectors.emailAttachments, $visibleMail).map( function() {
         var item = $(this).attr('download_url');
-        if (item.length > 0) {
+        if (item && item.length > 0) {
             var attachment = item.match(/^([^:]+)\s*:\s*([^:]+)\s*:\s*(.+)$/);
-            if (attachment.length > 3) {
+            if (attachment && attachment.length > 3) {
                 return {'mimeType': attachment[1], 'name': decodeURIComponent(attachment[2]), 'url': encodeURIComponent(attachment[3]), 'checked': 'false'}; // [0] is the whole string
             }
         }

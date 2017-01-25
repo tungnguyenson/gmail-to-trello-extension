@@ -7,7 +7,6 @@
     "16": "images/icon-16.png",
     "48": "images/icon-48.png"
   },
-  "web_accessible_resources":["images/icon-16.png"],
   "page_action": {
     "default_icon": "images/icon-16.png",
     "default_title": "GMail detected"
@@ -36,8 +35,11 @@
   ],
   "web_accessible_resources":[
     "images/icon-13.jpg",
+    "images/icon-16.jpg",
     "images/new_icon.gif",
-    "lib/jquery.min.map"
+    "views/popupView.html",
+    "lib/jquery.min.map",
+    "lib/jquery.min.js"
   ],
   "homepage_url": "http://facebook.com/tungns",
   "offline_enabled": false,
