@@ -35,7 +35,8 @@ GmailToTrello.PopupView.prototype.init = function() {
       + '"><span class="button-text">Add card</span></div></div>';
 
     var strPopupHtml = chrome.extension.getURL('views/popupView.html'); // $.load('views/popupView.html')?
-    var strPopupHtmlOBSOLETE = `
+   /*
+   var strPopupHtmlOBSOLETE = `
     <div id="gttPopup" class="J-M jQjAxd open" style="display:none">
     <div id="gttPopupSlider"></div>
     <div class="inner">
@@ -87,7 +88,8 @@ GmailToTrello.PopupView.prototype.init = function() {
        </div>
    </div>
 </div>`;
-    
+*/
+	
     this.$toolBar.append(strAddCardButtonHtml + strPopupHtml);
     this.$addCardButton = $('#gttButton', this.$toolBar);
     this.$popup = $('#gttPopup', this.$toolBar);
