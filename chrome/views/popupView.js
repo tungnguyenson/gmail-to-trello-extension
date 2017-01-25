@@ -34,7 +34,8 @@ GmailToTrello.PopupView.prototype.init = function() {
       + '<img class="f tk3N6e-I-J3" src="' + chrome.extension.getURL('images/icon-13.jpg')
       + '"><span class="button-text">Add card</span></div></div>';
 
-    var strPopupHtml = `
+    var strPopupHtml = chrome.extension.getURL('views/popupView.html'); // $.load('views/popupView.html')?
+    var strPopupHtmlOBSOLETE = `
     <div id="gttPopup" class="J-M jQjAxd open" style="display:none">
     <div id="gttPopupSlider"></div>
     <div class="inner">
