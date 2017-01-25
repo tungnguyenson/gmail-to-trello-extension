@@ -14,6 +14,9 @@ GmailToTrello.PopupView = function(parent) {
     // process
     this.waitingHiddenThread = false;
     this.waitingHiddenThreadProcId = null;
+	
+    // html pieces
+    this.html = {};
 
 };
 
@@ -27,76 +30,32 @@ GmailToTrello.PopupView.prototype.init = function() {
 
     // inject a button & a popup
 
-    var strAddCardButtonHtml =
-	'<div id="gttButton" class="T-I J-J5-Ji ar7 nf T-I-ax7 L3"'
-      + 'data-tooltip="Add this email as a Trello card">'
-      + '<div aria-haspopup="true" role="button" class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3" tabindex="0">'
-      + '<img class="f tk3N6e-I-J3" src="'
-      + chrome.extension.getURL('images/icon-13.jpg')
-      + '"><span class="button-text">Add card</span></div></div>';
+    if (this.html && this.html['add_card'] && this.html['add_card'.length > 1) {
+	// intentionally blank
+    } else {
+		this.html['add_card'] =
+			'<div id="gttButton" class="T-I J-J5-Ji ar7 nf T-I-ax7 L3"'
+			  + 'data-tooltip="Add this email as a Trello card">'
+			  + '<div aria-haspopup="true" role="button" class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3" tabindex="0">'
+			  + '<img class="f tk3N6e-I-J3" src="'
+			  + chrome.extension.getURL('images/icon-13.jpg')
+			  + '"><span class="button-text">Add card</span></div></div>';
+    }
+    this.$toolBar.append(this.html['add_card']); // + strPopupHtml);
 
-    this.$toolBar.append(strAddCardButtonHtml); // + strPopupHtml);
+    if (this.html && this.html['popup'] && this.html['popup'.length > 1) {
+		this.$toolBar.append(this.html['popup']);
+		this.init_popup();
+	} else {
+		$.get(chrome.extension.getURL('views/popupView.html'), function(data){
+			self.html['popup'] = data;
+			self.$toolBar.append(data);
+			self.init_popup();
+    	});
+	}
+};
 
-    //var strPopupHtml = $('div[id="gttPopup"]').load(chrome.extension.getURL('views/popupView.html'))
-    $.get(chrome.extension.getURL('views/popupView.html'), function(data){
-  	self.$toolBar.append(data);
-    });
-	  
-   /*
-   var strPopupHtmlOBSOLETE = `
-    <div id="gttPopup" class="J-M jQjAxd open" style="display:none">
-    <div id="gttPopupSlider"></div>
-    <div class="inner">
-  <div class="hdr clearfix">
-    <div class="userinfo">
-    </div>
-    <span class="item">|</span>
-    <a class="item" href="https://trello.com/b/CGU9BYgd/gmail-to-trello-development" target="_blank" title="Open Gmail-to-Trello Feature/Bug board in a new window">Features/Bugs</a>
-    <a class="item" href="javascript:void(0)" id="close-button" title="Close">&times;</a>
-    </div>
-  <div class="popupMsg">Loading...</div>
-        <div class="content menuInnerContainer" style="display:none">
-            <dl>
-                <dt style="display:none">Orgs. filter:</dt>
-                <dd style="display:none">
-                   <select id="gttOrg">
-                      <option value="all">All</option>
-                      <option value="-1">My Boards</option>
-                   </select>
-                </dd>
-                <dt>Board:</dt>
-                <dd><select id="gttBoard"></select></dd>
-                <dt>List:</dt>
-                <dd class="clearfix listrow">
-                    <span id="gttListMsg">...please pick a board...</span>
-                    <ul id="gttList"></ul>
-                </dd>
-                <dt>Labels:</dt>
-                <dd class="clearfix listrow">
-                    <span id="gttLabelsMsg">...please pick a board...</span>
-                    <ul id="gttLabels"></ul>
-                </dd>
-                <dt>Due Date:</dt>
-                <dd><input type="datetime-local" id="gttDueDate" /></dd>
-                <dt>Title:</dt>
-                <dd><input type="text" id="gttTitle" /></dd>
-                <dt>Description:</dt>
-                <dd><textarea id="gttDesc" style="height:180px;width:300px"></textarea></dd>
-                <dd>
-                    <input type="checkbox" checked="checked" id="chkBackLink" />
-                    <label for="chkBackLink">Link back to GMail</label>
-                    <input type="checkbox" checked="checked" id="chkSelfAssign" style="margin-left:30px">
-                    <label for="chkSelfAssign">Assign me to this card</label>
-                </dd>
-                <!-- IN PROGRESS: <dt>Attach:</dt> -->
-                <!-- IN PROGRESS: <div id="gttAttachments" /> -->
-                <dd><input type="button" disabled="true" id="addTrelloCard" value="Add Trello card"></input></dd>
-           </dl>
-       </div>
-   </div>
-</div>`;
-*/
-	
+GmailToTrello.PopupView.prototype.init_popup = function() {
     this.$addCardButton = $('#gttButton', this.$toolBar);
     this.$popup = $('#gttPopup', this.$toolBar);
     /* TODO (Ace, 16-Jan-2017): jQueryUI has a more elegant lower-corner resize experience, this is the start:
@@ -120,9 +79,10 @@ GmailToTrello.PopupView.prototype.init = function() {
     
     this.$popupMessage = $('.popupMsg', this.$popup);
     this.$popupContent = $('.content', this.$popup);
-    // NOTE (Ace, 21-Jan-2017): Never used? --> this.$popupChkGmail = $('#chkBackLink', this.$popup);
-    // NOTE (Ace, 21-Jan-2017): Never used? --> this.$popupChkSelfAssign = $('#chkSelfAssign', this.$popup);
-
+    // NEVER USED? (Ace, 21-Jan-2017):
+	this.$popupChkGmail = $('#chkBackLink', this.$popup);
+    // NEVER USED? (Ace, 21-Jan-2017):
+	this.$popupChkSelfAssign = $('#chkSelfAssign', this.$popup);
     
     // NOTE (Ace, 15-Jan-2017): Set the initial width by measuring from the left corner of the
     // "Add card" button to the edge of the window and then center that under the "Add card" button:
