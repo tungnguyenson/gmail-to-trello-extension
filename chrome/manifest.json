@@ -38,7 +38,8 @@
     "images/icon-16.jpg",
     "images/new_icon.gif",
     "views/popupView.html",
-    "lib/jquery.min.map"
+    "lib/jquery.min.map",
+    "lib/jquery.min.js"
   ],
   "homepage_url": "http://facebook.com/tungns",
   "offline_enabled": false,
