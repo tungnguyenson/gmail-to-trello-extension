@@ -293,17 +293,15 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
     $('.userinfo', this.$popup).append($('<span class="item">|</span> <a class="item signOutButton" href="javascript:void(0)" title="Sign out">Sign out</a>'));
 
     $('.signOutButton', this.$popup).click(function() {
-        self.showMessage(self, `Unimplemented. Try the following:
-			<ol><li>Under menu "Chrome":</li>
-			<li>Select "Clear Browsing Data..."</li>
-            <li>Check "Clear data from hosted apps"</li>
-			<li>Press button "Clear browsing data"</li>
-			</ol>
-			<button class="hideMsg" title="Dismiss message">Done</button>`
-            );
+        self.showMessage(self,
+	    'Unimplemented. Try the following:<ol><li>Under menu "Chrome":</li>'
+	  + '<li>Select "Clear Browsing Data..."</li>'
+          + '<li>Check "Clear data from hosted apps"</li>'
+	  + '<li>Press button "Clear browsing data"</li></ol>'
+	  + '<button class="hideMsg" title="Dismiss message">Done</button>'
+       );
     });
-
-
+	
     var orgs = data.trello.orgs;
     var $org = $('#gttOrg', this.$popup);
     $org.append($('<option value="all">All</option>'));
