@@ -1,0 +1,51 @@
+ <div id="gttPopup" class="J-M jQjAxd open" style="display:none">
+    <div id="gttPopupSlider"></div>
+    <div class="inner">
+  <div class="hdr clearfix">
+    <div class="userinfo">
+    </div>
+    <span class="item">|</span>
+    <a class="item" href="https://trello.com/b/CGU9BYgd/gmail-to-trello-development" target="_blank" title="Open Gmail-to-Trello Feature/Bug board in a new window">Features/Bugs</a>
+    <a class="item" href="javascript:void(0)" id="close-button" title="Close">&times;</a>
+    </div>
+  <div class="popupMsg">Loading...</div>
+        <div class="content menuInnerContainer" style="display:none">
+            <dl>
+                <dt style="display:none">Orgs. filter:</dt>
+                <dd style="display:none">
+                   <select id="gttOrg">
+                      <option value="all">All</option>
+                      <option value="-1">My Boards</option>
+                   </select>
+                </dd>
+                <dt>Board:</dt>
+                <dd><select id="gttBoard"></select></dd>
+                <dt>List:</dt>
+                <dd class="clearfix listrow">
+                    <span id="gttListMsg">...please pick a board...</span>
+                    <ul id="gttList"></ul>
+                </dd>
+                <dt>Labels:</dt>
+                <dd class="clearfix listrow">
+                    <span id="gttLabelsMsg">...please pick a board...</span>
+                    <ul id="gttLabels"></ul>
+                </dd>
+                <dt>Due Date:</dt>
+                <dd><input type="datetime-local" id="gttDueDate" /></dd>
+                <dt>Title:</dt>
+                <dd><input type="text" id="gttTitle" /></dd>
+                <dt>Description:</dt>
+                <dd><textarea id="gttDesc" style="height:180px;width:300px"></textarea></dd>
+                <dd>
+                    <input type="checkbox" checked="checked" id="chkBackLink" />
+                    <label for="chkBackLink">Link back to GMail</label>
+                    <input type="checkbox" checked="checked" id="chkSelfAssign" style="margin-left:30px">
+                    <label for="chkSelfAssign">Assign me to this card</label>
+                </dd>
+                <!-- IN PROGRESS: <dt>Attach:</dt> -->
+                <!-- IN PROGRESS: <div id="gttAttachments" /> -->
+                <dd><input type="button" disabled="true" id="addTrelloCard" value="Add Trello card"></input></dd>
+           </dl>
+       </div>
+   </div>
+</div>;
