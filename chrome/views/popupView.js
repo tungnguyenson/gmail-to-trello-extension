@@ -27,13 +27,14 @@ GmailToTrello.PopupView.prototype.init = function() {
 
     // inject a button & a popup
 
-    var strAddCardButtonHtml = 
-'<div id="gttButton" class="T-I J-J5-Ji ar7 nf T-I-ax7 L3" data-tooltip="Add this email as a Trello card">
+    var strAddCardButtonHtml = `
+<div id="gttButton" class="T-I J-J5-Ji ar7 nf T-I-ax7 L3"
+	data-tooltip="Add this email as a Trello card">
    <div aria-haspopup="true" role="button" class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3" tabindex="0">
-     <img class="f tk3N6e-I-J3" src="' + chrome.extension.getURL('images/icon-13.jpg') + '">
+     <img class="f tk3N6e-I-J3" src="` + chrome.extension.getURL('images/icon-13.jpg') + `">
         <span class="button-text">Add card</span>
     </div>
- </div>';
+ </div>`;
 
     var strPopupHtml = `
     <div id="gttPopup" class="J-M jQjAxd open" style="display:none">
