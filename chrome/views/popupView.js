@@ -30,7 +30,7 @@ GmailToTrello.PopupView.prototype.init = function() {
 
     // inject a button & a popup
 
-    if (this.html && this.html['add_card'] && this.html['add_card'.length > 1) {
+    if (this.html && this.html['add_card'] && this.html['add_card'].length > 1) {
 	// intentionally blank
     } else {
 		this.html['add_card'] =
@@ -43,7 +43,7 @@ GmailToTrello.PopupView.prototype.init = function() {
     }
     this.$toolBar.append(this.html['add_card']); // + strPopupHtml);
 
-    if (this.html && this.html['popup'] && this.html['popup'.length > 1) {
+    if (this.html && this.html['popup'] && this.html['popup'].length > 1) {
 		this.$toolBar.append(this.html['popup']);
 		this.init_popup();
 	} else {
