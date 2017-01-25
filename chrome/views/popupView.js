@@ -35,11 +35,11 @@ GmailToTrello.PopupView.prototype.init = function() {
       + chrome.extension.getURL('images/icon-13.jpg')
       + '"><span class="button-text">Add card</span></div></div>';
 
-    this.$toolbar.append(strAddCardButtonHtml); // + strPopupHtml);
+    this.$toolBar.append(strAddCardButtonHtml); // + strPopupHtml);
 
     //var strPopupHtml = $('div[id="gttPopup"]').load(chrome.extension.getURL('views/popupView.html'))
     $.get(chrome.extension.getURL('views/popupView.html'), function(data){
-  	self.$toolbar.append(data);
+  	self.$toolBar.append(data);
     });
 	  
    /*
