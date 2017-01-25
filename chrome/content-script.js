@@ -81,28 +81,25 @@ function getGmailObject() {
         '}));}, 0);'].join('\n');
     */
     
-    var actualCode = `
-        function timeOutFxn() {
-            var userEmail = 'dev@null.com';
-            if (typeof GLOBALS !== "undefined") {
-                userEmail = GLOBALS[10];
-            } else if (typeof (window) !== "undefined" && window.opener !== null && typeof window.opener.GLOBALS !== "undefined") {
-                userEmail = window.opener.GLOBALS[10];
-            };
-
-            var GTT_event = new CustomEvent ("GTT_connectExtension", { 'detail': { 'userEmail': userEmail } });
-
-            document.dispatchEvent(GTT_event);
-        };
-        setTimeout(timeOutFxn, 0);
-    `;
+    // NOTE (Ace, 24-Jan-2017): Backtick (`) support still a little spotty, converting to better supported way:
+    var actualCode =
+         'function timeOutFxn() {'
+       + '  var userEmail = "dev@null.com";'
+       + '  if (typeof GLOBALS !== "undefined") {'
+       + '         userEmail = GLOBALS[10];'
+       + '  } else if (typeof (window) !== "undefined" && window.opener !== null && typeof window.opener.GLOBALS !== "undefined") {'
+       + '         userEmail = window.opener.GLOBALS[10];'
+       + '  };'
+       + 'var GTT_event = new CustomEvent ("GTT_connectExtension", { "detail": { "userEmail": userEmail } });'
+       + '   document.dispatchEvent(GTT_event);
+       + '};'
+       + 'setTimeout(timeOutFxn, 0);';
     
     var script = document.createElement('script');
     script.textContent = actualCode;
     (document.head||document.documentElement).appendChild(script);
     script.parentNode.removeChild(script);
-
-
+ 
 }
 
 /*
