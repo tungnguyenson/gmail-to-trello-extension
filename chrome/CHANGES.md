@@ -4,6 +4,15 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.2.2
+---------------
+- Adding Labels
+- Movable modal UI centered under Add card, Avatars working
+- Cleaned up UI
+- Lots of bug fixes
+- Some additional markdown formatting in description for from: email.
+
+
 Version 2.1.5
 ---------------
 - Add Google Analytics
