@@ -92,8 +92,8 @@ GmailToTrello.PopupView.prototype.init_popup = function() {
     var parent = this.$addCardButton.offsetParent();
     var parentRight = parent.position().left + parent.width();
 
-    // We'll make our popup twice as wide as the button to the end of the window up to MAX_WIDTH:
-    var newPopupWidth = 2*(parentRight - addCardLeft);
+    // We'll make our popup 1.5x as wide as the button to the end of the window up to MAX_WIDTH:
+    var newPopupWidth = 1.5*(parentRight - addCardLeft);
     if (newPopupWidth < this.MIN_WIDTH) {
         newPopupWidth = this.MIN_WIDTH;
     } else if (newPopupWidth > this.MAX_WIDTH) {
