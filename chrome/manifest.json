@@ -1,6 +1,6 @@
 {
   "name": "GMail to Trello",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "manifest_version": 2,
   "description": "GMail to Trello integration. Create new Trello cards from Google mail threads with backlinks.",
   "icons": {
