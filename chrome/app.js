@@ -56,6 +56,10 @@ GmailToTrello.App.prototype.bindEvents = function() {
         self.data.event.fire('onSubmitAttachments', {data:self.data, attachments:params.attachments});
     });
 
+    this.data.event.addListener('onCardSubmitFail', function(target, params) {
+        self.popupView.displaySubmitFailedForm(params);
+    });
+
     this.data.event.addListener('onSubmitAttachments', function(target, params) {
         var attach1;
 
@@ -66,8 +70,10 @@ GmailToTrello.App.prototype.bindEvents = function() {
         if (attach1) {
             var trello_attach = {'mimeType': attach1.mimeType, 'name': attach1.name, 'url': attach1.url};
             // self.Model.submitAttachments(params.data.newCard.id, params.attachments);
-            Trello.post('cards/' + params.data.newCard.id + '/attachments', trello_attach, function(data) {
+            Trello.post('cards/' + params.data.newCard.id + '/attachments', trello_attach, function success(data) {
                 params.data.event.fire('onSubmitAttachments', {data:params.data, attachments:params.attachments});
+            }, function failure(data) {
+                self.popupView.displaySubmitFailedForm(data);
             });
         } else {
             self.popupView.displaySubmitCompleteForm();
@@ -161,4 +167,136 @@ GmailToTrello.App.prototype.replacer = function(text, dict) {
   });
   
   return text;
+};
+
+/**
+ * Markdownify a text block
+ */
+ GmailToTrello.App.prototype.markdownify = function($emailBody, features) {
+    if (!$emailBody || $emailBody.length < 1) {
+        log('markdownify requires emailBody');
+        return;
+    }
+    var self = this;
+
+    var processThisMarkdown = function(elementTag) { // Assume TRUE to process, unless explicitly restricted:
+        if (typeof features === 'undefined') {
+            return true;
+        }
+        if (features === false) {
+            return false;
+        }
+        if (!features.hasOwnProperty(elementTag)) {
+            return true;
+        }
+        if (features[elementTag] !== false) {
+            return true;
+        }
+        return false;
+    };
+
+    var uriForDisplay = function(uri) {
+        var uri_display = uri;
+        if (uri.length > 20) {
+            var re = RegExp("^\\w+:\/\/([\\w\\.\/_]+).*?([\\w\\.]+)$");
+            var matched = uri.match(re);
+            if (matched && matched.length > 1) {
+                uri_display = matched[1] + ':' + matched[2]; // Make a nicer looking visible text. [0] = text
+            }
+        }
+        return uri_display;
+    }
+
+    var body = $emailBody.innerText;
+    var $html = $emailBody.innerHTML;
+
+    var seen_already = {};
+    // links:
+    // a -> [text](html)
+    if (processThisMarkdown('a')) {
+        $('a', $html).each(function(index, value) {
+            var text = $(this).text().trim();
+            if (text && text.length > 4) { // Only replace links that have a chance of being unique in the text (x.dom):
+                var replace = text;
+                var uri = $(this).attr("href");
+                var uri_display = uriForDisplay(uri);
+                var comment = ' "' + text + ' via ' + uri_display + '"';
+                if (seen_already[text] !== 1) {
+                    seen_already[text] = 1;
+                    if (text == uri) {
+                        comment = ' "Open ' + uri_display + '"';
+                    }
+                    var re = new RegExp(self.escapeRegExp(text), "gi");
+                    var replaced = body.replace(re, "[" + replace + "](" + uri + comment + ')');
+                    body = replaced;
+                }
+            }
+        });
+    }
+
+    /* DISABLED (Ace, 16-Jan-2017): Images kinda make a mess, until requested lets not markdownify them:
+    // images:
+    // img -> ![alt_text](html)
+    if (processThisMarkdown('img')) {
+        $('img', $html).each(function(index, value) {
+            var text = $(this).attr("alt") || '<no-text>';
+            var uri = $(this).attr("src") || '<no-uri>';
+            var uri_display = uriForDisplay(uri);
+            var re = new RegExp(text, "gi");
+            var replaced = body.replace(re, "![" + text + "](" + uri + ' "' + text + ' via ' + uri_display + '"');
+            body = replaced;
+        });
+    }
+    */
+
+    // bullet lists:
+    // li -> " * "
+    if (processThisMarkdown('li')) {
+        $('li', $html).each(function(index, value) {
+            var text = $(this).text().trim();
+            var re = new RegExp(self.escapeRegExp(text), "gi");
+            var replaced = body.replace(re, "\n * " + text + "\n");
+            body = replaced;
+        });
+    }
+
+    // headers:
+    // H1 -> #
+    // H2 -> ##
+    // H3 -> ###
+    // H4 -> ####
+    // H5 -> #####
+    // H6 -> ######
+    if (processThisMarkdown('h')) {
+        $(':header', $html).each(function(index, value) {
+            var text = $(this).text().trim();
+            var nodeName = $(this).prop("nodeName") || "";
+            var x = '0' + nodeName.substr(-1);
+            var re = new RegExp(self.escapeRegExp(text), "gi");
+            var replaced = body.replace(re, "\n" + ('#'.repeat(x)) + " " + text + "\n");
+            body = replaced;
+        });
+    }
+
+    // bold: b -> **text**
+    if (processThisMarkdown('b')) {
+            $('b', $html).each(function(index, value) {
+            var text = $(this).text().trim();
+            var re = new RegExp(self.escapeRegExp(text), "gi");
+            var replaced = body.replace(re, " **" + text + "** ");
+            body = replaced;
+        });
+    }
+
+    // minimize newlines:
+    var replaced = body.replace(/\s{2,}/g, function(str) {
+        if (str.indexOf("\n\n\n") !== -1)
+            return "\n\n";
+        else if (str.indexOf("\n") !== -1)
+            return "\n";
+        else
+            return ' ';
+    });
+
+    return replaced;
 };

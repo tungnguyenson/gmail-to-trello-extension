@@ -146,103 +146,6 @@ GmailToTrello.GmailView.prototype.detect = function() {
 
 };
 
-GmailToTrello.GmailView.prototype.escapeRegExp = function (str) {
-    return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
-}
-
-GmailToTrello.GmailView.prototype.markdownify = function($emailBody) {
-    if (!$emailBody || $emailBody.length < 1) {
-        log('markdownify requires emailBody');
-        return;
-    }
-    var self = this;
-    var body = $emailBody.innerText;
-    var $html = $emailBody.innerHTML;
-
-    var seen_already = {};
-    // links:
-    // a -> [text](html)
-    $('a', $html).each(function(index, value) {
-        var text = $(this).text();
-        if (text && text.length > 4) { // Only replace links that have a chance of being unique in the text (x.dom):
-            var replace = text;
-            var uri = $(this).attr("href");
-            var comment = ' "' + text + ' via ' + uri + '"';
-            if (seen_already[text] !== 1) {
-                seen_already[text] = 1;
-                if (text == uri) {
-                    comment = ' "Open ' + uri + '"';
-                    var re = RegExp("^\\w+:\/\/([\\w\\.]+).*?([\\w\\.]+)$");
-                    var matched = text.match(re);
-                    if (matched && matched.length > 1) {
-                        replace = matched[1] + ':' + matched[2]; // Make a nicer looking visible text. [0] = text
-                    }
-                }
-                var re = new RegExp(self.escapeRegExp(text), "gi");
-                var replaced = body.replace(re, "[" + replace + "](" + uri + comment + ')');
-                body = replaced;
-            }
-        }
-    });
-
-    /* DISABLED (Ace, 16-Jan-2017): Images kinda make a mess, until requested lets not markdownify them:
-    // images:
-    // img -> ![alt_text](html)
-    $('img', $html).each(function(index, value) {
-        var text = $(this).attr("alt") || '<no-text>';
-        var uri = $(this).attr("src") || '<no-uri>';
-        var re = new RegExp(text, "gi");
-        var replaced = body.replace(re, "![" + text + "](" + uri + ' "' + text + ' via ' + uri + '"');
-        body = replaced;
-    });
-    */
-
-    // bullet lists:
-    // li -> " * "
-    $('li', $html).each(function(index, value) {
-        var text = $(this).text();
-        var re = new RegExp(self.escapeRegExp(text), "gi");
-        var replaced = body.replace(re, "\n * " + text + "\n");
-        body = replaced;
-    });
-
-    // headers:
-    // H1 -> #
-    // H2 -> ##
-    // H3 -> ###
-    // H4 -> ####
-    // H5 -> #####
-    // H6 -> ######
-     $(':header', $html).each(function(index, value) {
-        var text = $(this).text();
-        var nodeName = $(this).prop("nodeName") || "";
-        var x = '0' + nodeName.substr(-1);
-        var re = new RegExp(self.escapeRegExp(text), "gi");
-        var replaced = body.replace(re, "\n" + ('#'.repeat(x)) + " " + text + "\n");
-        body = replaced;
-    });
-
-    // bold: b -> **text**
-     $('b', $html).each(function(index, value) {
-        var text = $(this).text();
-        var re = new RegExp(self.escapeRegExp(text), "gi");
-        var replaced = body.replace(re, " **" + text + "** ");
-        body = replaced;
-    });
-
-    // minimize newlines:
-    var replaced = body.replace(/\s{2,}/g, function(str) {
-        if (str.indexOf("\n\n\n") !== -1)
-            return "\n\n";
-        else if (str.indexOf("\n") !== -1)
-            return "\n";
-        else
-            return ' ';
-    });
-
-    return replaced;
-}
-
 GmailToTrello.GmailView.prototype.parseData = function() {
     log('Gtt::parsing data...');
     if (this.parsingData)
@@ -273,9 +176,9 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     });
 
     // email name
-    var $emailName = $(this.selectors.emailName, $visibleMail).attr('name').trim();
-    var $emailAddress = $(this.selectors.emailAddress, $visibleMail).attr('email').trim();
-    var emailAttachments = $(this.selectors.emailAttachments, $visibleMail).map( function() {
+    var emailName = $(this.selectors.emailName, $visibleMail).attr('name').trim();
+    var emailAddress = $(this.selectors.emailAddress, $visibleMail).attr('email').trim();
+    var emailAttachments = $(this.selectors.emailAttachments, $visibleMail).map(function() {
         var item = $(this).attr('download_url');
         if (item && item.length > 0) {
             var attachment = item.match(/^([^:]+)\s*:\s*([^:]+)\s*:\s*(.+)$/);
@@ -284,12 +187,7 @@ GmailToTrello.GmailView.prototype.parseData = function() {
             }
         }
     });
-    // var $emailAttachments = $(this.selectors.emailAttachments, $visibleMail).attr('download_url');
-
-    // email body
-    var $emailBody = $(this.selectors.emailBody, $visibleMail);
-    var bodyText = this.markdownify($emailBody[0]);
-
+    
     // timestamp
     var $time = $(this.selectors.timestamp, $visibleMail);
     var timeValue = ($time) ? $time.attr('title') : '';
@@ -300,9 +198,31 @@ GmailToTrello.GmailView.prototype.parseData = function() {
 
     data.time = timeValue ? timeValue.toString(this.dateFormat || 'MMM d, yyyy') : '';
 
-    data.body = '[' + $emailName + '](mailto:' + $emailAddress + ' "Email ' + $emailName + ' <' + $emailAddress + '>") on ' + // FYI (Ace, 10-Jan-2017): [name](url) is markdown syntax
-        data.time + ":\n\n" + bodyText.trim();
+    data.from_raw = emailName + ' <' + emailAddress + '> on ' + data.time;
+    data.from_md = '[' + emailName + '](mailto:' + emailAddress + ' "Email ' + emailName + ' <' + emailAddress + '>") on ' + // FYI (Ace, 10-Jan-2017): [name](url) is markdown syntax
+        data.time;
+
+    var email = emailAddress.replace('@', '\\@');
+    var txtDirect = "["+email+"](" + document.location.href + " \"Direct link to creator's email\")";
+
+    var subject = encodeURIComponent(data.subject);
+
+    var dateSearch = encodeURIComponent(data.time);
+    var txtDirect_raw = "https://mail.google.com/mail/#advanced-search/subset=all&has=" + subject + "&within=1d&date=" + dateSearch;
+    var txtDirect_md = "[Search:Time](" + txtDirect_raw + ") \"Advanced search email subject + time\")";
+    var txtSearch_raw = "https://mail.google.com/mail/#search/" + subject;
+    var txtSearch_md = "[Search:Subject](" + txtSearch_raw + ") \"Search email subject\")";
+
+    data.link_raw = "\n---\nGmail import: " + txtDirect_raw + " | " + txtSearch_raw;
+    data.link_md = "\n---\nGmail import: " + txtDirect_md + " | " + txtSearch_md;
+
     
+    // email body
+    var $emailBody = $(this.selectors.emailBody, $visibleMail);
+    
+    data.body_raw =  data.from_raw + ":\n\n" + this.parent.markdownify($emailBody[0], false);
+    data.body_md = data.from_md + ":\n\n" + this.parent.markdownify($emailBody[0]);
+
     data.attachments = emailAttachments;
 
     var t = new Date().getTime();
