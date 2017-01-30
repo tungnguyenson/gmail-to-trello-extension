@@ -21,10 +21,17 @@
                 <dt>Board:</dt>
                 <dd><select id="gttBoard"></select></dd>
                 <dt>List:</dt>
+                <dd>
+                    <select id="gttList">
+                        <option value="">...please pick a board...</option>
+                    </select>
+                </dd>
+                <!-- OBSOLETE (Ace, 29-Jan-2017): Was our swanky list widget:
                 <dd class="clearfix listrow">
                     <span id="gttListMsg">...please pick a board...</span>
                     <ul id="gttList"></ul>
                 </dd>
+                -->
                 <dt>Labels:</dt>
                 <dd class="clearfix listrow">
                     <span id="gttLabelsMsg">...please pick a board...</span>
@@ -38,12 +45,14 @@
                 <dd><textarea id="gttDesc" style="height:180px;width:300px"></textarea></dd>
                 <dd>
                     <input type="checkbox" checked="checked" id="chkBackLink" />
-                    <label for="chkBackLink">Link back to GMail</label>
-                    <input type="checkbox" checked="checked" id="chkSelfAssign" style="margin-left:30px">
-                    <label for="chkSelfAssign">Assign me to this card</label>
+                    <label for="chkBackLink">Add GMail link</label>
+                    <input type="checkbox" checked="checked" id="chkMoreMarkdown" style="margin-left:10px">
+                    <label for="chkMoreMarkdown">More markdown</label>
+                    <input type="checkbox" checked="checked" id="chkSelfAssign" style="margin-left:10px">
+                    <label for="chkSelfAssign">Assign to me</label>
                 </dd>
-                <!-- IN PROGRESS: <dt>Attach:</dt> -->
-                <!-- IN PROGRESS: <div id="gttAttachments" /> -->
+                <dt>Attach:</dt>
+                <dd><div id="gttAttachments" /></dd>
                 <dd><input type="button" disabled="true" id="addTrelloCard" value="Add Trello card"></input></dd>
            </dl>
        </div>

@@ -208,45 +208,6 @@ GmailToTrello.Model.prototype.submit = function() {
     }
     var data = this.newCard;
 
-    if (data.useBacklink) {
-        var email = this.userEmail.replace('@', '\\@');
-        var txtDirect = "["+email+"](" + document.location.href + " \"Direct link to creator's email, not acccessible from anyone else\")";
-
-        //subject = subject.replace('"', '');
-        //subject = subject.replace(' ', '+');
-        // https://mail.google.com/mail/u/1/#advanced-search/subset=all&has=Bug&within=1d&date=nov+14?compose=14269f3a0707acb9
-        // <span id=":1v" class="g3" title="Mon, Nov 18, 2013 at 11:20 AM" alt="Mon, Nov 18, 2013 at 11:20 AM">11:20 AM (2 hours ago)</span>
-        // //*[@id=":1v"]
-        var subject = encodeURIComponent(data.title);
-
-        //parse date
-        log('parsing time');
-        log(data.timeStamp);
-        var dateSearch = (data.timeStamp) ? data.timeStamp.replace('at', '').trim() : null;
-        dateSearch = (dateSearch) ? Date.parse(dateSearch) : null;
-        dateSearch = (dateSearch) ? dateSearch.toString('MMM d, yyyy') : null;
-        log(dateSearch);
-
-        var txtSearch = '';
-        if (dateSearch) {
-            data.date = dateSearch;
-            dateSearch = encodeURIComponent(dateSearch);
-            txtSearch += "[Search](https://mail.google.com/mail/#advanced-search/subset=all&has=" + subject + "&within=1d&date=" + dateSearch + " \"Advance search by email subject and time\")";
-
-        }
-        else
-            txtSearch += "[Search](https://mail.google.com/mail/#search/" + subject + " \"Search by email subject\")";
-
-        data.description += "\n\n---\nImported from Gmail: " + txtDirect + " | " + txtSearch;
-        //after:2013/11/17 before:2013/11/20
-        //#advanced-search/subset=all&has=bug&within=1d&date=Nov+18%2C+2013
-        //
-        //log(this.data.desc);
-        //https://mail.google.com/mail/u/1/#advanced-search/subset=all&has=%5BTiki.vn+Bug&within=1d&date=nov+18%2C+2013
-
-
-    }
-
     //save settings
     chrome.extension.sendMessage({storage: 'userSettings', value: JSON.stringify({
         orgId: data.orgId,
@@ -257,8 +218,9 @@ GmailToTrello.Model.prototype.submit = function() {
         title: data.title,
         desc: data.description,
         attachments: data.attachments,
-        useBacklink: data.useBacklink,
-        selfAssign: data.selfAssign
+        useBackLink: data.useBackLink,
+        selfAssign: data.selfAssign,
+        moreMarkdown: data.moreMarkdown
     })});
 
     var idMembers = null;
@@ -283,11 +245,11 @@ GmailToTrello.Model.prototype.submit = function() {
         html5-datetime-local-chrome-how-to-input-datetime-in-current-time-zone */
     }
 
-    Trello.post('cards', trelloPostableData, function(data) {
+    Trello.post('cards', trelloPostableData, function success(data) {
         self.event.fire('onCardSubmitComplete', {data:data, attachments:self.newCard.attachments});
         log(data);
         //setTimeout(function() {self.popupNode.hide();}, 10000);
+    }, function failure(data) {
+        self.event.fire('onCardSubmitFailure', {data:data});
     });
-
-//    log(data);
 };
