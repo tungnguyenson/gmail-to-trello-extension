@@ -512,11 +512,15 @@ GmailToTrello.PopupView.prototype.updateLabels = function() {
     for (var i = 0; i < labels.length; i++) {
         var item = labels[i];
         if (item.name.length > 0) {
+            var $color = $('a').css('color', item.color);
+            var bkColor = self.parent.luminance($color.css('color')); // If you'd like to determine whether to make the background light or dark
             $gtt.append($('<li>')
                 .attr('trello-label-id', item.id)
-                .attr('style', 'color:' + item.color)
+                .css('border-color', item.color)
+                .css('background-color', bkColor)
                 .append(item.name)
             )
+            $color.css('color', 'black');
         }
     }
     $gtt.show();

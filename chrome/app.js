@@ -61,21 +61,21 @@ GmailToTrello.App.prototype.bindEvents = function() {
     });
 
     this.data.event.addListener('onSubmitAttachments', function(target, params) {
-        var attach1;
-
-        while (attach1 = params.attachments.shift() && attach1 && attach1.hasOwnProperty('checked') && attach1.checked !== true) {
-            /* intentionally blank */
-        }
+        var attach1 = params.attachments.shift();
         
         if (attach1) {
-            var trello_attach = {'mimeType': attach1.mimeType, 'name': attach1.name, 'url': attach1.url};
-            // self.Model.submitAttachments(params.data.newCard.id, params.attachments);
-            Trello.post('cards/' + params.data.newCard.id + '/attachments', trello_attach, function success(data) {
+            if (!attach1.hasOwnProperty('checked') || attach1.checked !== true) { // Skip this attachment
                 params.data.event.fire('onSubmitAttachments', {data:params.data, attachments:params.attachments});
-            }, function failure(data) {
-                self.popupView.displaySubmitFailedForm(data);
-            });
-        } else {
+            } else {
+                var trello_attach = {'mimeType': attach1.mimeType, 'name': attach1.name, 'url': attach1.url};
+                // self.Model.submitAttachments(params.data.newCard.id, params.attachments);
+                Trello.post('cards/' + params.data.newCard.id + '/attachments', trello_attach, function success(data) {
+                    params.data.event.fire('onSubmitAttachments', {data:params.data, attachments:params.attachments});
+                }, function failure(data) {
+                    self.popupView.displaySubmitFailedForm(data);
+                });
+            }
+        } else { // Done with attach list
             self.popupView.displaySubmitCompleteForm();
         }
     });
@@ -299,4 +299,34 @@ GmailToTrello.App.prototype.replacer = function(text, dict) {
     });
 
     return replaced;
+};
+
+/**
+ * Determine luminance of a color so we can augment with darker/lighter background
+ */
+ GmailToTrello.App.prototype.luminance = function(color){
+    var bkColorLight = 'lightGray'; // or white
+    var bkColorDark = 'darkGray'; // 'gray' is even darker
+    var bkColorReturn = bkColorLight;
+
+    var re = new RegExp ("rgb\\D+(\\d+)\\D+(\\d+)\\D+(\\d+)");
+    var matched = color.match(re, "i");
+    if (matched && matched.length > 2) { // 0 is total string:
+        var r = matched[1];
+        var g = matched[2];
+        var b = matched[3];
+        // var 1 = matched[4]; // if alpha is provided
+
+        var luma = 0.2126 * r + 0.7152 * g + 0.0722 * b; // per ITU-R BT.709
+
+        if (luma < 40) {
+            bkColorReturn = bkColorDark;
+        } else {
+            bkColorReturn = bkColorLight;
+        }
+    } else {
+        bkColorReturn = bkColorLight; // RegExp failed, assume dark color
+    }
+
+    return 'inherit'; // Use: bkColorReturn if you want to adjust background based on text perceived brightness
 };

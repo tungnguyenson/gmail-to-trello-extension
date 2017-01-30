@@ -183,7 +183,7 @@ GmailToTrello.GmailView.prototype.parseData = function() {
         if (item && item.length > 0) {
             var attachment = item.match(/^([^:]+)\s*:\s*([^:]+)\s*:\s*(.+)$/);
             if (attachment && attachment.length > 3) {
-                return {'mimeType': attachment[1], 'name': decodeURIComponent(attachment[2]), 'url': encodeURIComponent(attachment[3]), 'checked': 'false'}; // [0] is the whole string
+                return {'mimeType': attachment[1], 'name': decodeURIComponent(attachment[2]), 'url': attachment[3], 'checked': 'false'}; // [0] is the whole string
             }
         }
     });
@@ -191,15 +191,15 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     // timestamp
     var $time = $(this.selectors.timestamp, $visibleMail);
     var timeValue = ($time) ? $time.attr('title') : '';
-    timeValue = timeValue ? timeValue.replace('at', '') : '';
+    timeValue = timeValue ? timeValue.replace(' at ', ' ') : ''; // BUG (Ace, 29-Jan-2017): Replacing 'at' without spaces will mess up "Sat" which will then cause Date.parse to fail.
     if (timeValue !== '') {
         timeValue = Date.parse(timeValue);
     }
 
-    data.time = timeValue ? timeValue.toString(this.dateFormat || 'MMM d, yyyy') : '';
+    data.time = timeValue ? timeValue.toString(this.dateFormat || 'MMM d, yyyy') : 'recently';
 
     data.from_raw = emailName + ' <' + emailAddress + '> on ' + data.time;
-    data.from_md = '[' + emailName + '](mailto:' + emailAddress + ' "Email ' + emailName + ' <' + emailAddress + '>") on ' + // FYI (Ace, 10-Jan-2017): [name](url) is markdown syntax
+    data.from_md = '[' + emailName + '](mailto:' + emailAddress + ' "Email ' + emailAddress + '") on ' + // FYI (Ace, 10-Jan-2017): [name](url "comment") is markdown syntax
         data.time;
 
     var email = emailAddress.replace('@', '\\@');
@@ -209,9 +209,9 @@ GmailToTrello.GmailView.prototype.parseData = function() {
 
     var dateSearch = encodeURIComponent(data.time);
     var txtDirect_raw = "https://mail.google.com/mail/#advanced-search/subset=all&has=" + subject + "&within=1d&date=" + dateSearch;
-    var txtDirect_md = "[Search:Time](" + txtDirect_raw + ") \"Advanced search email subject + time\")";
+    var txtDirect_md = "[Search:Time](" + txtDirect_raw + " \"Advanced search email subject + time\")";
     var txtSearch_raw = "https://mail.google.com/mail/#search/" + subject;
-    var txtSearch_md = "[Search:Subject](" + txtSearch_raw + ") \"Search email subject\")";
+    var txtSearch_md = "[Search:Subject](" + txtSearch_raw + " \"Search email subject\")";
 
     data.link_raw = "\n---\nGmail import: " + txtDirect_raw + " | " + txtSearch_raw;
     data.link_md = "\n---\nGmail import: " + txtDirect_md + " | " + txtSearch_md;
