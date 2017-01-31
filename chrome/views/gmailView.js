@@ -23,7 +23,7 @@ GmailToTrello.GmailView = function(parent) {
         emailName: '.gD',
         emailAddress: '.gD', // Was: '.go', now using same name property
         emailSubject: '.hP',
-        emailBody: '.adO:first',
+        emailBody: '.adP:first', // Was: '.adO:first'
         emailAttachments: '.aZo', // Was: '.aQy',
         viewport: '.aeJ:first',
         viewportSplit: '.aNW:first', //reading panel

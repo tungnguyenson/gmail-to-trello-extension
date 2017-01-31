@@ -56,7 +56,7 @@ GmailToTrello.App.prototype.bindEvents = function() {
         self.data.event.fire('onSubmitAttachments', {data:self.data, attachments:params.attachments});
     });
 
-    this.data.event.addListener('onCardSubmitFail', function(target, params) {
+    this.data.event.addListener('onCardSubmitFailure', function(target, params) {
         self.popupView.displaySubmitFailedForm(params);
     });
 
@@ -170,6 +170,21 @@ GmailToTrello.App.prototype.replacer = function(text, dict) {
 };
 
 /**
+ * Make displayable URI
+ */
+GmailToTrello.App.prototype.uriForDisplay = function(uri) {
+    var uri_display = uri || '';
+    if (uri_display.length > 30) {
+        var re = RegExp("^\\w+:\/\/([\\w.\/_]+).*?([\\w._]*)$");
+        var matched = uri_display.match(re);
+        if (matched && matched.length > 0) {
+            uri_display = matched[1] + (matched[2] && matched[2].length > 0 ? ':' + matched[2] : ''); // Make a nicer looking visible text. [0] = text
+        }
+    }
+    return uri_display;
+};
+
+/**
  * Markdownify a text block
  */
  GmailToTrello.App.prototype.markdownify = function($emailBody, features) {
@@ -178,6 +193,12 @@ GmailToTrello.App.prototype.replacer = function(text, dict) {
         return;
     }
     var self = this;
+
+    const min_text_length_k = 4;
+    const regexp_k = {
+        'begin': '(^|\\s+)',
+        'end': '(\\s+|$)'
+    };
 
     var processThisMarkdown = function(elementTag) { // Assume TRUE to process, unless explicitly restricted:
         if (typeof features === 'undefined') {
@@ -195,42 +216,43 @@ GmailToTrello.App.prototype.replacer = function(text, dict) {
         return false;
     };
 
-    var uriForDisplay = function(uri) {
-        var uri_display = uri;
-        if (uri.length > 20) {
-            var re = RegExp("^\\w+:\/\/([\\w\\.\/_]+).*?([\\w\\.]+)$");
-            var matched = uri.match(re);
-            if (matched && matched.length > 1) {
-                uri_display = matched[1] + ':' + matched[2]; // Make a nicer looking visible text. [0] = text
-            }
-        }
-        return uri_display;
-    }
-
     var body = $emailBody.innerText;
     var $html = $emailBody.innerHTML;
 
-    var seen_already = {};
+    // Replace hr:
+    var replaced = body.replace(/\s*-{3,}\s*/g, "--\n");
+    body = replaced;
+
+    // Convert crlf x 2 (or more) to paragraph markers:
+    replaced = body.replace(/\s*[\n\r]+\s*[\n\r]+\s*/g, ' <p />\n');
+    body = replaced;
+
     // links:
     // a -> [text](html)
     if (processThisMarkdown('a')) {
+        var anchors = {};
         $('a', $html).each(function(index, value) {
-            var text = $(this).text().trim();
-            if (text && text.length > 4) { // Only replace links that have a chance of being unique in the text (x.dom):
-                var replace = text;
-                var uri = $(this).attr("href");
-                var uri_display = uriForDisplay(uri);
-                var comment = ' "' + text + ' via ' + uri_display + '"';
-                if (seen_already[text] !== 1) {
-                    seen_already[text] = 1;
-                    if (text == uri) {
-                        comment = ' "Open ' + uri_display + '"';
-                    }
-                    var re = new RegExp(self.escapeRegExp(text), "gi");
-                    var replaced = body.replace(re, "[" + replace + "](" + uri + comment + ')');
-                    body = replaced;
-                }
+            var text = ($(this).text() || "").trim();
+            var uri = ($(this).attr("href") || "").trim();
+            if (uri && text && text.length > min_text_length_k) {
+                anchors[text.toLowerCase()] = {'text': text, 'uri': uri}; // Intentionally overwrites duplicates                
             }
+        });
+        $.each(Object.keys(anchors).sort(function(a, b){ // Go by order of largest to smallest
+            return b.length - a.length;
+        }), function(index, value) {
+            var text = anchors[value].text;
+            var uri = anchors[value].uri;
+            var replace = text;
+            var uri_display = self.uriForDisplay(uri);
+            var comment = ' "' + text + ' via ' + uri_display + '"';
+            var re = new RegExp(self.escapeRegExp(text), "i");
+            if (uri.match(re)) {
+                comment = ' "Open ' + uri_display + '"';
+            }
+            re = new RegExp(regexp_k.begin + self.escapeRegExp(text) + regexp_k.end, "gi");
+            var replaced = body.replace(re, " [" + replace + "](" + uri /* + comment */ + ') '); // Comment seemed like too much extra text
+            body = replaced;
         });
     }
 
@@ -239,9 +261,10 @@ GmailToTrello.App.prototype.replacer = function(text, dict) {
     // img -> ![alt_text](html)
     if (processThisMarkdown('img')) {
         $('img', $html).each(function(index, value) {
-            var text = $(this).attr("alt") || '<no-text>';
-            var uri = $(this).attr("src") || '<no-uri>';
-            var uri_display = uriForDisplay(uri);
+            var text = ($(this).attr("alt") || "").trim();
+            var uri = ($(this).attr("src") || "").trim();
+            if (uri && text && text.length > min_text_length)
+            var uri_display = self.uriForDisplay(uri);
             var re = new RegExp(text, "gi");
             var replaced = body.replace(re, "![" + text + "](" + uri + ' "' + text + ' via ' + uri_display + '"');
             body = replaced;
@@ -253,10 +276,12 @@ GmailToTrello.App.prototype.replacer = function(text, dict) {
     // li -> " * "
     if (processThisMarkdown('li')) {
         $('li', $html).each(function(index, value) {
-            var text = $(this).text().trim();
-            var re = new RegExp(self.escapeRegExp(text), "gi");
-            var replaced = body.replace(re, "\n * " + text + "\n");
-            body = replaced;
+            var text = ($(this).text() || "").trim();
+            if (text && text.length > min_text_length_k) {
+                var re = new RegExp(regexp_k.begin + self.escapeRegExp(text) + regexp_k.end, "gi");
+                var replaced = body.replace(re, "\n * " + text + "\n");
+                body = replaced;
+            }
         });
     }
 
@@ -269,36 +294,40 @@ GmailToTrello.App.prototype.replacer = function(text, dict) {
     // H6 -> ######
     if (processThisMarkdown('h')) {
         $(':header', $html).each(function(index, value) {
-            var text = $(this).text().trim();
-            var nodeName = $(this).prop("nodeName") || "";
-            var x = '0' + nodeName.substr(-1);
-            var re = new RegExp(self.escapeRegExp(text), "gi");
-            var replaced = body.replace(re, "\n" + ('#'.repeat(x)) + " " + text + "\n");
-            body = replaced;
+            var text = ($(this).text() || "").trim();
+            var nodeName = $(this).prop("nodeName");
+            if (nodeName && text && text.length > min_text_length_k) {
+                var x = '0' + nodeName.substr(-1);
+                var re = new RegExp(regexp_k.begin + self.escapeRegExp(text) + regexp_k.end, "gi");
+                var replaced = body.replace(re, "\n" + ('#'.repeat(x)) + " " + text + "\n");
+                body = replaced;
+            }
         });
     }
 
     // bold: b -> **text**
     if (processThisMarkdown('b')) {
             $('b', $html).each(function(index, value) {
-            var text = $(this).text().trim();
-            var re = new RegExp(self.escapeRegExp(text), "gi");
-            var replaced = body.replace(re, " **" + text + "** ");
-            body = replaced;
+            var text = ($(this).text() || "").trim();
+            if (text && text.length > min_text_length_k) {
+                var re = new RegExp(regexp_k.begin + self.escapeRegExp(text) + regexp_k.end, "gi");
+                var replaced = body.replace(re, " **" + text + "** ");
+                body = replaced;
+            }
         });
     }
 
-    // minimize newlines:
-    var replaced = body.replace(/\s{2,}/g, function(str) {
-        if (str.indexOf("\n\n\n") !== -1)
-            return "\n\n";
-        else if (str.indexOf("\n") !== -1)
-            return "\n";
-        else
-            return ' ';
-    });
+    // Minimize newlines:
+    replaced = body.replace(/\s*[\n\r]+\s*/g, '\n');
+    body = replaced;
 
-    return replaced;
+    replace = body.replace(/\s{2,}/g, ' ');
+    body = replaced;
+
+    replaced = body.replace(/\s*<p \/>\s*/g, '\n\n');
+    body = replaced;
+
+    return body;
 };
 
 /**
@@ -329,4 +358,11 @@ GmailToTrello.App.prototype.replacer = function(text, dict) {
     }
 
     return 'inherit'; // Use: bkColorReturn if you want to adjust background based on text perceived brightness
+};
+
+/**
+ * HTML bookend a string
+ */
+ GmailToTrello.App.prototype.bookend = function(bookend, text, style) {
+    return '<' + bookend + (style ? ' style="' + style + '"' : '') + '>' + (text || "") + '</' + bookend + '>';
 };

@@ -220,17 +220,19 @@ GmailToTrello.Model.prototype.submit = function() {
         attachments: data.attachments,
         useBackLink: data.useBackLink,
         selfAssign: data.selfAssign,
-        moreMarkdown: data.moreMarkdown
+        markdown: data.markdown
     })});
 
     var idMembers = null;
     if (data.selfAssign) {
         idMembers = this.trello.user.id;  
     }
-    //
+    
+    var desc = data.description.length > 16384 ? data.description.substr(0,16381) + '...' : data.description;
+
     //submit data
     var trelloPostableData = {name: data.title, 
-        desc: data.description, 
+        desc: desc,
         idList: data.listId, idMembers:idMembers
     };
 
