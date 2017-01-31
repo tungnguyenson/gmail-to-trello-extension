@@ -195,6 +195,10 @@ GmailToTrello.App.prototype.uriForDisplay = function(uri) {
     var self = this;
 
     const min_text_length_k = 4;
+    const regexp_k = {
+        'begin': '(^|\\s+)',
+        'end': '(\\s+|$)'
+    };
 
     var processThisMarkdown = function(elementTag) { // Assume TRUE to process, unless explicitly restricted:
         if (typeof features === 'undefined') {
@@ -214,6 +218,14 @@ GmailToTrello.App.prototype.uriForDisplay = function(uri) {
 
     var body = $emailBody.innerText;
     var $html = $emailBody.innerHTML;
+
+    // Replace hr:
+    var replaced = body.replace(/\s*-{3,}\s*/g, "--\n");
+    body = replaced;
+
+    // Convert crlf x 2 (or more) to paragraph markers:
+    replaced = body.replace(/\s*[\n\r]+\s*[\n\r]+\s*/g, ' <p />\n');
+    body = replaced;
 
     // links:
     // a -> [text](html)
@@ -238,8 +250,8 @@ GmailToTrello.App.prototype.uriForDisplay = function(uri) {
             if (uri.match(re)) {
                 comment = ' "Open ' + uri_display + '"';
             }
-            re = new RegExp("\\b" + self.escapeRegExp(text) + "\\b", "gi");
-            var replaced = body.replace(re, "[" + replace + "](" + uri + comment + ')');
+            re = new RegExp(regexp_k.begin + self.escapeRegExp(text) + regexp_k.end, "gi");
+            var replaced = body.replace(re, " [" + replace + "](" + uri /* + comment */ + ') '); // Comment seemed like too much extra text
             body = replaced;
         });
     }
@@ -266,7 +278,7 @@ GmailToTrello.App.prototype.uriForDisplay = function(uri) {
         $('li', $html).each(function(index, value) {
             var text = ($(this).text() || "").trim();
             if (text && text.length > min_text_length_k) {
-                var re = new RegExp("\\b" + self.escapeRegExp(text) + "\\b", "gi");
+                var re = new RegExp(regexp_k.begin + self.escapeRegExp(text) + regexp_k.end, "gi");
                 var replaced = body.replace(re, "\n * " + text + "\n");
                 body = replaced;
             }
@@ -286,7 +298,7 @@ GmailToTrello.App.prototype.uriForDisplay = function(uri) {
             var nodeName = $(this).prop("nodeName");
             if (nodeName && text && text.length > min_text_length_k) {
                 var x = '0' + nodeName.substr(-1);
-                var re = new RegExp("\\b" + self.escapeRegExp(text) + "\\b", "gi");
+                var re = new RegExp(regexp_k.begin + self.escapeRegExp(text) + regexp_k.end, "gi");
                 var replaced = body.replace(re, "\n" + ('#'.repeat(x)) + " " + text + "\n");
                 body = replaced;
             }
@@ -298,24 +310,24 @@ GmailToTrello.App.prototype.uriForDisplay = function(uri) {
             $('b', $html).each(function(index, value) {
             var text = ($(this).text() || "").trim();
             if (text && text.length > min_text_length_k) {
-                var re = new RegExp("\\b" + self.escapeRegExp(text) + "\\b", "gi");
+                var re = new RegExp(regexp_k.begin + self.escapeRegExp(text) + regexp_k.end, "gi");
                 var replaced = body.replace(re, " **" + text + "** ");
                 body = replaced;
             }
         });
     }
 
-    // minimize newlines:
-    var replaced = body.replace(/\s{2,}/g, function(str) {
-        if (str.indexOf("\n\n\n") !== -1)
-            return "\n\n";
-        else if (str.indexOf("\n") !== -1)
-            return "\n";
-        else
-            return ' ';
-    });
+    // Minimize newlines:
+    replaced = body.replace(/\s*[\n\r]+\s*/g, '\n');
+    body = replaced;
 
-    return replaced;
+    replace = body.replace(/\s{2,}/g, ' ');
+    body = replaced;
+
+    replaced = body.replace(/\s*<p \/>\s*/g, '\n\n');
+    body = replaced;
+
+    return body;
 };
 
 /**
