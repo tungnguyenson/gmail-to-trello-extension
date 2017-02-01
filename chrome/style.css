@@ -111,7 +111,6 @@ ul#gttLabels {float:left; margin:0; padding:0;}
 #gttPopup #close-button {float: right;margin-right: 0;padding:0 10px; border-radius: 3px; color: black; background: lightgray; font-weight: bold; font-size:200%; text-decoration: none;}
 #gttPopup #close-button:hover {color:red; background:darkgray;}
 
-#gttPopup #gttAttachments {height:50px; width:339px; overflow: auto};
-#gttPopup #gttAttachments dt {width:20px; float:left; text-align:left; padding-right:5px;}
-#gttPopup #gttAttachments dd {display:block; margin:2px; margin-left:24px;}
+#gttPopup #gttAttachments {height:50px; width:100%; display: block; overflow: auto; padding:0; margin:0;}
+#gttPopup #gttAttachments label {padding-left: 15px; text-indent: -15px;} /* Still not working right */
 

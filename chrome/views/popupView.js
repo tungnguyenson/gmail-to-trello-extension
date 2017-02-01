@@ -354,7 +354,7 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
         .attr('gmail-link-raw', data.link_raw)
         .attr('gmail-link-md', data.link_md);
     
-    var attachments = '<dl>';
+    var attachments = '';
     $.each(data.attachments, function(iter, item) {
         var dict = {
           'id': item.url,
@@ -363,10 +363,9 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
           'mimeType': item.mimeType
         };
         attachments += self.parent.replacer (
-          '<input type="checkbox" checked="checked" id="%id%" mimeType="%mimeType%" name="%name%" url="%url%" /><label for="%id%">%name%</label><br />\n',
+          '<label><input type="checkbox" checked="checked" id="%id%" mimeType="%mimeType%" name="%name%" url="%url%" /> %name%</label><br />\n',
         dict);
     });
-    attachments += '</dl>';
     
     $('#gttAttachments', this.$popup).html(attachments);
     this.dataDirty = false;
