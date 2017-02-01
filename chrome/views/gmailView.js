@@ -30,7 +30,8 @@ GmailToTrello.GmailView = function(parent) {
         expandedEmails: '.h7',
         hiddenEmails: '.kv',
         emailInThreads: '.kv,.h7',
-        timestamp: '.gH .gK .g3:first'
+        timestamp: '.gH .gK .g3:first',
+        host: 'a.gb_b.gb_eb.gb_R'
     };
 
     this.dateFormat = 'MMM d, yyyy';
@@ -175,6 +176,20 @@ GmailToTrello.GmailView.prototype.parseData = function() {
             $visibleMail = $this;
     });
 
+    // host name
+    /* <a class="gb_b gb_eb gb_R" href="https://accounts.google.com/SignOutOptions?hl=en&amp;continue=https://mail.google.com/mail&amp;service=mail"
+    title="Google Account: Andrew Coven (acoven@box.com)" role="button" tabindex="0" aria-expanded="true"><span class="gb_9a gbii"></span></a>
+    */
+    var $host = $(this.selectors.host);
+    var title  = ($host.attr('title') || "").trim();
+    var matched = title.match(/[^:]+:\s+([^\(]+)\(([^\)]+)\)/);
+    var hostName = 'unknown';
+    var hostEmail = 'unknown@dot.com';
+    if (matched && matched.length > 1) {
+        hostName = matched[1].trim();
+        hostEmail = matched[2].trim();
+    }
+
     // email name
     var emailName = $(this.selectors.emailName, $visibleMail).attr('name').trim();
     var emailAddress = $(this.selectors.emailAddress, $visibleMail).attr('email').trim();
@@ -198,12 +213,12 @@ GmailToTrello.GmailView.prototype.parseData = function() {
 
     data.time = timeValue ? timeValue.toString(this.dateFormat || 'MMM d, yyyy') : 'recently';
 
-    data.from_raw = emailName + ' <' + emailAddress + '> on ' + data.time;
-    data.from_md = '[' + emailName + '](mailto:' + emailAddress + ' "Email ' + emailAddress + '") on ' + // FYI (Ace, 10-Jan-2017): [name](url "comment") is markdown syntax
-        data.time;
-
+    var from_raw = emailName + ' <' + emailAddress + '> on ' + data.time;
+    var from_md = '[' + emailName + '](mailto:' + emailAddress /*  + ' "Email ' + emailAddress + '"' */ + ') on '
+        + data.time;  // FYI (Ace, 10-Jan-2017): [name](url "comment") is markdown syntax
+    
     var email = emailAddress.replace('@', '\\@');
-    var txtDirect = "["+email+"](" + document.location.href + " \"Direct link to creator's email\")";
+    var txtDirect = "["+email+"](" + document.location.href + " \"Original email\")";
 
     var subject = encodeURIComponent(data.subject);
 
@@ -219,9 +234,27 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     
     // email body
     var $emailBody = $(this.selectors.emailBody, $visibleMail);
+
+    var email_md = '[' + emailName + '](' + emailAddress + ')';
+
+    var host_md = '[' + hostName + '](' + hostEmail + ')';
+
+    var make_preprocess_mailto = function (name, email) {
+        var valLtGt = name + " <" + email + ">";
+        var valParen = name + " (" + email + ")";
+        var retn = {};
+        retn[valLtGt.toLowerCase()] = {'text': name, 'uri': 'mailto:' + email};
+        retn[valParen.toLowerCase()] = {'text': name, 'uri': 'mailto:' + email};
+        retn[name.toLowerCase()] = {'text': name, 'uri': 'mailto:' + email};
+
+        return retn;
+    }
+
+    var preprocess = {'a':{}};
+    $.extend(preprocess['a'], make_preprocess_mailto(emailName, emailAddress), make_preprocess_mailto(hostName, hostEmail));
     
-    data.body_raw =  data.from_raw + ":\n\n" + this.parent.markdownify($emailBody[0], false);
-    data.body_md = data.from_md + ":\n\n" + this.parent.markdownify($emailBody[0]);
+    data.body_raw =  from_raw + ":\n\n" + this.parent.markdownify($emailBody[0], false, preprocess);
+    data.body_md = from_md + ":\n\n" + this.parent.markdownify($emailBody[0], true, preprocess);
 
     data.attachments = emailAttachments;
 

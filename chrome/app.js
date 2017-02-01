@@ -187,7 +187,7 @@ GmailToTrello.App.prototype.uriForDisplay = function(uri) {
 /**
  * Markdownify a text block
  */
- GmailToTrello.App.prototype.markdownify = function($emailBody, features) {
+ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preprocess) {
     if (!$emailBody || $emailBody.length < 1) {
         log('markdownify requires emailBody');
         return;
@@ -196,8 +196,8 @@ GmailToTrello.App.prototype.uriForDisplay = function(uri) {
 
     const min_text_length_k = 4;
     const regexp_k = {
-        'begin': '(^|\\s+)',
-        'end': '(\\s+|$)'
+        'begin': '(^|\\s+|<)',
+        'end': '(>|\\s+|$)'
     };
 
     var processThisMarkdown = function(elementTag) { // Assume TRUE to process, unless explicitly restricted:
@@ -230,7 +230,7 @@ GmailToTrello.App.prototype.uriForDisplay = function(uri) {
     // links:
     // a -> [text](html)
     if (processThisMarkdown('a')) {
-        var anchors = {};
+        var anchors = preprocess.a ||{};
         $('a', $html).each(function(index, value) {
             var text = ($(this).text() || "").trim();
             var uri = ($(this).attr("href") || "").trim();
@@ -243,15 +243,16 @@ GmailToTrello.App.prototype.uriForDisplay = function(uri) {
         }), function(index, value) {
             var text = anchors[value].text;
             var uri = anchors[value].uri;
-            var replace = text;
             var uri_display = self.uriForDisplay(uri);
+            /*
             var comment = ' "' + text + ' via ' + uri_display + '"';
             var re = new RegExp(self.escapeRegExp(text), "i");
             if (uri.match(re)) {
                 comment = ' "Open ' + uri_display + '"';
             }
-            re = new RegExp(regexp_k.begin + self.escapeRegExp(text) + regexp_k.end, "gi");
-            var replaced = body.replace(re, " [" + replace + "](" + uri /* + comment */ + ') '); // Comment seemed like too much extra text
+            */
+            var re = new RegExp(regexp_k.begin + self.escapeRegExp(value) + regexp_k.end, "gi");
+            var replaced = body.replace(re, " [" + text + "](" + uri /* + comment */ + ') '); // Comment seemed like too much extra text
             body = replaced;
         });
     }
