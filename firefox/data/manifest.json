@@ -1,0 +1,48 @@
+{
+  "name": "GMail to Trello",
+  "version": "2.1.3.7",
+  "manifest_version": 2,
+  "description": "A free tool for GMail and Trello integration, allow creating new card from email thread and easily searching back",
+  "icons": {
+    "16": "images/icon-16.png",
+    "48": "images/icon-48.png"
+  },
+  "web_accessible_resources":["images/icon-16.png"],
+  "page_action": {
+    "default_icon": "images/icon-16.png",
+    "default_title": "GMail detected"
+  },
+
+  "background": {"scripts": ["background.js"]},
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+          "lib/jquery.min.js",
+          "lib/jquery-ui-1.10.3.custom.min.js",
+          "lib/trello.min.js",
+          "lib/date.js",
+          "lib/eventTarget.js",
+          "lib/menuControl.js",
+          "lib/waitCounter.js",
+          "views/gmailView.js",
+          "views/popupView.js",
+          "model.js",
+          "app.js",
+          "content-script.js" ],
+      "css": ["style.css"]
+    }
+  ],
+  "web_accessible_resources":[
+    "images/icon-13.jpg",
+    "images/new_icon.gif",
+    "lib/jquery.min.map"
+  ],
+  "homepage_url": "http://facebook.com/tungns",
+  "offline_enabled": false,
+  "permissions": [
+    "tabs",
+    "http://*/*", "https://*/*"
+  ],
+  "options_page": "options.html"
+}
