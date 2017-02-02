@@ -357,13 +357,12 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
     var attachments = '';
     $.each(data.attachments, function(iter, item) {
         var dict = {
-          'id': item.url,
           'url': item.url,
           'name': item.name,
           'mimeType': item.mimeType
         };
         attachments += self.parent.replacer (
-          '<label><input type="checkbox" checked="checked" id="%id%" mimeType="%mimeType%" name="%name%" url="%url%" /> %name%</label><br />\n',
+          '<label><input type="checkbox" checked="checked" mimeType="%mimeType%" name="%name%" url="%url%" /> %name%</label><br />\n',
         dict);
     });
     
