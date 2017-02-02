@@ -1,0 +1,87 @@
+.hidden {display: none}
+
+.clearfix:before,  
+.clearfix:after {  
+    content: " ";  
+    display: table;  
+}  
+.clearfix:after {  
+    clear: both;  
+}  
+/* toolbar holder */
+.iH div {position: static}
+
+#gttPopup {
+    position: absolute; 
+    max-height: none;
+    right:0;
+    min-width: 450px;
+    -webkit-user-select: none; overflow: hidden; 
+    border-top:2px solid #ccc;/*#0088C3;*/
+    border-bottom:2px solid #ccc;
+    background: #FEFEFE;
+    padding:0;
+    opacity: 0.95;
+    z-index: 99998; /*still behind the slider*/
+    overflow: visible;
+    white-space: normal;
+}
+
+#gttPopupSlider {
+	position: absolute;
+	left:0;top:-2px;bottom:-2px;
+	width:3px;
+    border-top:32px solid #0088C3;/*#0088C3;*/
+	background: #0088C3;
+    z-index: 99999;
+    cursor: col-resize;
+
+}
+
+#gttPopup .inner {overflow: hidden;margin-left:3px;}
+
+#gttButton {
+    padding-left: 16px; padding-right: 16px;
+    -webkit-user-select: none; margin-bottom:0px;margin-top:-2px; outline: none;
+}
+#gttButton * {outline:none}
+#gttButton img {vertical-align: -4px; height: 16px;padding-right:2px}
+
+#gttPopup .content {
+    position: relative; left: 0;
+    padding:5px;
+}
+
+#gttPopup .popupMsg {border:1px solid #EDC967; background: #F9EDB8; padding:5px 10px 15px;margin:10px}
+
+#gttListMsg {background: #F9EDB8;}
+ul#gttList {float:left;margin:0;padding:0;}
+/*
+#gttList li {float:left;margin:0 10px 0 0;padding:5px 10px;list-style: none;border: 1px solid #ccc;border-radius:3px;cursor:pointer;background: #F2F2F2;font-size:11px;}
+*/
+#gttPopup .listrow {min-height: 31px}
+#gttList li {float:left;margin:0 10px 5px 0;padding:4px 10px;list-style: none;border-radius:3px;border: 1px solid #ccc;border-top-width:5px;cursor:pointer;background: #F2F2F2;font-size:11px;cursor: pointer;font-weight: bold;color:#666;}
+#gttList li:hover, #gttList li.active, #gttList li.active:hover {border-color:#3086B7;color:#05679E;}
+
+#gttPopup dt {width:70px;float:left;text-align:right;padding-right:5px;}
+#gttPopup dd {display:block;margin:8px;margin-left:75px;}
+
+#gttPopup input,#gttPopup select,#gttPopup option {font-size:12px;}
+
+#gttPopup input[type=button] {font-size:14px;padding:5px 18px;color:#fff;background:linear-gradient(to bottom, #24a828 0, #1b7e1e 100%);border:0;border-radius:3px;cursor: pointer}
+#gttPopup input[type=button]:hover {background:linear-gradient(to bottom, #1f9323 0, #166919 100%)}
+#gttPopup input[type=text], #gttPopup textarea {padding:3px;border:1px solid #A1A1A1;border-radius: 3px}
+
+#gttPopup input[disabled], #gttPopup input[disabled]:hover {background: #ccc;color:#666;cursor:default;}
+
+/*
+#gttPopup #closeButton {z-index:9999;position: absolute;top:0;right:0;padding: 5px 15px;border: 1px solid #CBCBCB;background: #F2F2F2;color:#000;text-decoration: none}
+#gttPopup #closeButton:hover {background: #ccc}
+*/
+
+#gttPopup .hdr {font-weight: bold;vertical-align: middle;line-height: 30px;height: 30px;background:#ECEAED;border-bottom: 1px solid #ccc}
+#gttPopup .hdr a {text-decoration: none}
+#gttPopup .hdr a:hover {text-decoration: underline}
+#gttPopup .hdr .item {float:left;margin-right: 10px}
+#gttPopup .member-avatar {float:left;width:30px;height: 30px;border-radius: 3px;background: #d6d6d6;color:#000;text-align: center;}
+#gttPopup #close-button {float: right;margin-right: 0;padding:0 10px;background: #F0EEF1}

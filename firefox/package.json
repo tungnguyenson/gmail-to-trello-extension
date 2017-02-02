@@ -1,0 +1,12 @@
+{
+  "name": "gmail-to-trello",
+  "title": "Gmail To Trello",
+  "id": "jid1-B54rj67qjqvKcg",
+  "description": "A free tool for GMail and Trello integration, allow creating new card from email thread and easily searching back.  This was originally ported from the chrome extension with the same name at https://chrome.google.com/webstore/detail/gmail-to-trello/oceoildfbiaeclndnjknjpfaoofeekgl",
+  "icon": "data/images/icon-48.png",
+  "homepage": "https://github.com/SethBoyd/gmail-to-trello-extension",
+  "author": "Seth Boyd <sethdboyd@gmail.com> (https://github.com/SethBoyd)",
+  "contributors": "Original Author (https://github.com/tungbi)",
+  "license": "MIT",
+  "version": "1.0.1"
+}
