@@ -363,7 +363,7 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
         };
         attachments += self.parent.replacer (
           '<label><input type="checkbox" checked="checked" mimeType="%mimeType%" name="%name%" url="%url%" /> %name%</label><br />\n',
-        dict);
+          dict);
     });
     
     $('#gttAttachments', this.$popup).html(attachments);
