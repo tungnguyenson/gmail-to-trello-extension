@@ -289,14 +289,12 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
     $('.userinfo', this.$popup).append($('<a class="item">').attr('href', user.url).attr('target', '_blank').attr('title', 'Open your Trello homepage').append(user.username));
     $('.userinfo', this.$popup).append($('<span class="item">|</span> <a class="item signOutButton" href="javascript:void(0)" title="Sign out">Sign out</a>'));
 
-    $('.signOutButton', this.$popup).click(function() {
-        self.showMessage(self,
-	    'Unimplemented. Try the following:<ol><li>Under menu "Chrome":</li>'
-	  + '<li>Select "Clear Browsing Data..."</li>'
-          + '<li>Check "Clear data from hosted apps"</li>'
-	  + '<li>Press button "Clear browsing data"</li></ol>'
-	  + '<button class="hideMsg" title="Dismiss message">Done</button>'
-       );
+    $('.signOutButton', this.$popup).click(function() {self.showMessage(self,
+            '<a class="hideMsg" title="Dismiss message">&times;</a>Unimplemented. Try the following:<ol><li>Under menu "Chrome":</li>'
+            + '<li>Select "Clear Browsing Data..."</li>'
+            + '<li>Check "Clear data from hosted apps"</li>'
+            + '<li>Press button "Clear browsing data"</li></ol>'
+        );
     });
 	
     var orgs = data.trello.orgs;
@@ -690,14 +688,12 @@ GmailToTrello.PopupView.prototype.displaySubmitCompleteForm = function() {
     var jQueryToRawHtml = function(jQueryObject) {
         return jQueryObject.prop('outerHTML');
     }
-    this.showMessage(self, 'Trello card created: ' + 
+    this.showMessage(self, '<a class="hideMsg" title="Dismiss message">&times;</a>Trello card created: ' + 
         jQueryToRawHtml($('<a>')
             .attr('href', data.url)
             .attr('target', '_blank')
             .append(data.title))
-        + '<br /><br /><button class="hideMsg" title="Dismiss message">Done</button>'
-    );
-
+        );
     this.$popupContent.hide();
 };
 
@@ -714,14 +710,13 @@ GmailToTrello.PopupView.prototype.displaySubmitFailedForm = function(response) {
 
     var style = 'float: left; clear: left; width: 90px; text-align: right; color: red;';
     
-    var msg = 'ERROR: Trello card create FAILED! <dl style="font-weight: bold;">';
+    var msg = '<a class="hideMsg" title="Dismiss message">&times;</a>ERROR: Trello card create FAILED! <dl style="font-weight: bold;">';
     
     $.each (['title', 'status', 'responseText'], function (iter, item) {
         msg += self.parent.bookend('dt', item + ':', style) + '%' + item + '%';
     });
 
-    msg = self.parent.replacer(msg, replacer)
-        + '</dl><button class="hideMsg" title="Dismiss message">Done</button>';
+    msg = self.parent.replacer(msg, replacer) + '</dl>';
     
     this.showMessage(self, msg);
     this.$popupContent.hide();
