@@ -108,10 +108,11 @@ ul#gttLabels {float:left; margin:0; padding:0;}
 #gttPopup .hdr .item {float:left; margin-right: 10px}
 #gttPopup .member-avatar {float:left; width:30px; height: 30px; border-radius: 3px; background: lightgray; color: black; text-align: center;}
 #gttPopup .member-avatar:hover {color:lightblue; background:darkgray;}
-#gttPopup #close-button {float: right;margin-right: 0;padding:0 10px; border-radius: 3px; color: black; background: lightgray; font-weight: bold; font-size:200%; text-decoration: none;}
-#gttPopup #close-button:hover {color:red; background:darkgray;}
+#gttPopup #close-button, #gttPopup .popupMsg .hideMsg {float: right; margin: 0; padding: 0 10px; border-radius: 3px; color: black; background: lightgray; font-weight: bold; font-size:200%; text-decoration: none;}
+#gttPopup #close-button:hover, #gttPopup .popupMsg .hideMsg:hover {color:red; background:darkgray;}
+#gttPopup .popupMsg .hideMsg {background: #EDC967; font-size: 150%; padding: 0 5px; margin-top:-5px; margin-right:-10px;} /* hideMsg close box is smaller */
 
-#gttPopup #gttAttachments {height:50px; width:100%; display: inline-block; overflow: auto; padding:0; margin:0;}
-#gttPopup #gttAttachments input[type=checkbox] {width:15px;}
-#gttPopup #gttAttachments label {display:inline-block; padding-left:24px; text-indent:-18px;}
+#gttPopup #gttAttachments {height: 50px; width: 100%; display: inline-block; overflow: auto; padding: 0; margin: 0;}
+#gttPopup #gttAttachments input[type=checkbox] {width: 15px;}
+#gttPopup #gttAttachments label {display: inline-block; padding-left: 24px; text-indent: -18px;}
 

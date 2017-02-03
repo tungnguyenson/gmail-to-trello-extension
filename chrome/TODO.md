@@ -3,9 +3,9 @@
 - [done] Detect most visible thread on screen
 - [done] refactor
 - [done] Check valid gmail's event (email thread mode)
-- attachments
-- add due date
+- [done] attachments
+- [done] add due date
+- [done] Include "From <email> to Description"
 - validate textbox data (empty state)
 - Add email body to comments
-- Include "From <email> to Description"
 - Fix bug: Stop detecting & parsing after user changed form's data

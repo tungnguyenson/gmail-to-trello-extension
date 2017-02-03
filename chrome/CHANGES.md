@@ -4,6 +4,18 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.4.2
+---------------
+- Added Markdown button to turn off for main description text
+- Added Attachments
+- Changed Lists UI to Drop-down, kept styled UI for Labels
+- Made labels multi-selectable
+
+Version 2.3.1
+---------------
+- Added Due Date
+- Additional markdown formatting causing too much noise
+
 Version 2.2.2
 ---------------
 - Adding Labels
