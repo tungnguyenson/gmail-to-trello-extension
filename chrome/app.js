@@ -367,3 +367,27 @@ GmailToTrello.App.prototype.uriForDisplay = function(uri) {
  GmailToTrello.App.prototype.bookend = function(bookend, text, style) {
     return '<' + bookend + (style ? ' style="' + style + '"' : '') + '>' + (text || "") + '</' + bookend + '>';
 };
+
+/**
+ * Get selected text
+ * http://stackoverflow.com/questions/5379120/get-the-highlighted-selected-text
+ */
+ GmailToTrello.App.prototype.getSelectedText = function() {
+    var text = "";
+    var activeEl = document.activeElement;
+    var activeElTagName = activeEl ? activeEl.tagName.toLowerCase() : null;
+    if (
+      (activeElTagName == "textarea" || activeElTagName == "input") &&
+      /^(?:text|search|password|tel|url)$/i.test(activeEl.type) &&
+      (typeof activeEl.selectionStart == "number")
+    ) {
+        text = activeEl.value.slice(activeEl.selectionStart, activeEl.selectionEnd).trim();
+    } else if (document.selection) {
+        text = document.selection.createRange().text.trim();
+    } else if (document.getSelection){
+        text = document.getSelection().toString().trim();
+    } else if (window.getSelection) {
+        text = window.getSelection().toString().trim();
+    }
+    return text;
+};

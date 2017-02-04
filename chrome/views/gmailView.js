@@ -234,6 +234,8 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     
     // email body
     var $emailBody = $(this.selectors.emailBody, $visibleMail);
+    var $emailBody1 = $emailBody[0];
+    var selectedText = this.parent.getSelectedText();
 
     var email_md = '[' + emailName + '](' + emailAddress + ')';
 
@@ -253,8 +255,8 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     var preprocess = {'a':{}};
     $.extend(preprocess['a'], make_preprocess_mailto(emailName, emailAddress), make_preprocess_mailto(hostName, hostEmail));
     
-    data.body_raw =  from_raw + ":\n\n" + this.parent.markdownify($emailBody[0], false, preprocess);
-    data.body_md = from_md + ":\n\n" + this.parent.markdownify($emailBody[0], true, preprocess);
+    data.body_raw =  from_raw + ":\n\n" + (selectedText || this.parent.markdownify($emailBody1, false, preprocess));
+    data.body_md = from_md + ":\n\n" + (selectedText || this.parent.markdownify($emailBody1, true, preprocess));
 
     data.attachments = emailAttachments;
 
