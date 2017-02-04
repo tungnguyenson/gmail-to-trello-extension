@@ -4,6 +4,10 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.4.3
+---------------
+- When text is selected, bring that over instead of entire message
+
 Version 2.4.2
 ---------------
 - Added Markdown button to turn off for main description text
@@ -23,7 +27,6 @@ Version 2.2.2
 - Cleaned up UI
 - Lots of bug fixes
 - Some additional markdown formatting in description for from: email.
-
 
 Version 2.1.5
 ---------------
