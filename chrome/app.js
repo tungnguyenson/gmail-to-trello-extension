@@ -280,7 +280,7 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
             var text = ($(this).text() || "").trim();
             if (text && text.length > min_text_length_k) {
                 var re = new RegExp(regexp_k.begin + self.escapeRegExp(text) + regexp_k.end, "gi");
-                var replaced = body.replace(re, "\n * " + text + "\n");
+                var replaced = body.replace(re, " <p />* " + text + "<p /> ");
                 body = replaced;
             }
         });
@@ -326,6 +326,9 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
     body = replaced;
 
     replaced = body.replace(/\s*<p \/>\s*/g, '\n\n');
+    body = replaced;
+
+    replaced = body.replace(/\n{3,}/g, '\n\n');
     body = replaced;
 
     return body;
