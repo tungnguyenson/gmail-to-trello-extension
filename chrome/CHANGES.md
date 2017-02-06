@@ -7,6 +7,8 @@ CHANGE LOG:
 Version 2.4.6
 ---------------
 - Use paragraph marker for markdown 'li' conversion
+- Respect () [] for anchor markdown bookends
+- Clear out html before appending items, should fix duplicate html elements problem
 
 Version 2.4.5
 ---------------
