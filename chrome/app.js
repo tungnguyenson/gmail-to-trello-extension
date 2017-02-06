@@ -56,8 +56,8 @@ GmailToTrello.App.prototype.bindEvents = function() {
         self.data.event.fire('onSubmitAttachments', {data:self.data, attachments:params.attachments});
     });
 
-    this.data.event.addListener('onCardSubmitFailure', function(target, params) {
-        self.popupView.displaySubmitFailedForm(params);
+    this.data.event.addListener('onAPIFailure', function(target, params) {
+        self.popupView.displayAPIFailedForm(params);
     });
 
     this.data.event.addListener('onSubmitAttachments', function(target, params) {
@@ -72,7 +72,7 @@ GmailToTrello.App.prototype.bindEvents = function() {
                 Trello.post('cards/' + params.data.newCard.id + '/attachments', trello_attach, function success(data) {
                     params.data.event.fire('onSubmitAttachments', {data:params.data, attachments:params.attachments});
                 }, function failure(data) {
-                    self.popupView.displaySubmitFailedForm(data);
+                    self.popupView.displayAPIFailedForm(data);
                 });
             }
         } else { // Done with attach list
@@ -174,7 +174,7 @@ GmailToTrello.App.prototype.replacer = function(text, dict) {
  */
 GmailToTrello.App.prototype.uriForDisplay = function(uri) {
     var uri_display = uri || '';
-    if (uri_display.length > 30) {
+    if (uri_display && uri_display.length > 30) {
         var re = RegExp("^\\w+:\/\/([\\w.\/_]+).*?([\\w._]*)$");
         var matched = uri_display.match(re);
         if (matched && matched.length > 0) {
@@ -187,7 +187,7 @@ GmailToTrello.App.prototype.uriForDisplay = function(uri) {
 /**
  * Markdownify a text block
  */
- GmailToTrello.App.prototype.markdownify = function($emailBody, features, preprocess) {
+GmailToTrello.App.prototype.markdownify = function($emailBody, features, preprocess) {
     if (!$emailBody || $emailBody.length < 1) {
         log('markdownify requires emailBody');
         return;
@@ -334,7 +334,7 @@ GmailToTrello.App.prototype.uriForDisplay = function(uri) {
 /**
  * Determine luminance of a color so we can augment with darker/lighter background
  */
- GmailToTrello.App.prototype.luminance = function(color){
+GmailToTrello.App.prototype.luminance = function(color){
     var bkColorLight = 'lightGray'; // or white
     var bkColorDark = 'darkGray'; // 'gray' is even darker
     var bkColorReturn = bkColorLight;
@@ -364,7 +364,7 @@ GmailToTrello.App.prototype.uriForDisplay = function(uri) {
 /**
  * HTML bookend a string
  */
- GmailToTrello.App.prototype.bookend = function(bookend, text, style) {
+GmailToTrello.App.prototype.bookend = function(bookend, text, style) {
     return '<' + bookend + (style ? ' style="' + style + '"' : '') + '>' + (text || "") + '</' + bookend + '>';
 };
 
@@ -372,7 +372,7 @@ GmailToTrello.App.prototype.uriForDisplay = function(uri) {
  * Get selected text
  * http://stackoverflow.com/questions/5379120/get-the-highlighted-selected-text
  */
- GmailToTrello.App.prototype.getSelectedText = function() {
+GmailToTrello.App.prototype.getSelectedText = function() {
     var text = "";
     var activeEl = document.activeElement;
     var activeElTagName = activeEl ? activeEl.tagName.toLowerCase() : null;
@@ -390,4 +390,18 @@ GmailToTrello.App.prototype.uriForDisplay = function(uri) {
         text = window.getSelection().toString().trim();
     }
     return text;
+};
+
+/**
+ * Truncate a string
+ */
+GmailToTrello.App.prototype.truncate = function(text, max, add) {
+    var retn = text || "";
+    const add_k = add || "";
+    const max_k = max - add_k.length;
+
+    if (text && text.length > max_k) {
+        retn = text.slice(0, max_k) + add_k;
+    }
+    return retn;
 };

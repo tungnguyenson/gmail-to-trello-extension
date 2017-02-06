@@ -235,9 +235,7 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         var body = markdown ? body_md : body_raw;
         var link = useBackLink ? (markdown ? link_md : link_raw) : '';
 
-        var size = self.MAX_BODY_SIZE - (link.length + 3);
-
-        var desc = body.length > size ? body.substr(0, size) + '...' : body;
+        var desc = self.parent.truncate(body, self.MAX_BODY_SIZE, '...');
 
 
         $gttDesc.val(desc + link);
@@ -342,8 +340,7 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
 
     var body = markdown ? data.body_md : data.body_raw;
     var link = useBackLink ? (markdown ? data.link_md : data.link_raw) : '';
-    var size = self.MAX_BODY_SIZE - (link.length + 3);
-    var desc = body.length > size ? body.substr(0, size) + '...' : body;
+    var desc = self.parent.truncate(body, self.MAX_BODY_SIZE, '...');
 
     $('#gttDesc', this.$popup)
         .val(desc + link)
@@ -697,7 +694,7 @@ GmailToTrello.PopupView.prototype.displaySubmitCompleteForm = function() {
     this.$popupContent.hide();
 };
 
-GmailToTrello.PopupView.prototype.displaySubmitFailedForm = function(response) {
+GmailToTrello.PopupView.prototype.displayAPIFailedForm = function(response) {
     var self = this;
     var data = this.data.newCard;
     var resp = response.data;
@@ -710,7 +707,7 @@ GmailToTrello.PopupView.prototype.displaySubmitFailedForm = function(response) {
 
     var style = 'float: left; clear: left; width: 90px; text-align: right; color: red;';
     
-    var msg = '<a class="hideMsg" title="Dismiss message">&times;</a>ERROR: Trello card create FAILED! <dl style="font-weight: bold;">';
+    var msg = '<a class="hideMsg" title="Dismiss message">&times;</a>ERROR: Trello API FAILURE! <dl style="font-weight: bold;">';
     
     $.each (['title', 'status', 'responseText'], function (iter, item) {
         msg += self.parent.bookend('dt', item + ':', style) + '%' + item + '%';

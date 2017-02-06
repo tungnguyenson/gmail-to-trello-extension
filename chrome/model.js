@@ -84,18 +84,20 @@ GmailToTrello.Model.prototype.loadTrelloData = function() {
     // get user's info
     log('Getting user info');
     Trello.get('members/me', {}, function(data) {
+        if (!data || !data.hasOwnProperty('id')) {
+            return false;
+        }
+
         data.avatarUrl = null;
-        if (data.avatarSource !== 'none' && data.avatarHash.length > 0) {
+        if (data && data.avatarSource !== 'none' && data.avatarHash && data.avatarHash.length > 0) {
             data.avatarUrl = 'https://trello-avatars.s3.amazonaws.com/' + data.avatarHash + '/30.png';
         }
-        self.trello.user = data;
 
-        if (!data || !data.hasOwnProperty('id'))
-            return false;
+        self.trello.user = data;
 
         // get user orgs
         self.trello.orgs = [{id: -1, displayName: 'My Boards'}];
-        if (data.hasOwnProperty('idOrganizations') && data.idOrganizations.length > 0) {
+        if (data && data.hasOwnProperty('idOrganizations') && data.idOrganizations && data.idOrganizations.length > 0) {
             log('Getting user orgs');
             Trello.get('members/me/organizations', {fields: "displayName"}, function(data) {
                 log(data);
@@ -103,12 +105,14 @@ GmailToTrello.Model.prototype.loadTrelloData = function() {
                     self.trello.orgs.push(data[i]);
                 }
                 self.checkTrelloDataReady();
+            }, function failure(data) {
+                self.event.fire('onAPIFailure', {data:data});
             });
 
         }
 
         // get boards list, including orgs
-        if (data.hasOwnProperty('idBoards') && data.idBoards.length > 0) {
+        if (data && data.hasOwnProperty('idBoards') && data.idBoards && data.idBoards.length > 0) {
             log('Getting user boards');
             self.trello.boards = null;
             Trello.get('members/me/boards', {fields: "closed,name,idOrganization"}, function(data) {
@@ -130,15 +134,14 @@ GmailToTrello.Model.prototype.loadTrelloData = function() {
                 log(validData);
                 self.trello.boards = validData;
                 self.checkTrelloDataReady();
+            }, function failure(data) {
+                self.event.fire('onAPIFailure', {data:data});
             });
         }
-
         self.checkTrelloDataReady();
+    }, function failure(data) {
+        self.event.fire('onAPIFailure', {data:data});
     });
-
-
-
-
 };
 
 GmailToTrello.Model.prototype.checkTrelloDataReady = function() {
@@ -174,15 +177,8 @@ GmailToTrello.Model.prototype.loadTrelloLists = function(boardId) {
          */
         self.trello.lists = data.lists;
         self.event.fire('onLoadTrelloListSuccess');
-
-//        listNode.html(strOptions).show();
-//        msgNode.hide();
-
-//        if (saveSettingFound)
-//            listNode.val(saveSettingId);
-//        listNode.change();
-
-        //self.validateData();
+    }, function failure(data) {
+            self.event.fire('onAPIFailure', {data:data});
     });
 };
 
@@ -197,6 +193,8 @@ GmailToTrello.Model.prototype.loadTrelloLabels = function(boardId) {
         // If you want to add a "none" label, do:
         // self.trello.labels.unshift ({color:'gray', name:'none', id:'-1'});
         self.event.fire('onLoadTrelloLabelsSuccess');
+    }, function failure(data) {
+        self.event.fire('onAPIFailure', {data:data});
     });
 };
 
@@ -228,8 +226,8 @@ GmailToTrello.Model.prototype.submit = function() {
         idMembers = this.trello.user.id;  
     }
     
-    var desc = data.description.length > 16384 ? data.description.substr(0,16381) + '...' : data.description;
-
+    var desc = this.parent.truncate(data.description, this.parent.popupView.MAX_BODY_SIZE, '...');
+    
     //submit data
     var trelloPostableData = {name: data.title, 
         desc: desc,
@@ -237,11 +235,11 @@ GmailToTrello.Model.prototype.submit = function() {
     };
 
     // NOTE (Ace, 10-Jan-2017): Can only post valid labels, this can be a comma-delimited list of valid label ids, will err 400 if any label id unknown:
-    if (data.labelsId.length > 1 && data.labelsId.indexOf('-1') === -1) { // Will 400 if we post invalid ids (such as -1):
+    if (data && data.labelsId && data.labelsId.length > 1 && data.labelsId.indexOf('-1') === -1) { // Will 400 if we post invalid ids (such as -1):
         trelloPostableData.idLabels = data.labelsId;
     }
 
-    if (data.dueDate.length > 1) { // Will 400 if not valid date:
+    if (data && data.dueDate && data.dueDate.length > 1) { // Will 400 if not valid date:
         trelloPostableData.due = new Date(data.dueDate.replace('T', ' ').replace('-','/')).toISOString();
         /* Replaces work around quirk in Date object, see: http://stackoverflow.com/questions/28234572/
         html5-datetime-local-chrome-how-to-input-datetime-in-current-time-zone */
@@ -252,6 +250,6 @@ GmailToTrello.Model.prototype.submit = function() {
         log(data);
         //setTimeout(function() {self.popupNode.hide();}, 10000);
     }, function failure(data) {
-        self.event.fire('onCardSubmitFailure', {data:data});
+        self.event.fire('onAPIFailure', {data:data});
     });
 };

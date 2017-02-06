@@ -130,7 +130,7 @@ GmailToTrello.PopupView.prototype.detectPopup = function() {
     //detect duplicate toolBar
     var $button = $('#gttButton');
     var $popup = $('#gttPopup');
-    if ($button.length>0) {
+    if ($button && $button.length>0) {
         log('GTT::Found Button at:');log($button);
         if ($button[0].clientWidth <= 0) {
             log('GTT::Button is in an inactive region. Moving...');
@@ -145,12 +145,11 @@ GmailToTrello.PopupView.prototype.detectPopup = function() {
             //log($popup[0].clientWidth);
             this.event.fire('onRequestUpdateGmailData');
         }
+        
         return true;
-    }
-    else
+    } else {
         return false;
-
-    //return $('#gttPopup').length>0;
+    }
 };
 
 GmailToTrello.PopupView.prototype.loadSettings = function() {
@@ -281,6 +280,7 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
 
 
     var orgs = data.trello.orgs;
+
     var strOptions = '<option value="all">All</option>';
     for (var i = 0; i < orgs.length; i++) {
         var item = orgs[i];
@@ -289,18 +289,7 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
     var $org = jQuery('#gttOrg', this.$popup);
     $org.html(strOptions);
     $org.val('all');
-/*
-    if (this.data.settings.orgId) {
-        var settingId = this.data.settings.orgId;
-        for (var i = 0; i < data.trello.orgs.length; i++) {
-            var item = data.trello.orgs[i];
-            if (item.id == settingId) {
-                $org.val(settingId);
-                break;
-            }
-        }
-    }
-*/
+
     this.updateBoards();
 
     if (data.settings.hasOwnProperty('useBacklink')) {
@@ -354,7 +343,7 @@ GmailToTrello.PopupView.prototype.updateBoards = function() {
     var strOptions = '<option value="">Please select ... </option>';
     for (var i = 0; i < filteredOrgs.length; i++) {
         var orgItem = filteredOrgs[i];
-        if (i > 0 && filteredOrgs.length > 1)
+        if (i > 0 && filteredOrgs && filteredOrgs.length > 1)
             strOptions += '<option value="_">-----</option>';
         for (var j = 0; j < boards.length; j++) {
             if (boards[j].idOrganization == orgItem.id) {
