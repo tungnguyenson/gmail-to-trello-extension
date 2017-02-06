@@ -196,8 +196,8 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
 
     const min_text_length_k = 4;
     const regexp_k = {
-        'begin': '(^|\\s+|<)',
-        'end': '(>|\\s+|$)'
+        'begin': '(^|\\s+|<|\\[|\\()',
+        'end': '(>|\\]|\\)|\\s+|$)'
     };
 
     var processThisMarkdown = function(elementTag) { // Assume TRUE to process, unless explicitly restricted:
@@ -251,7 +251,7 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
                 comment = ' "Open ' + uri_display + '"';
             }
             */
-            var re = new RegExp(regexp_k.begin + self.escapeRegExp(value) + regexp_k.end, "gi");
+            var re = new RegExp(regexp_k.begin + '(' + self.escapeRegExp(value) + ')' + regexp_k.end, "gi");
             var replaced = body.replace(re, " [" + text + "](" + uri /* + comment */ + ') '); // Comment seemed like too much extra text
             body = replaced;
         });

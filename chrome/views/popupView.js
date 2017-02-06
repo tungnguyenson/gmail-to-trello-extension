@@ -283,9 +283,12 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
     else {
         $userAvatar = $('<span class="member-avatar">').text(user.username.substr(0, 1).toUpperCase());
     }
+
+    // NOTE (Ace, 6-Feb-2017): Assigning .userInfo to a variable and then updating it doesn't work right, so refer explicitly to item:
+    $('.userinfo', this.$popup).html(""); // Clear out
+
     $('.userinfo', this.$popup).append($('<a class="item">').attr('href', user.url).attr('target', '_blank').attr('title', 'Open your Trello homepage').append($userAvatar));
     $('.userinfo', this.$popup).append($('<a class="item">').attr('href', user.url).attr('target', '_blank').attr('title', 'Open your Trello homepage').append(user.username));
-    $('.userinfo', this.$popup).append($('<span class="item">|</span> <a class="item signOutButton" href="javascript:void(0)" title="Sign out">Sign out</a>'));
 
     $('.signOutButton', this.$popup).click(function() {self.showMessage(self,
             '<a class="hideMsg" title="Dismiss message">&times;</a>Unimplemented. Try the following:<ol><li>Under menu "Chrome":</li>'
@@ -419,6 +422,8 @@ GmailToTrello.PopupView.prototype.updateBoards = function() {
     }
 
     var $board = $('#gttBoard', this.$popup);
+    $board.html(""); // Clear it.
+    // $board(option[id="0"]).val("").text('Select a board...'); // TODO (Ace, 6-Feb-2016): Add board options explicitly
     $board.append($('<option value="">Select a board...</option>'));
     
     $.each(Object.keys(newBoards).sort(), function(iter, item) {
@@ -470,46 +475,11 @@ GmailToTrello.PopupView.prototype.updateLists = function() {
     $list.change();
 };
 
-GmailToTrello.PopupView.prototype.updateListsOBSOLETE = function() {
-    var self = this;
-    var lists = this.data.trello.lists;
-    var $gtt = $('#gttList', this.$popup);
-
-    for (var i = 0; i < lists.length; i++) {
-        var item = lists[i];
-        $gtt.append($('<li>').attr('trello-list-id', item.id).append(item.name));
-    }
-    $gtt.show();
-
-    $('#gttListMsg', this.$popup).hide();
-
-    var listControl = new MenuControl({'selectors': '#gttList li', 'nonexclusive': false});
-    listControl.event.addListener('onMenuClick', function(e, params) {
-        self.validateData();
-    });
-
-    var settings = this.data.settings;
-    var orgId = $('#gttOrg', this.$popup).val();
-    var boardId = $('#gttBoard', this.$popup).val();
-    if (settings.orgId && settings.orgId == orgId && settings.boardId && settings.boardId == boardId && settings.listId) {
-        var settingId = settings.listId;
-        for (var i = 0; i < lists.length; i++) {
-            var item = lists[i];
-            if (item.id == settingId) {
-                $('#gttList li[tello-list-id="' + item.id + '"]').click();
-                break; // Single-selection list
-            }
-        }
-    } else {
-        //select 1st list item
-        $('#gttList li:first').click();
-    }
-};
-
 GmailToTrello.PopupView.prototype.updateLabels = function() {
     var self = this;
     var labels = this.data.trello.labels;
     var $gtt = $('#gttLabels', this.$popup);
+    $gtt.html(""); // Clear out
 
     for (var i = 0; i < labels.length; i++) {
         var item = labels[i];
