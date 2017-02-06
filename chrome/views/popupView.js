@@ -694,7 +694,7 @@ GmailToTrello.PopupView.prototype.displaySubmitCompleteForm = function() {
     this.$popupContent.hide();
 };
 
-GmailToTrello.PopupView.prototype.displaySubmitFailedForm = function(response) {
+GmailToTrello.PopupView.prototype.displayAPIFailedForm = function(response) {
     var self = this;
     var data = this.data.newCard;
     var resp = response.data;
@@ -707,7 +707,7 @@ GmailToTrello.PopupView.prototype.displaySubmitFailedForm = function(response) {
 
     var style = 'float: left; clear: left; width: 90px; text-align: right; color: red;';
     
-    var msg = '<a class="hideMsg" title="Dismiss message">&times;</a>ERROR: Trello card create FAILED! <dl style="font-weight: bold;">';
+    var msg = '<a class="hideMsg" title="Dismiss message">&times;</a>ERROR: Trello API FAILURE! <dl style="font-weight: bold;">';
     
     $.each (['title', 'status', 'responseText'], function (iter, item) {
         msg += self.parent.bookend('dt', item + ':', style) + '%' + item + '%';

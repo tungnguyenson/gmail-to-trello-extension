@@ -136,6 +136,8 @@ GmailToTrello.Model.prototype.loadTrelloData = function() {
         }
 
         self.checkTrelloDataReady();
+    }, function failure(data) {
+        self.event.fire('onAPIFailure', {data:data});
     });
 };
 
@@ -250,6 +252,6 @@ GmailToTrello.Model.prototype.submit = function() {
         log(data);
         //setTimeout(function() {self.popupNode.hide();}, 10000);
     }, function failure(data) {
-        self.event.fire('onCardSubmitFailure', {data:data});
+        self.event.fire('onAPIFailure', {data:data});
     });
 };

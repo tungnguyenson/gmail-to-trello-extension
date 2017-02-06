@@ -56,8 +56,8 @@ GmailToTrello.App.prototype.bindEvents = function() {
         self.data.event.fire('onSubmitAttachments', {data:self.data, attachments:params.attachments});
     });
 
-    this.data.event.addListener('onCardSubmitFailure', function(target, params) {
-        self.popupView.displaySubmitFailedForm(params);
+    this.data.event.addListener('onAPIFailure', function(target, params) {
+        self.popupView.displayAPIFailedForm(params);
     });
 
     this.data.event.addListener('onSubmitAttachments', function(target, params) {
@@ -72,7 +72,7 @@ GmailToTrello.App.prototype.bindEvents = function() {
                 Trello.post('cards/' + params.data.newCard.id + '/attachments', trello_attach, function success(data) {
                     params.data.event.fire('onSubmitAttachments', {data:params.data, attachments:params.attachments});
                 }, function failure(data) {
-                    self.popupView.displaySubmitFailedForm(data);
+                    self.popupView.displayAPIFailedForm(data);
                 });
             }
         } else { // Done with attach list
