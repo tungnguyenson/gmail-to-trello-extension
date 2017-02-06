@@ -4,12 +4,16 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.4.6
+---------------
+- Use paragraph marker for markdown 'li' conversion
+
 Version 2.4.5
---------------
+---------------
 - Add APIFailure display when initial trello grabs fail out
 
 Version 2.4.4
---------------
+---------------
 - Check for avatar URL returned before checking length
 
 Version 2.4.3
