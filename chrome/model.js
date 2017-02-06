@@ -105,6 +105,8 @@ GmailToTrello.Model.prototype.loadTrelloData = function() {
                     self.trello.orgs.push(data[i]);
                 }
                 self.checkTrelloDataReady();
+            }, function failure(data) {
+                self.event.fire('onAPIFailure', {data:data});
             });
 
         }
@@ -132,9 +134,10 @@ GmailToTrello.Model.prototype.loadTrelloData = function() {
                 log(validData);
                 self.trello.boards = validData;
                 self.checkTrelloDataReady();
+            }, function failure(data) {
+                self.event.fire('onAPIFailure', {data:data});
             });
         }
-
         self.checkTrelloDataReady();
     }, function failure(data) {
         self.event.fire('onAPIFailure', {data:data});
@@ -174,15 +177,8 @@ GmailToTrello.Model.prototype.loadTrelloLists = function(boardId) {
          */
         self.trello.lists = data.lists;
         self.event.fire('onLoadTrelloListSuccess');
-
-//        listNode.html(strOptions).show();
-//        msgNode.hide();
-
-//        if (saveSettingFound)
-//            listNode.val(saveSettingId);
-//        listNode.change();
-
-        //self.validateData();
+    }, function failure(data) {
+            self.event.fire('onAPIFailure', {data:data});
     });
 };
 
@@ -197,6 +193,8 @@ GmailToTrello.Model.prototype.loadTrelloLabels = function(boardId) {
         // If you want to add a "none" label, do:
         // self.trello.labels.unshift ({color:'gray', name:'none', id:'-1'});
         self.event.fire('onLoadTrelloLabelsSuccess');
+    }, function failure(data) {
+        self.event.fire('onAPIFailure', {data:data});
     });
 };
 
