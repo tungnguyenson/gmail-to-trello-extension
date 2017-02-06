@@ -419,6 +419,8 @@ GmailToTrello.PopupView.prototype.updateBoards = function() {
     }
 
     var $board = $('#gttBoard', this.$popup);
+    $board.html(""); // Clear it.
+    // $board(option[id="0"]).val("").text('Select a board...'); // TODO (Ace, 6-Feb-2016): Add board options explicitly
     $board.append($('<option value="">Select a board...</option>'));
     
     $.each(Object.keys(newBoards).sort(), function(iter, item) {
