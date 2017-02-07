@@ -91,13 +91,19 @@ GmailToTrello.PopupView.prototype.init_popup = function() {
     var parent = this.$addCardButton.offsetParent();
     var parentRight = parent.position().left + parent.width();
 
-    // We'll make our popup 1.75x as wide as the button to the end of the window up to MAX_WIDTH:
-    var newPopupWidth = 1.75*(parentRight - addCardLeft);
+    // We'll make our popup 1.5x as wide as the button to the end of the window up to MAX_WIDTH:
+    var newPopupWidth = 1.5*(parentRight - addCardLeft);
     if (newPopupWidth < this.MIN_WIDTH) {
         newPopupWidth = this.MIN_WIDTH;
     } else if (newPopupWidth > this.MAX_WIDTH) {
         newPopupWidth = this.MAX_WIDTH;
     }
+    if (this.data.settings.newPopupWidth) {
+        newPopupWidth = this.data.settings.popupWidth;
+    } else {
+        this.data.settings.popupWidth = newPopupWidth;
+    }
+
     this.$popup.css('width', newPopupWidth + 'px');
 
     var newPopupLeft = addCardCenter - (newPopupWidth / 2);
@@ -139,14 +145,11 @@ GmailToTrello.PopupView.prototype.detectPopup = function() {
     //return $('#gttPopup').length>0;
 };
 
-GmailToTrello.PopupView.prototype.loadSettings = function() {
-
-};
-
 // NOTE (Ace, 15-Jan-2017): This resizes all the text areas to match the width of the popup:
 GmailToTrello.PopupView.prototype.onResize = function() {
     var textWidth = this.$popup.width() - 111;
     $('input[type=text],textarea,#gttAttachments', this.$popup).css('width', textWidth + 'px');
+    this.data.settings.popupWidth = textWidth + 111;
 };
 
 GmailToTrello.PopupView.prototype.bindEvents = function() {
@@ -592,7 +595,6 @@ GmailToTrello.PopupView.prototype.validateData = function() {
     var newCard = {};
     var orgId = $('#gttOrg', this.$popup).val();
     var boardId = $('#gttBoard', this.$popup).val();
-    //var listId = $('#gttList li.active', this.$popup).attr('trello-list-id');
     var listId = $('#gttList', this.$popup).val();
     var dueDate = $('#gttDueDate', this.$popup).val();
     var title = $('#gttTitle', this.$popup).val();
@@ -637,6 +639,7 @@ GmailToTrello.PopupView.prototype.validateData = function() {
             timeStamp: timeStamp
         };
         this.data.newCard = newCard;
+        this.data.settings = newCard;
     }
     $('#addTrelloCard', this.$popup).attr('disabled', !validateStatus);
 

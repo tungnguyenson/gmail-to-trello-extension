@@ -12,6 +12,8 @@ GmailToTrello.Model = function(parent) {
     this.isInitialized = false;
     this.event = new EventTarget();
     this.newCard = null;
+
+    const this.CHROME_SETTINGS_ID = 'gtt_user_settings';
 };
 
 GmailToTrello.Model.prototype.init = function() {
@@ -22,6 +24,8 @@ GmailToTrello.Model.prototype.init = function() {
     // load user settings
     if (self.settings.orgId == '-1')
         self.settings.orgId = 'all';
+
+
 
     // init Trello
     this.initTrello();
@@ -165,16 +169,6 @@ GmailToTrello.Model.prototype.loadTrelloLists = function(boardId) {
     this.trello.lists = null;
 
     Trello.get('boards/' + boardId, {lists: "open", list_fields: "name"}, function(data) {
-        /*
-         var saveSettingId = null;
-         var saveSettingFound = false;
-         
-         if (self.userSettings !== null) {
-         saveSettingId = self.userSettings.listId;
-         log('Found userSettings.listId');
-         log(saveSettingId);
-         }
-         */
         self.trello.lists = data.lists;
         self.event.fire('onLoadTrelloListSuccess');
     }, function failure(data) {
@@ -198,6 +192,18 @@ GmailToTrello.Model.prototype.loadTrelloLabels = function(boardId) {
     });
 };
 
+GmailToTrello.Model.prototype.loadSettings = function() {
+    var self = this;
+    chrome.storage.sync.get(this.parent.CHROME_SETTINGS_ID, function(response) {
+    self.parent.popupView.data.settings = response;
+  });
+};
+
+GmailToTrello.Model.prototype.saveSettings = function() {
+    var self = this;
+    chrome.storage.sync.set({this.parent.CHROME_SETTINGS_ID: JSON.stringify(self.parent.popupView.data.settings)});
+};
+
 GmailToTrello.Model.prototype.submit = function() {
     var self = this;
     if (this.newCard === null) {
@@ -206,8 +212,9 @@ GmailToTrello.Model.prototype.submit = function() {
     }
     var data = this.newCard;
 
-    //save settings
-    chrome.extension.sendMessage({storage: 'userSettings', value: JSON.stringify({
+    this.saveSettings();
+    /* OLD save settings
+    chrome.storage.sync.set({storage: self.CHROME_SETTINGS_ID, value: JSON.stringify({
         orgId: data.orgId,
         boardId: data.boardId,
         listId: data.listId,
@@ -220,6 +227,7 @@ GmailToTrello.Model.prototype.submit = function() {
         selfAssign: data.selfAssign,
         markdown: data.markdown
     })});
+    */
 
     var idMembers = null;
     if (data.selfAssign) {
