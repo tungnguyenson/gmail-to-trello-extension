@@ -4,6 +4,10 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.4.7
+---------------
+- Try another approach for titlebar of popup to not get duplicate options by setting explicit properties
+
 Version 2.4.6
 ---------------
 - Use paragraph marker for markdown 'li' conversion
