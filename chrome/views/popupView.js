@@ -277,6 +277,12 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
     //bind trello data
     var user = data.trello.user;
     var $userAvatar = '';
+    var userAvatarSrc = user.avatarUrl || '';
+    var userAvatarText = '';
+    if (userAvatarSrc.length < 1 && user.username && user.username.length > 1) {
+        user.username.substr(0, 1).toUpperCase();
+    }
+
     if (user.avatarUrl) {
         $userAvatar = $('<img class="member-avatar">').attr('src', user.avatarUrl);
     }
@@ -285,12 +291,12 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
     }
 
     // NOTE (Ace, 6-Feb-2017): Assigning .userInfo to a variable and then updating it doesn't work right, so refer explicitly to item:
-    $('.userinfo', this.$popup).html(""); // Clear out
+    $('#gttAvatarURL', this.$popup).attr('href', user.url);
+    $('#gttAvatarText', this.$popup).text(userAvatarText);
+    $('#gttAvatarImg', this.$popup).attr('src', userAvatarSrc);
+    $('#gttUsername', this.$popup).attr('href', user.url).text(user.username);
 
-    $('.userinfo', this.$popup).append($('<a class="item">').attr('href', user.url).attr('target', '_blank').attr('title', 'Open your Trello homepage').append($userAvatar));
-    $('.userinfo', this.$popup).append($('<a class="item">').attr('href', user.url).attr('target', '_blank').attr('title', 'Open your Trello homepage').append(user.username));
-
-    $('.signOutButton', this.$popup).click(function() {self.showMessage(self,
+    $('#gttSignOutButton', this.$popup).click(function() {self.showMessage(self,
             '<a class="hideMsg" title="Dismiss message">&times;</a>Unimplemented. Try the following:<ol><li>Under menu "Chrome":</li>'
             + '<li>Select "Clear Browsing Data..."</li>'
             + '<li>Check "Clear data from hosted apps"</li>'
