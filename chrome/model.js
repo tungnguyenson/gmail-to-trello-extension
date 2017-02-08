@@ -12,8 +12,6 @@ GmailToTrello.Model = function(parent) {
     this.isInitialized = false;
     this.event = new EventTarget();
     this.newCard = null;
-
-    const this.CHROME_SETTINGS_ID = 'gtt_user_settings';
 };
 
 GmailToTrello.Model.prototype.init = function() {
@@ -24,8 +22,6 @@ GmailToTrello.Model.prototype.init = function() {
     // load user settings
     if (self.settings.orgId == '-1')
         self.settings.orgId = 'all';
-
-
 
     // init Trello
     this.initTrello();
@@ -192,18 +188,6 @@ GmailToTrello.Model.prototype.loadTrelloLabels = function(boardId) {
     });
 };
 
-GmailToTrello.Model.prototype.loadSettings = function() {
-    var self = this;
-    chrome.storage.sync.get(this.parent.CHROME_SETTINGS_ID, function(response) {
-    self.parent.popupView.data.settings = response;
-  });
-};
-
-GmailToTrello.Model.prototype.saveSettings = function() {
-    var self = this;
-    chrome.storage.sync.set({this.parent.CHROME_SETTINGS_ID: JSON.stringify(self.parent.popupView.data.settings)});
-};
-
 GmailToTrello.Model.prototype.submit = function() {
     var self = this;
     if (this.newCard === null) {
@@ -212,7 +196,7 @@ GmailToTrello.Model.prototype.submit = function() {
     }
     var data = this.newCard;
 
-    this.saveSettings();
+    this.parent.saveSettings();
     /* OLD save settings
     chrome.storage.sync.set({storage: self.CHROME_SETTINGS_ID, value: JSON.stringify({
         orgId: data.orgId,
@@ -251,6 +235,10 @@ GmailToTrello.Model.prototype.submit = function() {
         trelloPostableData.due = new Date(data.dueDate.replace('T', ' ').replace('-','/')).toISOString();
         /* Replaces work around quirk in Date object, see: http://stackoverflow.com/questions/28234572/
         html5-datetime-local-chrome-how-to-input-datetime-in-current-time-zone */
+    }
+
+    if (data && data.position && data.position == 'top') {
+        trelloPostableData.pos = 'top'; // Bottom is default, only need to indicate top
     }
 
     Trello.post('cards', trelloPostableData, function success(data) {

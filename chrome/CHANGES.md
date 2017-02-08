@@ -6,7 +6,8 @@ CHANGE LOG:
 
 Version 2.4.8
 ---------------
-- Have reproducable case for settings not being saved; fixing
+- Have reproducable case for settings not being saved; fixed with using chrome sync settings and getting timing right
+- Added popup to indicate whether to add card to top or bottom (default) of list
 
 Version 2.4.7
 ---------------

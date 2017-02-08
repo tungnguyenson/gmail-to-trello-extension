@@ -1,7 +1,7 @@
 /*
  Flows:
     + 1st loading (onDocumentReady)
-        - loadUserSettings()
+        - load user settings()
         - initPopup() // html, data binding & event binding
         - initTrelloData()
         - extractData()
@@ -70,7 +70,7 @@ var app = new GmailToTrello.App();
 function getGmailObject() {
 
     document.addEventListener('GTT_connectExtension', function(e) {
-        app.data.userEmail = e.detail.userEmail; // Was: e.detail[10];
+        app.model.userEmail = e.detail.userEmail; // Was: e.detail[10];
     // console.log(app.data);
     });
 
