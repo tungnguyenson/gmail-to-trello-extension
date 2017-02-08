@@ -165,16 +165,6 @@ GmailToTrello.Model.prototype.loadTrelloLists = function(boardId) {
     this.trello.lists = null;
 
     Trello.get('boards/' + boardId, {lists: "open", list_fields: "name"}, function(data) {
-        /*
-         var saveSettingId = null;
-         var saveSettingFound = false;
-         
-         if (self.userSettings !== null) {
-         saveSettingId = self.userSettings.listId;
-         log('Found userSettings.listId');
-         log(saveSettingId);
-         }
-         */
         self.trello.lists = data.lists;
         self.event.fire('onLoadTrelloListSuccess');
     }, function failure(data) {
@@ -206,8 +196,9 @@ GmailToTrello.Model.prototype.submit = function() {
     }
     var data = this.newCard;
 
-    //save settings
-    chrome.extension.sendMessage({storage: 'userSettings', value: JSON.stringify({
+    this.parent.saveSettings();
+    /* OLD save settings
+    chrome.storage.sync.set({storage: self.CHROME_SETTINGS_ID, value: JSON.stringify({
         orgId: data.orgId,
         boardId: data.boardId,
         listId: data.listId,
@@ -220,6 +211,7 @@ GmailToTrello.Model.prototype.submit = function() {
         selfAssign: data.selfAssign,
         markdown: data.markdown
     })});
+    */
 
     var idMembers = null;
     if (data.selfAssign) {
@@ -243,6 +235,10 @@ GmailToTrello.Model.prototype.submit = function() {
         trelloPostableData.due = new Date(data.dueDate.replace('T', ' ').replace('-','/')).toISOString();
         /* Replaces work around quirk in Date object, see: http://stackoverflow.com/questions/28234572/
         html5-datetime-local-chrome-how-to-input-datetime-in-current-time-zone */
+    }
+
+    if (data && data.position && data.position == 'top') {
+        trelloPostableData.pos = 'top'; // Bottom is default, only need to indicate top
     }
 
     Trello.post('cards', trelloPostableData, function success(data) {

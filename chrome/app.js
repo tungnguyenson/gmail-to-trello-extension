@@ -6,9 +6,11 @@ var GmailToTrello = GmailToTrello || {}; // Namespace initialization
 GmailToTrello.App = function() {
     this.popupView = new GmailToTrello.PopupView(this);
     this.gmailView = new GmailToTrello.GmailView(this);
-    this.data = new GmailToTrello.Model(this);
+    this.model = new GmailToTrello.Model(this);
     
     this.bindEvents();
+
+    this.CHROME_SETTINGS_ID = 'gtt_user_settings';
 };
 
 GmailToTrello.App.prototype.bindEvents = function() {
@@ -16,51 +18,51 @@ GmailToTrello.App.prototype.bindEvents = function() {
     
     /*** Data's events binding ***/
     
-    this.data.event.addListener('onBeforeAuthorize', function() {
+    this.model.event.addListener('onBeforeAuthorize', function() {
         self.popupView.showMessage(self, 'Authorizing...');    
     });
     
-    this.data.event.addListener('onAuthenticateFailed', function() {
+    this.model.event.addListener('onAuthenticateFailed', function() {
         self.popupView.showMessage(self, 'Trello authorization failed');    
     });
     
-    this.data.event.addListener('onAuthorized', function() {
+    this.model.event.addListener('onAuthorized', function() {
         log('GmailToTrello.onAuthorized()');
         log("Status: " + Trello.authorized().toString());
     });
     
-    this.data.event.addListener('onBeforeLoadTrello', function() {
+    this.model.event.addListener('onBeforeLoadTrello', function() {
         self.popupView.showMessage(self, 'Loading Trello data...');
     });
     
-    this.data.event.addListener('onTrelloDataReady', function() {
+    this.model.event.addListener('onTrelloDataReady', function() {
         self.popupView.$popupContent.show();
         self.popupView.hideMessage();
 
-        self.popupView.bindData(self.data);
+        self.popupView.bindData(self.model);
     });
     
-    this.data.event.addListener('onLoadTrelloListSuccess', function() {
+    this.model.event.addListener('onLoadTrelloListSuccess', function() {
         self.popupView.updateLists();
         self.popupView.validateData();
     });
     
-    this.data.event.addListener('onLoadTrelloLabelsSuccess', function() {
+    this.model.event.addListener('onLoadTrelloLabelsSuccess', function() {
         self.popupView.updateLabels();
         self.popupView.validateData();
     });
 
-    this.data.event.addListener('onCardSubmitComplete', function(target, params) {
-        self.data.newCard.url = params.data.url;
-        self.data.newCard.id = params.data.id;
-        self.data.event.fire('onSubmitAttachments', {data:self.data, attachments:params.attachments});
+    this.model.event.addListener('onCardSubmitComplete', function(target, params) {
+        self.model.newCard.url = params.data.url;
+        self.model.newCard.id = params.data.id;
+        self.model.event.fire('onSubmitAttachments', {data:self.model, attachments:params.attachments});
     });
 
-    this.data.event.addListener('onAPIFailure', function(target, params) {
+    this.model.event.addListener('onAPIFailure', function(target, params) {
         self.popupView.displayAPIFailedForm(params);
     });
 
-    this.data.event.addListener('onSubmitAttachments', function(target, params) {
+    this.model.event.addListener('onSubmitAttachments', function(target, params) {
         var attach1 = params.attachments.shift();
         
         if (attach1) {
@@ -83,17 +85,17 @@ GmailToTrello.App.prototype.bindEvents = function() {
     /*** PopupView's events binding ***/
 
     this.popupView.event.addListener('onPopupVisible', function() {
-        var data = self.data;
-        if (!data.isInitialized) {
+        var model = self.model;
+        if (!model.isInitialized) {
             self.popupView.showMessage(self, 'Initializing...');
             self.popupView.$popupContent.hide();
-            data.init();
+            model.init();
         }
         else {
             self.popupView.reset();
         }
-        data.gmail = self.gmailView.parseData();
-        self.popupView.bindGmailData(data.gmail);
+        model.gmail = self.gmailView.parseData();
+        self.popupView.bindGmailData(model.gmail);
         //else log('GTT::Initializer closing:Data is already initialized');
 
     });
@@ -101,18 +103,18 @@ GmailToTrello.App.prototype.bindEvents = function() {
     this.popupView.event.addListener('onBoardChanged', function(target, params) {
         var boardId = params.boardId;
         if (boardId !== "_" && boardId !== "" && boardId!==null) {
-            self.data.loadTrelloLists(boardId);
-            self.data.loadTrelloLabels(boardId);
+            self.model.loadTrelloLists(boardId);
+            self.model.loadTrelloLabels(boardId);
         }
     });
     
     this.popupView.event.addListener('onSubmit', function() {
-        self.data.submit();
+        self.model.submit();
     });
 
     this.popupView.event.addListener('onRequestUpdateGmailData', function() {
-        self.data.gmail = self.gmailView.parseData();
-        self.popupView.bindGmailData(self.data.gmail);
+        self.model.gmail = self.gmailView.parseData();
+        self.popupView.bindGmailData(self.model.gmail);
     });
   
     this.gmailView.event.addListener('onDetected', function(){
@@ -125,7 +127,7 @@ GmailToTrello.App.prototype.bindEvents = function() {
 };
 
 GmailToTrello.App.prototype.initialize = function() {
-    this.data.isInitialized = false;
+    this.model.isInitialized = false;
     this.gmailView.detect();
 
     service = analytics.getService('gmail_to_trello');
@@ -408,3 +410,37 @@ GmailToTrello.App.prototype.truncate = function(text, max, add) {
     }
     return retn;
 };
+
+/**
+ * Load settings
+ */
+GmailToTrello.App.prototype.loadSettings = function(popup) {
+    var self = this;
+    const setID = this.CHROME_SETTINGS_ID;
+    chrome.storage.sync.get(setID, function(response) {
+        if (response && response.hasOwnProperty(setID)) {
+            $.extend(self.popupView.data.settings, JSON.parse(response[setID])); // NOTE (Ace, 7-Feb-2017): Might need to store these off the app object
+        }
+        if (popup) { 
+            popup.init_popup(); 
+        }
+    });
+};
+
+/**
+ * Save settings
+ */
+GmailToTrello.App.prototype.saveSettings = function() {
+    const setID = this.CHROME_SETTINGS_ID;
+    const settings = this.popupView.data.settings;
+    
+    // Delete large, potentially needing secure, data bits:
+    settings.description = '';
+    settings.title = '';
+    settings.attachments = [];
+
+    const hash = {};
+    hash[setID] = JSON.stringify(settings);
+    chrome.storage.sync.set(hash);  // NOTE (Ace, 7-Feb-2017): Might need to store these off the app object
+};
+

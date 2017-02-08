@@ -19,19 +19,15 @@
                    </select>
                 </dd>
                 <dt>Board:</dt>
-                <dd><select id="gttBoard"></select></dd>
+                <dd><select id="gttBoard">
+                    <option value="">Select a board...</option>
+                </select></dd>
                 <dt>List:</dt>
                 <dd>
                     <select id="gttList">
                         <option value="">...please pick a board...</option>
                     </select>
                 </dd>
-                <!-- OBSOLETE (Ace, 29-Jan-2017): Was our swanky list widget:
-                <dd class="clearfix listrow">
-                    <span id="gttListMsg">...please pick a board...</span>
-                    <ul id="gttList"></ul>
-                </dd>
-                -->
                 <dt>Labels:</dt>
                 <dd class="clearfix listrow">
                     <span id="gttLabelsMsg">...please pick a board...</span>
@@ -53,7 +49,12 @@
                 </dd>
                 <dt>Attach:</dt>
                 <dd id="gttAttachments" />
-                <dd><input type="button" disabled="true" id="addTrelloCard" value="Add Trello card" /></dd>
+                <dd><input type="button" disabled="true" id="addTrelloCard" value="Add Trello card" />
+                    at <select id="gttPosition" style="margin-left:2px;">
+                            <option value="bottom">bottom</option>
+                            <option value="top">top</option>
+                        </select>
+                </dd>
            </dl>
        </div>
    </div>
