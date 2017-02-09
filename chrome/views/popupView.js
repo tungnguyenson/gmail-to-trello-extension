@@ -196,6 +196,8 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
             .prop('title', 'Add to ' + pos)
             .prop('value', pos)
             .text(self.position[pos]);
+
+        self.validateData();
     });
 
     /** Add Card Panel's behavior **/
@@ -414,7 +416,7 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
           'mimeType': item.mimeType
         };
         attachments += self.parent.replacer (
-          '<label><input type="checkbox" checked="false" mimeType="%mimeType%" name="%name%" url="%url%" /> %name%</label><br />\n',
+          '<label><input type="checkbox" mimeType="%mimeType%" name="%name%" url="%url%" /> %name%</label><br />\n', /* checked="checked" */
           dict);
     });
     
