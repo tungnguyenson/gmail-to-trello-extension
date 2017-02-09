@@ -4,11 +4,12 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
-Version 2.4.9
+Version 2.4.10
 ---------------
 - Change top/bottom popup to up-line and down-line arrow icons
 - Change default for attachments to unchecked
 - Fix bug where popup width wasn't being saved and restored correctly
+- Fix avatar initials to be first name + last name initials, or first 2 chars of username, if no avatar URL/pic
 
 Version 2.4.8
 ---------------
