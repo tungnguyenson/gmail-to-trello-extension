@@ -419,7 +419,7 @@ GmailToTrello.App.prototype.loadSettings = function(popup) {
     const setID = this.CHROME_SETTINGS_ID;
     chrome.storage.sync.get(setID, function(response) {
         if (response && response.hasOwnProperty(setID)) {
-            $.extend(self.popupView.data.settings, JSON.parse(response[setID])); // NOTE (Ace, 7-Feb-2017): Might need to store these off the app object
+            self.popupView.data.settings = JSON.parse(response[setID]); // NOTE (Ace, 7-Feb-2017): Might need to store these off the app object
         }
         if (popup) { 
             popup.init_popup(); 
@@ -444,3 +444,16 @@ GmailToTrello.App.prototype.saveSettings = function() {
     chrome.storage.sync.set(hash);  // NOTE (Ace, 7-Feb-2017): Might need to store these off the app object
 };
 
+/**
+ * Encode entities
+ */
+GmailToTrello.App.prototype.encodeEntities = function(s) {
+    return $("<div/>").text(s).html();
+};
+
+/**
+ * Decode entities
+ */
+GmailToTrello.App.prototype.decodeEntities = function(s) {
+    return $("<div/>").html(s).text();
+};

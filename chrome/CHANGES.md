@@ -4,6 +4,12 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.4.9
+---------------
+- Change top/bottom popup to up-line and down-line arrow icons
+- Change default for attachments to unchecked
+- Fix bug where popup width wasn't being saved and restored correctly
+
 Version 2.4.8
 ---------------
 - Have reproducable case for settings not being saved; fixed with using chrome sync settings and getting timing right

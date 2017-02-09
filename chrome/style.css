@@ -105,8 +105,8 @@ ul#gttLabels {float:left; margin:0; padding:0;}
 #gttPopup .hdr {font-weight: bold; vertical-align: middle; line-height: 30px; height: 30px; background:#ECEAED; border-bottom: 1px solid #ccc;}
 #gttPopup .hdr a {text-decoration: none;}
 #gttPopup .hdr a:hover {text-decoration: underline;}
-#gttPopup .hdr .item {float:left; margin-right: 10px}
-#gttPopup .member-avatar {float:left; width:30px; height: 30px; border-radius: 3px; background: lightgray; color: black; text-align: center;}
+#gttPopup .hdr .item {float: left; margin-right: 10px}
+#gttPopup .member-avatar {float: left; width:30px; height: 30px; border-radius: 3px; background: lightgray; color: black; text-align: center;}
 #gttPopup .member-avatar:hover {color:lightblue; background:darkgray;}
 #gttPopup #close-button, #gttPopup .popupMsg .hideMsg {float: right; margin: 0; padding: 0 10px; border-radius: 3px; color: black; background: lightgray; font-weight: bold; font-size:200%; text-decoration: none;}
 #gttPopup #close-button:hover, #gttPopup .popupMsg .hideMsg:hover {color:red; background:darkgray;}
@@ -115,4 +115,6 @@ ul#gttLabels {float:left; margin:0; padding:0;}
 #gttPopup #gttAttachments {height: 50px; width: 100%; display: inline-block; overflow: auto; padding: 0; margin: 0;}
 #gttPopup #gttAttachments input[type=checkbox] {width: 15px;}
 #gttPopup #gttAttachments label {display: inline-block; padding-left: 24px; text-indent: -18px;}
+
+#gttPopup #gttPosition {-webkit-transform: rotate(90deg); display: inline-block; padding-top: 2px; font-weight: bold; font-size: 200%; vertical-align: middle;}
 
