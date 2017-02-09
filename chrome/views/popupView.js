@@ -8,8 +8,10 @@ GmailToTrello.PopupView = function(parent) {
 
     this.data = {settings:{}};
     
-    this.MIN_WIDTH = 450;
-    this.MAX_WIDTH = 1400;
+    this.width_k = {
+        'min': 450,
+        'max': 1400
+    };
 
     // process
     this.waitingHiddenThread = false;
@@ -20,7 +22,10 @@ GmailToTrello.PopupView = function(parent) {
 
     this.MAX_BODY_SIZE = 16384;
 
-    this.parent.loadSettings();
+    this.position = {
+        'bottom': parent.decodeEntities('&rarrb;'),
+        'top': parent.decodeEntities('&larrb;')
+    };
 };
 
 GmailToTrello.PopupView.prototype.init = function() {
@@ -66,12 +71,12 @@ GmailToTrello.PopupView.prototype.init_popup = function() {
 
     /* TODO (Ace, 16-Jan-2017): jQueryUI has a more elegant lower-corner resize experience, this is the start:
     this.$popup.resizable({
-        maxHeight: self.MAX_WIDTH,
-        maxWidth: self.MAX_WIDTH,
+        maxHeight: self.width_k.max,
+        maxWidth: self.width_k.max,
         minHeight: 150,
-        minWidth: self.MIN_WIDTH,
+        minWidth: self.width_k.min,
         stop: function(event, ui) {
-            var constraintRight = $(window).width() - self.MIN_WIDTH;
+            var constraintRight = $(window).width() - self.width_k.min;
             var distance = ui.position.left - ui.originalPosition.left;
             self.$popup.css('width', self.$popup.width()-distance+'px');
             $slider.css('left', '0');
@@ -95,19 +100,17 @@ GmailToTrello.PopupView.prototype.init_popup = function() {
     var parent = this.$addCardButton.offsetParent();
     var parentRight = parent.position().left + parent.width();
 
-    // We'll make our popup 1.5x as wide as the button to the end of the window up to MAX_WIDTH:
-    var newPopupWidth = 1.5*(parentRight - addCardLeft);
-    if (newPopupWidth < this.MIN_WIDTH) {
-        newPopupWidth = this.MIN_WIDTH;
-    } else if (newPopupWidth > this.MAX_WIDTH) {
-        newPopupWidth = this.MAX_WIDTH;
+    // We'll make our popup 1.25x as wide as the button to the end of the window up to max width:
+    var newPopupWidth = 1.25*(parentRight - addCardLeft);
+    if (this.data && this.data.settings && this.data.settings.popupWidth && this.data.settings.popupWidth.length > 0) {
+        newPopupWidth = parseFloat(this.data.settings.popupWidth, 10 /* base 10 */);
     }
-    if (this.data && this.data.settings && this.data.settings.popupWidth && this.data.settings.popupWidth > 0) {
-        newPopupWidth = this.data.settings.popupWidth;
-    } else {
-        $.extend(true /* deep copy */, this.data,{'settings': {'popupWidth': newPopupWidth}});
+    if (newPopupWidth < this.width_k.min) {
+        newPopupWidth = this.width_k.min;
+    } else if (newPopupWidth > this.width_k.max) {
+        newPopupWidth = this.width_k.max;
     }
-
+    
     this.$popup.css('width', newPopupWidth + 'px');
 
     var newPopupLeft = addCardCenter - (newPopupWidth / 2);
@@ -154,7 +157,7 @@ GmailToTrello.PopupView.prototype.onResize = function() {
     var origWidth = this.$popup.width();
     var textWidth = origWidth - 111;
     $('input[type=text],textarea,#gttAttachments', this.$popup).css('width', textWidth + 'px');
-    $.extend(true /* deep copy */, this.data,{'settings': {'popupWidth': origWidth}});
+    this.validateData(); // Assures size is saved
 };
 
 GmailToTrello.PopupView.prototype.bindEvents = function() {
@@ -165,15 +168,13 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
 
     //slider (blue bar on left side of dialog to resize)
     var $slider = $("#gttPopupSlider", this.$popup);
-    var constraintRight = $(window).width() - this.MIN_WIDTH;
+    var constraintRight = $(window).width() - this.width_k.min;
 
     $slider.draggable({axis: "x", containment: [0, 0, constraintRight, 0],
         stop: function(event, ui) {
             var distance = ui.position.left - ui.originalPosition.left;
             self.$popup.css('width', self.$popup.width()-distance+'px');
             $slider.css('left', '0');
-            //self.$popup.css('left', (self.$popup.position().left + distance) + 'px');
-            //$slider.css('left', ui.originalPosition.left + 'px');
             // TODO (Ace, 29-Jan-2017): Re-center after resizing
             self.onResize();
         }
@@ -181,6 +182,20 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
 
     $('#close-button', this.$popup).click(function() {
         self.$popup.toggle();
+    });
+
+    $('#gttPosition', this.$popup).click(function() {
+        var pos = $(this).prop('value');
+        if (pos == 'top') {
+            pos = 'bottom';
+        } else {
+            pos = 'top';
+        }
+
+        $(this)
+            .prop('title', 'Add to ' + pos)
+            .prop('value', pos)
+            .text(self.position[pos]);
     });
 
     /** Add Card Panel's behavior **/
@@ -356,6 +371,14 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
     if (data.settings.hasOwnProperty('markdown')) {
         $('#chkMarkdown', this.$popup).prop('checked', data.settings.markdown);
     }
+
+    if (data.settings.hasOwnProperty('position')) {
+        var pos = data.settings.position || 'bottom';
+        $('#gttPosition', this.$popup)
+            .prop('title', 'Add to ' + pos)
+            .prop('value', pos)
+            .text(this.position[pos]);
+    }
 };
     
 GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
@@ -385,7 +408,7 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
           'mimeType': item.mimeType
         };
         attachments += self.parent.replacer (
-          '<label><input type="checkbox" checked="checked" mimeType="%mimeType%" name="%name%" url="%url%" /> %name%</label><br />\n',
+          '<label><input type="checkbox" checked="false" mimeType="%mimeType%" name="%name%" url="%url%" /> %name%</label><br />\n',
           dict);
     });
     
@@ -610,7 +633,7 @@ GmailToTrello.PopupView.prototype.validateData = function() {
     var useBackLink = $('#chkBackLink', this.$popup).is(':checked');
     var selfAssign = $('#chkSelfAssign', this.$popup).is(':checked');
     var markdown = $('#chkMarkdown', this.$popup).is(':checked');
-    var position = $('#gttPosition', this.$popup).val();
+    var position = $('#gttPosition', this.$popup).prop('value');
     var timeStamp = $('.gH .gK .g3:first', this.$visibleMail).attr('title');
     var popupWidth = this.$popup.css('width');
     var labelsId = $('#gttLabels li.active', this.$popup).map(function(iter, item) {
