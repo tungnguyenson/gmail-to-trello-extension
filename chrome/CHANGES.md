@@ -6,7 +6,7 @@ CHANGE LOG:
 
 Version 2.4.12
 ---------------
-- Match regex for Markdownify on non-word boundary, too
+- Match regex for Markdownify on non-word boundary, do additional pass and make placeholders then replace those so markdown anchors don't get out of hand
 
 Version 2.4.11
 ---------------

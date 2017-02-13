@@ -232,12 +232,15 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
     // links:
     // a -> [text](html)
     if (processThisMarkdown('a')) {
-        var anchors = preprocess.a ||{};
+        var anchors = preprocess.a || {};
+        const swap_unique_k = 'gtt_swap:';
+        var count = 0;
+        var replacer_dict = {};
         $('a', $html).each(function(index, value) {
             var text = ($(this).text() || "").trim();
             var uri = ($(this).attr("href") || "").trim();
             if (uri && text && text.length >= min_text_length_k) {
-                anchors[text.toLowerCase()] = {'text': text, 'uri': uri}; // Intentionally overwrites duplicates                
+                anchors[text.toLowerCase()] = {'text': text, 'uri': uri}; // Intentionally overwrites duplicates
             }
         });
         $.each(Object.keys(anchors).sort(function(a, b){ // Go by order of largest to smallest
@@ -245,6 +248,7 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
         }), function(index, value) {
             var text = anchors[value].text;
             var uri = anchors[value].uri;
+            var swap = swap_unique_k + (count++).toString();
             var uri_display = self.uriForDisplay(uri);
             /*
             var comment = ' "' + text + ' via ' + uri_display + '"';
@@ -254,9 +258,15 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
             }
             */
             var re = new RegExp(regexp_k.begin + '(' + self.escapeRegExp(value) + ')' + regexp_k.end, "gi");
-            var replaced = body.replace(re, " [" + text + "](" + uri /* + comment */ + ') '); // Comment seemed like too much extra text
-            body = replaced;
+            var replaced = body.replace(re, '%' + swap + '%'); // Replace occurance with placeholder
+            if (body !== replaced) {
+                body = replaced;
+                replacer_dict[swap] = " [" + text + "](" + uri /* + comment */ + ') '; // Comment seemed like too much extra text
+            }
         });
+
+        replaced = this.replacer(body, replacer_dict); // Now replace placeholders with actual anchors
+        body = replaced;
     }
 
     /* DISABLED (Ace, 16-Jan-2017): Images kinda make a mess, until requested lets not markdownify them:
