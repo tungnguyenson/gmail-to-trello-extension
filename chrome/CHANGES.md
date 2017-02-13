@@ -4,6 +4,10 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.4.12
+---------------
+- Match regex for Markdownify on non-word boundary, too
+
 Version 2.4.11
 ---------------
 - Change top/bottom popup to up-line and down-line arrow icons

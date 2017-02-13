@@ -198,8 +198,8 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
 
     const min_text_length_k = 4;
     const regexp_k = {
-        'begin': '(^|\\s+|<|\\[|\\()',
-        'end': '(>|\\]|\\)|\\s+|$)'
+        'begin': '(^|\\s+|<|\\[|\\(|\\b)',
+        'end': '($|\\s+|>|\\]|\\)|\\b)'
     };
 
     var processThisMarkdown = function(elementTag) { // Assume TRUE to process, unless explicitly restricted:
@@ -236,7 +236,7 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
         $('a', $html).each(function(index, value) {
             var text = ($(this).text() || "").trim();
             var uri = ($(this).attr("href") || "").trim();
-            if (uri && text && text.length > min_text_length_k) {
+            if (uri && text && text.length >= min_text_length_k) {
                 anchors[text.toLowerCase()] = {'text': text, 'uri': uri}; // Intentionally overwrites duplicates                
             }
         });
