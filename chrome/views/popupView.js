@@ -260,7 +260,7 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         var body = markdown ? body_md : body_raw;
         var link = useBackLink ? (markdown ? link_md : link_raw) : '';
 
-        var desc = self.parent.truncate(body, self.MAX_BODY_SIZE, '...');
+        var desc = self.parent.truncate(body, self.MAX_BODY_SIZE - link.length, '...');
 
 
         $gttDesc.val(desc + link);
@@ -401,7 +401,7 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
 
     var body = markdown ? data.body_md : data.body_raw;
     var link = useBackLink ? (markdown ? data.link_md : data.link_raw) : '';
-    var desc = self.parent.truncate(body, self.MAX_BODY_SIZE, '...');
+    var desc = self.parent.truncate(body, self.MAX_BODY_SIZE - link.length, '...');
 
     $('#gttDesc', this.$popup)
         .val(desc + link)
