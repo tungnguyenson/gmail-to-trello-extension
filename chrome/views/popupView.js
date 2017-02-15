@@ -323,10 +323,12 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
         $userAvatar = $('<img class="member-avatar">').attr('src', user.avatarUrl);
     }
     else {
-        var initials = user.username.slice(0,2);
-        var matched = user.fullName.match(/^(\w).*?[\s\\W]+(\w)\w*$/);
-        if (matched && matched.length > 1) {
-            initials = matched[1] + matched[2]; // 0 is whole string
+        var initials = user.username && user.username.length > 0 ? user.username.slice(0,1) : '?';
+        if (user.fullName && user.fullName.length > 1) {
+            var matched = user.fullName.match(/^(\w).*?[\s\\W]+(\w)\w*$/);
+            if (matched && matched.length > 1) {
+                initials = matched[1] + matched[2]; // 0 is whole string            
+            }
         }
         $userAvatar = $('<span class="member-avatar">').text(initials.toUpperCase());
 
@@ -336,7 +338,7 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
     $('#gttAvatarURL', this.$popup).attr('href', user.url);
     $('#gttAvatarText', this.$popup).text(userAvatarText);
     $('#gttAvatarImg', this.$popup).attr('src', userAvatarSrc);
-    $('#gttUsername', this.$popup).attr('href', user.url).text(user.username);
+    $('#gttUsername', this.$popup).attr('href', user.url).text(user.username || '?');
 
     $('#gttSignOutButton', this.$popup).click(function() {self.showMessage(self,
             '<a class="hideMsg" title="Dismiss message">&times;</a>Unimplemented. Try the following:<ol><li>Under menu "Chrome":</li>'

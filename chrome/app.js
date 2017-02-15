@@ -201,6 +201,7 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
         'begin': '(^|\\s+|<|\\[|\\(|\\b)',
         'end': '($|\\s+|>|\\]|\\)|\\b)'
     };
+    const swap_unique_k = 'gtt_swap:';
 
     var processThisMarkdown = function(elementTag) { // Assume TRUE to process, unless explicitly restricted:
         if (typeof features === 'undefined') {
@@ -233,7 +234,6 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
     // a -> [text](html)
     if (processThisMarkdown('a')) {
         var anchors = preprocess.a || {};
-        const swap_unique_k = 'gtt_swap:';
         var count = 0;
         var replacer_dict = {};
         $('a', $html).each(function(index, value) {
@@ -248,7 +248,7 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
         }), function(index, value) {
             var text = anchors[value].text;
             var uri = anchors[value].uri;
-            var swap = swap_unique_k + (count++).toString();
+            var swap = swap_unique_k + ((count++).toString());
             var uri_display = self.uriForDisplay(uri);
             /*
             var comment = ' "' + text + ' via ' + uri_display + '"';
@@ -449,7 +449,7 @@ GmailToTrello.App.prototype.saveSettings = function() {
     settings.title = '';
     settings.attachments = [];
 
-    const hash = {};
+    var hash = {};
     hash[setID] = JSON.stringify(settings);
     chrome.storage.sync.set(hash);  // NOTE (Ace, 7-Feb-2017): Might need to store these off the app object
 };
