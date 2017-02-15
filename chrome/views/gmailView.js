@@ -228,8 +228,8 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     var txtSearch_raw = "https://mail.google.com/mail/#search/" + subject;
     var txtSearch_md = "[Search:Subject](" + txtSearch_raw + " \"Search email subject\")";
 
-    data.link_raw = "\n---\nGmail import: " + txtDirect_raw + " | " + txtSearch_raw;
-    data.link_md = "\n---\nGmail import: " + txtDirect_md + " | " + txtSearch_md;
+    data.link_raw = "\n\n---\nGmail: " + txtDirect_raw + " | " + txtSearch_raw;
+    data.link_md = "\n\n---\nGmail: " + txtDirect_md + " | " + txtSearch_md;
 
     
     // email body
