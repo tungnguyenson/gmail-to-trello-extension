@@ -4,9 +4,14 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
-Version 2.4.13
+Version 2.4.15
+---------------
+- Make replacements holistic
+
+Version 2.4.14
 ---------------
 - Change const hash to var hash, causing chrome storage error.
+- Truncate description enough to make room for link at end
 
 Version 2.4.12
 ---------------

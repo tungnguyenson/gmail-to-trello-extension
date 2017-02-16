@@ -152,6 +152,8 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     if (this.parsingData)
         return;
 
+    var self = this;
+
     this.parsingData = true;
     var startTime = new Date().getTime();
     var data = {};
@@ -244,10 +246,11 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     var make_preprocess_mailto = function (name, email) {
         var valLtGt = name + " <" + email + ">";
         var valParen = name + " (" + email + ")";
+        var anchor_md = self.parent.anchorMarkdownify(name, 'mailto:' + email);
         var retn = {};
-        retn[valLtGt.toLowerCase()] = {'text': name, 'uri': 'mailto:' + email};
-        retn[valParen.toLowerCase()] = {'text': name, 'uri': 'mailto:' + email};
-        retn[name.toLowerCase()] = {'text': name, 'uri': 'mailto:' + email};
+        retn[valLtGt.toLowerCase()] = anchor_md;
+        retn[valParen.toLowerCase()] = anchor_md;
+        retn[name.toLowerCase()] = anchor_md;
 
         return retn;
     }
