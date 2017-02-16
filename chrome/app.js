@@ -190,7 +190,22 @@ GmailToTrello.App.prototype.uriForDisplay = function(uri) {
  * Make anchored backlink
  */
 GmailToTrello.App.prototype.anchorMarkdownify = function(text, href, comment) {
-    return " [" + (text || "") + "](" + (href || "") /* + (comment || "") */ + ") "
+    var text1 = (text || "").trim();
+    var href1 = (href || "").trim();
+    var comment1 = (comment || "").trim();
+
+    var retn = " [" + text1 + "]";
+    if (text1.toLowerCase() !== href1.toLowerCase()) {
+        retn += "(" + href1;
+        if (comment1) {
+            retn += ' "' + comment1 + '"';
+        }
+        retn += ")";
+    }
+
+    retn += " ";
+
+    return retn;
 }
 
 /**
@@ -208,7 +223,7 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
         'begin': '(^|\\s+|<|\\[|\\(|\\b)',
         'end': '($|\\s+|>|\\]|\\)|\\b)'
     };
-    const swap_unique_k = 'gtt_swap:';
+    const unique_placeholder_k = 'gtt:placeholder:'; // Unique placeholder tag
 
     var count = 0;
     var replacer_dict = {};
@@ -237,17 +252,18 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
     body = replaced;
 
     // Convert crlf x 2 (or more) to paragraph markers:
-    replaced = body.replace(/\s*[\n\r]+\s*[\n\r]+\s*/g, ' <p />\n');
+    replaced = body.replace(/\s*[\n\r]+\s*[\n\r]+\s*/g, '<p />\n');
     body = replaced;
 
     var toProcess = {};
 
     /**
-     * 4 passes:
+     * 5 explicit steps in 3 passes:
      * (1) Collect tagged items
-     * (2) Sort force-lowercase by length
-     * (3) Replace with placeholder
-     * (4) Replace placeholders with final text
+     * (2) Remove duplicates
+     * (3) Sort force-lowercase by length
+     * (4) Replace with placeholder
+     * (5) Replace placeholders with final text
      */
     var sortAndPlaceholderize = function(tooProcess) {
         if (tooProcess) {
@@ -255,7 +271,7 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
                 return b.length - a.length;
             }), function(index, value) {
                 var replace = tooProcess[value];
-                var swap = swap_unique_k + ((count++).toString());
+                var swap = unique_placeholder_k + ((count++).toString());
                 var re = new RegExp(regexp_k.begin + self.escapeRegExp(value) + regexp_k.end, "gi");
                 var replaced = body.replace(re, '%' + swap + '%'); // Replace occurance with placeholder
                 if (body !== replaced) {
@@ -279,12 +295,13 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
         }
     };
 
-    // bold: b -> **text**
-    processMarkdown('b', " **%text%** ");
-
     // bullet lists:
-    // li -> " * "
-    processMarkdown('li', " <p />* %text%<p /> ");
+    // ul li -> " * "
+    processMarkdown('ul li', "<p />* %text%<p />");
+
+    // numeric lists:
+    // ol li -> " 1. "
+    processMarkdown('ol li', "<p />1. %text%<p />");
 
     // headers:
     // H1 -> #
@@ -300,11 +317,22 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
             var nodeName = $(this).prop("nodeName") || "0";
             if (nodeName && text && text.length > min_text_length_k) {
                 var x = nodeName.substr(-1);
-                toProcess[text.toLowerCase()] = "\n" + ('#'.repeat(x)) + " " + text + "\n";
+                toProcess[text.toLowerCase()] = "\n" + ('#'.repeat(x)) + " " + text + "\n"; // Intentionally overwrites duplicates
             }
         });
         sortAndPlaceholderize(toProcess);
     }
+
+    replaced = this.replacer(body, replacer_dict); // Replace initial batch of <div> like placeholders
+    body = replaced;
+    replacer_dict = {}; // Reset
+    count = 0; // Reset
+
+    // bold: b -> **text**
+    processMarkdown('b', " **%text%** ");
+
+    // italics: i -> _text_
+    processMarkdown('i', " _%text%_ ");
 
     // links:
     // a -> [text](html)
@@ -338,14 +366,14 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
             if (href && text && text.length > min_text_length)
             // var uri_display = self.uriForDisplay(href);
             if (href && text && text.length >= min_text_length_k) {
-                toProcess[text.toLowerCase()] = {'text': text, 'replace': self.anchorMarkdownify(text, href)}; // Comment seemed like too much extra text // Intentionally overwrites duplicates
+                toProcess[text.toLowerCase()] = self.anchorMarkdownify(text, href); // Comment seemed like too much extra text // Intentionally overwrites duplicates
             }
         });
         sortAndPlaceholderize(toProcess);
     }
     */
 
-    replaced = this.replacer(body, replacer_dict); // Now replace placeholders with actual anchors
+    replaced = this.replacer(body, replacer_dict); // Replace second batch of <span> like placeholders
     body = replaced;
 
     // Minimize newlines:
