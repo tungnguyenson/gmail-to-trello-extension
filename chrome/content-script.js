@@ -90,16 +90,18 @@ function getGmailObject() {
        + '  } else if (typeof (window) !== "undefined" && window.opener !== null && typeof window.opener.GLOBALS !== "undefined") {'
        + '         userEmail = window.opener.GLOBALS[10];'
        + '  };'
-       + 'var GTT_event = new CustomEvent ("GTT_connectExtension", { "detail": { "userEmail": userEmail } });'
-       + '   document.dispatchEvent(GTT_event);'
+       + '  var GTT_event = new CustomEvent ("GTT_connectExtension", { "detail": { "userEmail": userEmail } });'
+       + '  document.dispatchEvent(GTT_event);'
        + '};'
        + 'setTimeout(timeOutFxn, 0);';
     
     var script = document.createElement('script');
-    script.textContent = actualCode;
+    // script.textContent = actualCode;
+    script.src = chrome.extension.getURL('inject.js');
     (document.head || document.documentElement).appendChild(script);
-    script.parentNode.removeChild(script);
- 
+    script.onload = function() {
+        script.parentNode.removeChild(script);
+    }
 }
 
 /*
