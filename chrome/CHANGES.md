@@ -8,6 +8,7 @@ Version 2.4.15
 ---------------
 - Make replacements holistic
 - Clean up markdownify to add numeric lists and allow <span>-like items inside of <div>-like items.
+- Remove href="javascript:void(0)" as a likely cause of Content Security Policy warning
 
 Version 2.4.14
 ---------------

@@ -2,7 +2,7 @@
  * This function is injected into the page for the content-script to receive information
  */
 setTimeout (function() {
-  var userEmail = "dev@null.com";
+  var userEmail = "?";
   if (typeof GLOBALS !== "undefined") {
          userEmail = GLOBALS[10];
   } else if (typeof (window) !== "undefined" && window.opener !== null && typeof window.opener.GLOBALS !== "undefined") {
