@@ -187,6 +187,28 @@ GmailToTrello.App.prototype.uriForDisplay = function(uri) {
 };
 
 /**
+ * Make anchored backlink
+ */
+GmailToTrello.App.prototype.anchorMarkdownify = function(text, href, comment) {
+    var text1 = (text || "").trim();
+    var href1 = (href || "").trim();
+    var comment1 = (comment || "").trim();
+
+    var retn = " [" + text1 + "]";
+    if (text1.toLowerCase() !== href1.toLowerCase()) {
+        retn += "(" + href1;
+        if (comment1) {
+            retn += ' "' + comment1 + '"';
+        }
+        retn += ")";
+    }
+
+    retn += " ";
+
+    return retn;
+}
+
+/**
  * Markdownify a text block
  */
 GmailToTrello.App.prototype.markdownify = function($emailBody, features, preprocess) {
@@ -201,9 +223,12 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
         'begin': '(^|\\s+|<|\\[|\\(|\\b)',
         'end': '($|\\s+|>|\\]|\\)|\\b)'
     };
-    const swap_unique_k = 'gtt_swap:';
+    const unique_placeholder_k = 'gtt:placeholder:'; // Unique placeholder tag
 
-    var processThisMarkdown = function(elementTag) { // Assume TRUE to process, unless explicitly restricted:
+    var count = 0;
+    var replacer_dict = {};
+
+    var featureEnabled = function(elementTag) { // Assume TRUE to process, unless explicitly restricted:
         if (typeof features === 'undefined') {
             return true;
         }
@@ -223,80 +248,60 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
     var $html = $emailBody.innerHTML;
 
     // Replace hr:
-    var replaced = body.replace(/\s*-{3,}\s*/g, "--\n");
+    var replaced = body.replace(/\s*-{3,}\s*/g, "---\n");
     body = replaced;
 
     // Convert crlf x 2 (or more) to paragraph markers:
-    replaced = body.replace(/\s*[\n\r]+\s*[\n\r]+\s*/g, ' <p />\n');
+    replaced = body.replace(/\s*[\n\r]+\s*[\n\r]+\s*/g, '<p />\n');
     body = replaced;
 
-    // links:
-    // a -> [text](html)
-    if (processThisMarkdown('a')) {
-        var anchors = preprocess.a || {};
-        var count = 0;
-        var replacer_dict = {};
-        $('a', $html).each(function(index, value) {
-            var text = ($(this).text() || "").trim();
-            var uri = ($(this).attr("href") || "").trim();
-            if (uri && text && text.length >= min_text_length_k) {
-                anchors[text.toLowerCase()] = {'text': text, 'uri': uri}; // Intentionally overwrites duplicates
-            }
-        });
-        $.each(Object.keys(anchors).sort(function(a, b){ // Go by order of largest to smallest
-            return b.length - a.length;
-        }), function(index, value) {
-            var text = anchors[value].text;
-            var uri = anchors[value].uri;
-            var swap = swap_unique_k + ((count++).toString());
-            var uri_display = self.uriForDisplay(uri);
-            /*
-            var comment = ' "' + text + ' via ' + uri_display + '"';
-            var re = new RegExp(self.escapeRegExp(text), "i");
-            if (uri.match(re)) {
-                comment = ' "Open ' + uri_display + '"';
-            }
-            */
-            var re = new RegExp(regexp_k.begin + '(' + self.escapeRegExp(value) + ')' + regexp_k.end, "gi");
-            var replaced = body.replace(re, '%' + swap + '%'); // Replace occurance with placeholder
-            if (body !== replaced) {
-                body = replaced;
-                replacer_dict[swap] = " [" + text + "](" + uri /* + comment */ + ') '; // Comment seemed like too much extra text
-            }
-        });
+    var toProcess = {};
 
-        replaced = this.replacer(body, replacer_dict); // Now replace placeholders with actual anchors
-        body = replaced;
+    /**
+     * 5 explicit steps in 3 passes:
+     * (1) Collect tagged items
+     * (2) Remove duplicates
+     * (3) Sort force-lowercase by length
+     * (4) Replace with placeholder
+     * (5) Replace placeholders with final text
+     */
+    var sortAndPlaceholderize = function(tooProcess) {
+        if (tooProcess) {
+            $.each(Object.keys(tooProcess).sort(function(a,b){ // Go by order of largest to smallest
+                return b.length - a.length;
+            }), function(index, value) {
+                var replace = tooProcess[value];
+                var swap = unique_placeholder_k + ((count++).toString());
+                var re = new RegExp(regexp_k.begin + self.escapeRegExp(value) + regexp_k.end, "gi");
+                var replaced = body.replace(re, '%' + swap + '%'); // Replace occurance with placeholder
+                if (body !== replaced) {
+                    body = replaced;
+                    replacer_dict[swap] = replace;
+                }
+            })
+        }
     }
-
-    /* DISABLED (Ace, 16-Jan-2017): Images kinda make a mess, until requested lets not markdownify them:
-    // images:
-    // img -> ![alt_text](html)
-    if (processThisMarkdown('img')) {
-        $('img', $html).each(function(index, value) {
-            var text = ($(this).attr("alt") || "").trim();
-            var uri = ($(this).attr("src") || "").trim();
-            if (uri && text && text.length > min_text_length)
-            var uri_display = self.uriForDisplay(uri);
-            var re = new RegExp(text, "gi");
-            var replaced = body.replace(re, "![" + text + "](" + uri + ' "' + text + ' via ' + uri_display + '"');
-            body = replaced;
-        });
-    }
-    */
+    var processMarkdown = function(elementTag, replaceText) {
+        if (elementTag && replaceText && featureEnabled(elementTag)) {
+            toProcess = preprocess[elementTag] || {};
+            $(elementTag, $html).each(function(index, value) {
+                var text = ($(this).text() || "").trim();
+                if (text && text.length > min_text_length_k) {
+                    var replace = self.replacer(replaceText, {'text': text});
+                    toProcess[text.toLowerCase()] = replace; // Intentionally overwrites duplicates
+                }
+            });
+            sortAndPlaceholderize(toProcess);
+        }
+    };
 
     // bullet lists:
-    // li -> " * "
-    if (processThisMarkdown('li')) {
-        $('li', $html).each(function(index, value) {
-            var text = ($(this).text() || "").trim();
-            if (text && text.length > min_text_length_k) {
-                var re = new RegExp(regexp_k.begin + self.escapeRegExp(text) + regexp_k.end, "gi");
-                var replaced = body.replace(re, " <p />* " + text + "<p /> ");
-                body = replaced;
-            }
-        });
-    }
+    // ul li -> " * "
+    processMarkdown('ul li', "<p />* %text%<p />");
+
+    // numeric lists:
+    // ol li -> " 1. "
+    processMarkdown('ol li', "<p />1. %text%<p />");
 
     // headers:
     // H1 -> #
@@ -305,30 +310,71 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
     // H4 -> ####
     // H5 -> #####
     // H6 -> ######
-    if (processThisMarkdown('h')) {
+    if (featureEnabled('h')) {
+        toProcess = preprocess['h'] || {};
         $(':header', $html).each(function(index, value) {
             var text = ($(this).text() || "").trim();
-            var nodeName = $(this).prop("nodeName");
+            var nodeName = $(this).prop("nodeName") || "0";
             if (nodeName && text && text.length > min_text_length_k) {
-                var x = '0' + nodeName.substr(-1);
-                var re = new RegExp(regexp_k.begin + self.escapeRegExp(text) + regexp_k.end, "gi");
-                var replaced = body.replace(re, "\n" + ('#'.repeat(x)) + " " + text + "\n");
-                body = replaced;
+                var x = nodeName.substr(-1);
+                toProcess[text.toLowerCase()] = "\n" + ('#'.repeat(x)) + " " + text + "\n"; // Intentionally overwrites duplicates
             }
         });
+        sortAndPlaceholderize(toProcess);
     }
 
+    replaced = this.replacer(body, replacer_dict); // Replace initial batch of <div> like placeholders
+    body = replaced;
+    replacer_dict = {}; // Reset
+    count = 0; // Reset
+
     // bold: b -> **text**
-    if (processThisMarkdown('b')) {
-            $('b', $html).each(function(index, value) {
+    processMarkdown('b', " **%text%** ");
+
+    // italics: i -> _text_
+    processMarkdown('i', " _%text%_ ");
+
+    // links:
+    // a -> [text](html)
+    if (featureEnabled('a')) {
+        toProcess = preprocess['a'] || {};
+        $('a', $html).each(function(index, value) {
             var text = ($(this).text() || "").trim();
-            if (text && text.length > min_text_length_k) {
-                var re = new RegExp(regexp_k.begin + self.escapeRegExp(text) + regexp_k.end, "gi");
-                var replaced = body.replace(re, " **" + text + "** ");
-                body = replaced;
+            var href = ($(this).prop("href") || "").trim(); // Was attr
+            /*
+            var uri_display = self.uriForDisplay(href);
+            var comment = ' "' + text + ' via ' + uri_display + '"';
+            var re = new RegExp(self.escapeRegExp(text), "i");
+            if (uri.match(re)) {
+                comment = ' "Open ' + uri_display + '"';
+            }
+            */
+            if (href && text && text.length >= min_text_length_k) {
+                toProcess[text.toLowerCase()] = self.anchorMarkdownify(text, href); // Comment seemed like too much extra text // Intentionally overwrites duplicates
             }
         });
+        sortAndPlaceholderize(toProcess);
     }
+
+    /* DISABLED (Ace, 16-Jan-2017): Images kinda make a mess, until requested lets not markdownify them:
+    // images:
+    // img -> ![alt_text](html)
+    if (featureEnabled('img')) {
+        $('img', $html).each(function(index, value) {
+            var text = ($(this).prop("alt") || "").trim(); // Was attr
+            var href = ($(this).prop("src") || "").trim(); // Was attr
+            if (href && text && text.length > min_text_length)
+            // var uri_display = self.uriForDisplay(href);
+            if (href && text && text.length >= min_text_length_k) {
+                toProcess[text.toLowerCase()] = self.anchorMarkdownify(text, href); // Comment seemed like too much extra text // Intentionally overwrites duplicates
+            }
+        });
+        sortAndPlaceholderize(toProcess);
+    }
+    */
+
+    replaced = this.replacer(body, replacer_dict); // Replace second batch of <span> like placeholders
+    body = replaced;
 
     // Minimize newlines:
     replaced = body.replace(/\s*[\n\r]+\s*/g, '\n');

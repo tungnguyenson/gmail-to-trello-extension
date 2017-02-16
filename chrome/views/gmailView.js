@@ -152,6 +152,8 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     if (this.parsingData)
         return;
 
+    var self = this;
+
     this.parsingData = true;
     var startTime = new Date().getTime();
     var data = {};
@@ -216,20 +218,18 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     var from_raw = emailName + ' <' + emailAddress + '> on ' + data.time;
     var from_md = '[' + emailName + '](mailto:' + emailAddress /*  + ' "Email ' + emailAddress + '"' */ + ') on '
         + data.time;  // FYI (Ace, 10-Jan-2017): [name](url "comment") is markdown syntax
-    
-    var email = emailAddress.replace('@', '\\@');
-    var txtDirect = "["+email+"](" + document.location.href + " \"Original email\")";
 
     var subject = encodeURIComponent(data.subject);
 
     var dateSearch = encodeURIComponent(data.time);
-    var txtDirect_raw = "https://mail.google.com/mail/#advanced-search/subset=all&has=" + subject + "&within=1d&date=" + dateSearch;
-    var txtDirect_md = "[Search:Time](" + txtDirect_raw + " \"Advanced search email subject + time\")";
-    var txtSearch_raw = "https://mail.google.com/mail/#search/" + subject;
-    var txtSearch_md = "[Search:Subject](" + txtSearch_raw + " \"Search email subject\")";
-
-    data.link_raw = "\n\n---\nGmail: " + txtDirect_raw + " | " + txtSearch_raw;
-    data.link_md = "\n\n---\nGmail: " + txtDirect_md + " | " + txtSearch_md;
+    var txtDirect = "https://mail.google.com/mail/#advanced-search/subset=all&has=" + subject + "&within=1d&date=" + dateSearch;
+    var txtSearch = "https://mail.google.com/mail/#search/" + subject;
+    
+    data.link_raw = "\n\n---\nGmail: " + txtDirect + " | " + txtSearch;
+    data.link_md = "\n\n---\nGmail: "
+        + self.parent.anchorMarkdownify("Search:Time", txtDirect, "Advanced search email subject + time")
+        + " | "
+        + self.parent.anchorMarkdownify("Search:Subject", txtSearch, "Search email subject");
 
     
     // email body
@@ -244,10 +244,11 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     var make_preprocess_mailto = function (name, email) {
         var valLtGt = name + " <" + email + ">";
         var valParen = name + " (" + email + ")";
+        var anchor_md = self.parent.anchorMarkdownify(name, 'mailto:' + email);
         var retn = {};
-        retn[valLtGt.toLowerCase()] = {'text': name, 'uri': 'mailto:' + email};
-        retn[valParen.toLowerCase()] = {'text': name, 'uri': 'mailto:' + email};
-        retn[name.toLowerCase()] = {'text': name, 'uri': 'mailto:' + email};
+        retn[valLtGt.toLowerCase()] = anchor_md;
+        retn[valParen.toLowerCase()] = anchor_md;
+        retn[name.toLowerCase()] = anchor_md;
 
         return retn;
     }
