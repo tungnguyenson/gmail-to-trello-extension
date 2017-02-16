@@ -181,7 +181,7 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
     });
 
     $('#close-button', this.$popup).click(function() {
-        self.$popup.toggle();
+        self.$popup.hide();
     });
 
     $('#gttPosition', this.$popup).click(function() {
@@ -730,9 +730,9 @@ GmailToTrello.PopupView.prototype.displayAPIFailedForm = function(response) {
     var resp = response.data;
 
     var replacer = {
-        'title': self.parent.bookend('dd', data.title),
-        'status': self.parent.bookend('dd', resp.status),
-        'responseText': self.parent.bookend('dd', resp.responseText)
+        'title': self.parent.bookend('dd', data.title || '?'),
+        'status': self.parent.bookend('dd', resp.status || '?'),
+        'responseText': self.parent.bookend('dd', resp.responseText || '?')
     }
 
     var style = 'float: left; clear: left; width: 90px; text-align: right; color: red;';
