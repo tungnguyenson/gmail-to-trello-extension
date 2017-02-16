@@ -7,6 +7,7 @@ CHANGE LOG:
 Version 2.4.15
 ---------------
 - Make replacements holistic
+- Clean up markdownify to add numeric lists and allow <span>-like items inside of <div>-like items.
 
 Version 2.4.14
 ---------------
