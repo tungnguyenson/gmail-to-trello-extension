@@ -10,7 +10,8 @@ GmailToTrello.PopupView = function(parent) {
     
     this.width_k = {
         'min': 450,
-        'max': 1400
+        'max': 1400,
+        'text_min': 111
     };
 
     // process
@@ -39,37 +40,73 @@ GmailToTrello.PopupView.prototype.init = function() {
     // inject a button & a popup
 
     if (this.html && this.html['add_card'] && this.html['add_card'].length > 1) {
-	// intentionally blank
+	   log('add_card_html already exists');
     } else {
 		this.html['add_card'] =
 			'<div id="gttButton" class="T-I J-J5-Ji ar7 nf T-I-ax7 L3"'
 			  + 'data-tooltip="Add this email as a Trello card">'
 			  + '<div aria-haspopup="true" role="button" class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3" tabindex="0">'
-			  + '<img class="f tk3N6e-I-J3" src="'
+			  + '<img class="f tk3N6e-I-J3" height="13" width="13" src="'
 			  + chrome.extension.getURL('images/icon-13.jpg')
 			  + '"><span class="button-text">Add card</span></div></div>';
     }
-    this.$toolBar.append(this.html['add_card']); // + strPopupHtml);
+    this.$toolBar.append(this.html['add_card']);
 
     if (this.html && this.html['popup'] && this.html['popup'].length > 1) {
 		this.$toolBar.append(this.html['popup']);
         this.parent.loadSettings(this);
-		// this.init_popup();
 	} else {
 		$.get(chrome.extension.getURL('views/popupView.html'), function(data){
 			self.html['popup'] = data;
 			self.$toolBar.append(data);
 			self.parent.loadSettings(self);
-            // self.init_popup();
     	});
 	}
+};
+
+/** 
+ * Set the initial width by measuring from the left corner of the
+ * "Add card" button to the edge of the window and then center that under the "Add card" button:
+ */
+GmailToTrello.PopupView.prototype.centerPopup = function(useWidth) {
+    var addCardLeft = this.$addCardButton.position().left;
+    var addCardCenter = addCardLeft + (this.$addCardButton.outerWidth() / 2);
+    
+    var parent = this.$addCardButton.offsetParent();
+    var parentRight = parent.position().left + parent.width();
+
+    // We'll make our popup 1.25x as wide as the button to the end of the window up to max width:
+    var newPopupWidth = this.width_k.min;
+    if (useWidth && useWidth > 0) {
+        newPopupWidth = useWidth; // May snap to min if necessary
+        addCardCenter = this.$popup.position().left;
+        addCardCenter += this.$popup.width() / 2;
+    } else if (this.data && this.data.settings && this.data.settings.popupWidth && this.data.settings.popupWidth.length > 0) {
+        newPopupWidth = parseFloat(this.data.settings.popupWidth, 10 /* base 10 */);
+    } else {
+        newPopupWidth = 1.25*(parentRight - addCardLeft); // Make popup 1.25x as wide as the button to the end of the window up to max width
+    }
+
+    if (newPopupWidth < this.width_k.min) {
+        newPopupWidth = this.width_k.min;
+    } else if (newPopupWidth > this.width_k.max) {
+        newPopupWidth = this.width_k.max;
+    }
+    
+    this.$popup.css('width', newPopupWidth + 'px');
+
+    var newPopupLeft = addCardCenter - (newPopupWidth / 2);
+
+    this.$popup.css('left', newPopupLeft + 'px')
+
+    this.onResize();
 };
 
 GmailToTrello.PopupView.prototype.init_popup = function() {
     this.$addCardButton = $('#gttButton', this.$toolBar);
     this.$popup = $('#gttPopup', this.$toolBar);
 
-    /* TODO (Ace, 16-Jan-2017): jQueryUI has a more elegant lower-corner resize experience, this is the start:
+    /* TODO (Ace, 16-Jan-2017): jQueryUI has a more elegant right-lower-corner resize experience, this is the start:
     this.$popup.resizable({
         maxHeight: self.width_k.max,
         maxWidth: self.width_k.max,
@@ -91,33 +128,7 @@ GmailToTrello.PopupView.prototype.init_popup = function() {
     this.$popupMessage = $('.popupMsg', this.$popup);
     this.$popupContent = $('.content', this.$popup);
     
-    // NOTE (Ace, 15-Jan-2017): TURN THIS INTO CALLABLE CENTERING ROUTINE?
-    // Set the initial width by measuring from the left corner of the
-    // "Add card" button to the edge of the window and then center that under the "Add card" button:
-    var addCardLeft = this.$addCardButton.position().left;
-    var addCardCenter = addCardLeft + (this.$addCardButton.outerWidth() / 2);
-    
-    var parent = this.$addCardButton.offsetParent();
-    var parentRight = parent.position().left + parent.width();
-
-    // We'll make our popup 1.25x as wide as the button to the end of the window up to max width:
-    var newPopupWidth = 1.25*(parentRight - addCardLeft);
-    if (this.data && this.data.settings && this.data.settings.popupWidth && this.data.settings.popupWidth.length > 0) {
-        newPopupWidth = parseFloat(this.data.settings.popupWidth, 10 /* base 10 */);
-    }
-    if (newPopupWidth < this.width_k.min) {
-        newPopupWidth = this.width_k.min;
-    } else if (newPopupWidth > this.width_k.max) {
-        newPopupWidth = this.width_k.max;
-    }
-    
-    this.$popup.css('width', newPopupWidth + 'px');
-
-    var newPopupLeft = addCardCenter - (newPopupWidth / 2);
-
-    this.$popup.css('left', newPopupLeft + 'px')
-
-    this.onResize();
+    this.centerPopup();
 
     this.bindEvents();
 
@@ -155,7 +166,7 @@ GmailToTrello.PopupView.prototype.detectPopup = function() {
 // NOTE (Ace, 15-Jan-2017): This resizes all the text areas to match the width of the popup:
 GmailToTrello.PopupView.prototype.onResize = function() {
     var origWidth = this.$popup.width();
-    var textWidth = origWidth - 111;
+    var textWidth = origWidth - this.width_k.text_min;
     $('input[type=text],textarea,#gttAttachments', this.$popup).css('width', textWidth + 'px');
     this.validateData(); // Assures size is saved
 };
@@ -173,10 +184,10 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
     $slider.draggable({axis: "x", containment: [0, 0, constraintRight, 0],
         stop: function(event, ui) {
             var distance = ui.position.left - ui.originalPosition.left;
-            self.$popup.css('width', self.$popup.width()-distance+'px');
+            var newWidth = self.$popup.width()-distance;
+            // self.$popup.css('width', newWidth + 'px');
             $slider.css('left', '0');
-            // TODO (Ace, 29-Jan-2017): Re-center after resizing
-            self.onResize();
+            self.centerPopup(newWidth);
         }
     });
 
