@@ -45,7 +45,6 @@ GmailToTrello.Model.prototype.initTrello = function() {
     });
 
     if (!Trello.authorized()) {
-
         this.event.fire('onBeforeAuthorize');
 
         Trello.authorize({
@@ -70,6 +69,13 @@ GmailToTrello.Model.prototype.initTrello = function() {
         //log(Trello);
         //log(Trello.token());
     }
+};
+
+GmailToTrello.Model.prototype.deauthorizeTrello = function() {
+    log("GTT:deauthorizeTrello()");
+
+    Trello.deauthorize();
+    this.isInitialized = false;
 };
 
 GmailToTrello.Model.prototype.loadTrelloData = function() {

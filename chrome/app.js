@@ -17,7 +17,6 @@ GmailToTrello.App.prototype.bindEvents = function() {
    var self = this;
     
     /*** Data's events binding ***/
-    
     this.model.event.addListener('onBeforeAuthorize', function() {
         self.popupView.showMessage(self, 'Authorizing...');    
     });
@@ -115,6 +114,10 @@ GmailToTrello.App.prototype.bindEvents = function() {
     this.popupView.event.addListener('onRequestUpdateGmailData', function() {
         self.model.gmail = self.gmailView.parseData();
         self.popupView.bindGmailData(self.model.gmail);
+    });
+
+    this.popupView.event.addListener('onRequestDeauthorizeTrello', function() {
+        self.model.deauthorizeTrello();
     });
   
     this.gmailView.event.addListener('onDetected', function(){
