@@ -397,41 +397,24 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
     replaced = this.replacer(body, replacer_dict); // Replace second batch of <span> like placeholders
     body = replaced;
 
-    // Minimize newlines:
+    // ORDER MATTERS FOR THIS NEXT SET:
+    // (1) Replace <space>CRLF<space> with just CR:
     replaced = body.replace(/\s*[\n\r]+\s*/g, '\n');
     body = replaced;
 
+    // (2) Replace 2 or more spaces with just one:
     replaced = repeatReplace(body, new RegExp("\\s{2,}", "g"), " ");
     body = replaced;
 
-    /*
-    for (var iter = max_replace_attempts_k; iter > 0; iter--) {
-        replaced = body.replace(/\s{2,}/g, ' ');
-        if (body === replaced) {
-            iter = 0; // All done
-        } else {
-            body = replaced;
-        }
-    };
-    */
-
+    // (3) Replace paragraph markers with CR+CR:
     replaced = body.replace(/\s*<p \/>\s*/g, '\n\n');
     body = replaced;
 
+    // (4) Replace 3 or more CRs with just two:
     replaced = repeatReplace(body, new RegExp("\\n{3,}", "g"), "\n\n");
     body = replaced;
 
-    /*
-    for (var iter = max_replace_attempts_k; iter > 0; iter--) {
-        replaced = body.replace(/\n{3,}/g, '\n\n');
-        if (body === replaced) {
-            iter = 0; // All done
-        } else {
-            body = replaced;
-        }
-    };
-    */
-
+    // (5) Trim excess at beginning and end:
     replaced = body.trim();
     body = replaced;
 
