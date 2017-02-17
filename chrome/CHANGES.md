@@ -4,6 +4,11 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.4.18
+---------------
+- Add height and width to image tag so it doesn't "jump"
+- Adjust centering logic for popup to be more human-friendly (still should move to lower-third resize logic)
+
 Version 2.4.17
 ---------------
 - Call Trello.deauthorize on Sign Out request
