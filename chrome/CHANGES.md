@@ -4,6 +4,12 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.4.16
+---------------
+- Call Trello.deauthorize on Sign Out request
+- Clean up logic of Sign Out to request Reload afterward
+- Clean up error display to find error data in response packet
+
 Version 2.4.15
 ---------------
 - Make replacements holistic

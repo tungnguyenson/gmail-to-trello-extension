@@ -340,11 +340,10 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
     $('#gttAvatarImg', this.$popup).attr('src', userAvatarSrc);
     $('#gttUsername', this.$popup).attr('href', user.url).text(user.username || '?');
 
-    $('#gttSignOutButton', this.$popup).click(function() {self.showMessage(self,
-            '<a class="hideMsg" title="Dismiss message">&times;</a>Unimplemented. Try the following:<ol><li>Under menu "Chrome":</li>'
-            + '<li>Select "Clear Browsing Data..."</li>'
-            + '<li>Check "Clear data from hosted apps"</li>'
-            + '<li>Press button "Clear browsing data"</li></ol>'
+    $('#gttSignOutButton', this.$popup).click(function() {
+        self.event.fire('onRequestDeauthorizeTrello');
+        self.showMessage(self, '<a class="hideMsg" title="Dismiss message">&times;</a>Trello token deauthorized. '
+            + 'Please <a href="./">reload</a> the page.'
         );
     });
 	
@@ -726,24 +725,28 @@ GmailToTrello.PopupView.prototype.displaySubmitCompleteForm = function() {
 
 GmailToTrello.PopupView.prototype.displayAPIFailedForm = function(response) {
     var self = this;
-    var data = this.data.newCard;
-    var resp = response.data;
-
-    var replacer = {
-        'title': self.parent.bookend('dd', data.title || '?'),
-        'status': self.parent.bookend('dd', resp.status || '?'),
-        'responseText': self.parent.bookend('dd', resp.responseText || '?')
+    
+    var resp = {};
+    if (response && response.data) {
+        resp = response.data;
     }
 
-    var style = 'float: left; clear: left; width: 90px; text-align: right; color: red;';
+    if (this.data && this.data.newCard) {
+        resp.title = this.data.newCard.title; // Put a temp copy of this over where we'll get the other data
+    }
+
+    var errDisplay = ['title', 'status', 'statusText', 'responseText'];
     
+    var replacer = {};
+
     var msg = '<a class="hideMsg" title="Dismiss message">&times;</a>ERROR: Trello API FAILURE! <dl style="font-weight: bold;">';
-    
-    $.each (['title', 'status', 'responseText'], function (iter, item) {
-        msg += self.parent.bookend('dt', item + ':', style) + '%' + item + '%';
+    var style = 'float: left; clear: left; width: 90px; text-align: right; color: red;';
+        
+    $.each (errDisplay, function (iter, item) {
+        msg += self.parent.bookend('dt', item + ':', style) + self.parent.bookend('dd', resp[item] || '?');
     });
 
-    msg = self.parent.replacer(msg, replacer) + '</dl>';
+    msg += '</dl>';
     
     this.showMessage(self, msg);
     this.$popupContent.hide();
