@@ -178,8 +178,9 @@ GmailToTrello.App.prototype.replacer = function(text, dict) {
  * Make displayable URI
  */
 GmailToTrello.App.prototype.uriForDisplay = function(uri) {
+    const uri_display_trigger_length_k = 10;
     var uri_display = uri || '';
-    if (uri_display && uri_display.length > 30) {
+    if (uri_display && uri_display.length > uri_display_trigger_length_k) {
         var re = RegExp("^\\w+:\/\/([\\w.\/_]+).*?([\\w._]*)$");
         var matched = uri_display.match(re);
         if (matched && matched.length > 0) {
@@ -197,17 +198,18 @@ GmailToTrello.App.prototype.anchorMarkdownify = function(text, href, comment) {
     var href1 = (href || "").trim();
     var comment1 = (comment || "").trim();
 
-    var retn = " [" + text1 + "]";
-    if (text1.toLowerCase() !== href1.toLowerCase()) {
-        retn += "(" + href1;
-        if (comment1) {
-            retn += ' "' + comment1 + '"';
-        }
-        retn += ")";
+    var retn = '';
+
+    if (text1.length < 1 && href1.length < 1) {
+        // Intetionally blank
+    } else if (text1.toLowerCase() === href1.toLowerCase()) {
+        retn = ' <' + href1 + '> '; // This renders correctly in Trello as a sole URL
+       // NOTE (Ace, 17-Feb-2017): Turns out Trello doesn't support markdown [] only, so we'll construct a nice displayable text vs url:
+       // text1 = this.uriForDisplay(text1);
+    } else {
+        retn = " [" + text1 + "](" + href1 + (comment1 ? ' "' + comment1 + '"' : '') + ") ";
     }
-
-    retn += " ";
-
+    
     return retn;
 }
 
@@ -222,6 +224,7 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
     var self = this;
 
     const min_text_length_k = 4;
+    const max_replace_attempts_k = 10;
     const regexp_k = {
         'begin': '(^|\\s+|<|\\[|\\(|\\b)',
         'end': '($|\\s+|>|\\]|\\)|\\b)'
@@ -296,6 +299,21 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
             });
             sortAndPlaceholderize(toProcess);
         }
+    };
+    /**
+     * Repeat replace for max attempts or when done, whatever comes first
+     */
+    var repeatReplace = function(body, inRegexp, replaceWith) {
+        var replace1 = '';
+        for (var iter = max_replace_attempts_k; iter > 0; iter--) {
+            replace1 = body.replace(inRegexp, replaceWith);
+                if (body === replace1) {
+                    iter = 0; // All done
+                } else {
+                    body = replace1;
+                }
+        }
+        return body;
     };
 
     // bullet lists:
@@ -383,13 +401,38 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
     replaced = body.replace(/\s*[\n\r]+\s*/g, '\n');
     body = replaced;
 
-    replace = body.replace(/\s{2,}/g, ' ');
+    replaced = repeatReplace(body, new RegExp("\\s{2,}", "g"), " ");
     body = replaced;
+
+    /*
+    for (var iter = max_replace_attempts_k; iter > 0; iter--) {
+        replaced = body.replace(/\s{2,}/g, ' ');
+        if (body === replaced) {
+            iter = 0; // All done
+        } else {
+            body = replaced;
+        }
+    };
+    */
 
     replaced = body.replace(/\s*<p \/>\s*/g, '\n\n');
     body = replaced;
 
-    replaced = body.replace(/\n{3,}/g, '\n\n');
+    replaced = repeatReplace(body, new RegExp("\\n{3,}", "g"), "\n\n");
+    body = replaced;
+
+    /*
+    for (var iter = max_replace_attempts_k; iter > 0; iter--) {
+        replaced = body.replace(/\n{3,}/g, '\n\n');
+        if (body === replaced) {
+            iter = 0; // All done
+        } else {
+            body = replaced;
+        }
+    };
+    */
+
+    replaced = body.trim();
     body = replaced;
 
     return body;
