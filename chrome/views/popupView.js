@@ -353,8 +353,15 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
 
     $('#gttSignOutButton', this.$popup).click(function() {
         self.event.fire('onRequestDeauthorizeTrello');
-        self.showMessage(self, '<a class="hideMsg" title="Dismiss message">&times;</a>Trello token deauthorized. '
-            + 'Please <a href="./">reload</a> the page.'
+        self.showMessage(self, '<a class="hideMsg" title="Dismiss message">&times;</a>'
+            + '<ul><li>Trello token deauthorized.'
+            + '<ol><li><a href="./">Reload</a> this page.</li>'
+            + '<li>Click on "Add Card" &mdash; a pop-up will request you "Authorize Trello".</li></ol></li>'
+            + '<li style="padding-top: 1em;">To <b>completely</b> clear the Trello cookie:'
+            + '<ol><li>Under menu "Chrome"</li>'
+            + '<li>Select "Clear Browsing Data..."</li>'
+            + '<li>Check "Clear data from hosted apps"</li>'
+            + '<li>Press button "Clear browsing data"</li></ol></li></ul>'
         );
     });
 	
