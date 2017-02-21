@@ -33,7 +33,9 @@ GmailToTrello.Model.prototype.initTrello = function() {
 
     var self = this;
 
-    this.trello.user = this.trello.orgs = this.trello.boards = null;
+    this.trello.user = null;
+    this.trello.orgs = null;
+    this.trello.boards = null;
 
     Trello.setKey(this.trello.apiKey);
     Trello.authorize({
@@ -54,7 +56,7 @@ GmailToTrello.Model.prototype.initTrello = function() {
             scope: {read: true, write: true},
             expiration: 'never',
             success: function(data) {
-                log('Trello authorization successfully');
+                log('Trello authorization successful');
                 log(data);
                 self.event.fire('onAuthorized');
                 self.loadTrelloData();
