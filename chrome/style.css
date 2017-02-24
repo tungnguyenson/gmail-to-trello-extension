@@ -74,18 +74,11 @@ height: 100px; width: 339px; z-index: 1; position: relative; line-height: normal
 #gttPopup .popupMsg {border:1px solid #EDC967; background: #F9EDB8; padding:5px 10px 15px; margin:10px}
 #gttPopup #resize-icon {position: relative; bottom: 24px; right: 24px;}
 
-/* #gttListMsg {background: #F9EDB8;} */
 #gttLabelsMsg {background: #F9EDB8;}
 
-/* ul#gttList {float:left; margin:0; padding:0;} */
-
 #gttPopup .listrow {min-height: 31px}
-/* #gttList li {float:left; margin:0 10px 5px 0; padding:5px 11px; list-style: none; border-radius:3px; border: 1px solid #ccc; border-top-width:5px; cursor:pointer; background: #F2F2F2; font-size:11px; font-weight: bold; color:#666;}
-#gttList li:hover, #gttList li.active:hover {border-color:#3086B7; color:#05679E;}
-#gttList li.active {border-color:#3086B7; color:#05679E; padding:4px 10px; border: 2px solid; border-top-width:6px;}
-*/
 
-ul#gttLabels {float: left; margin: 0; padding: 0;}
+ul#gttLabels {float: left; margin: 0; padding: 0; height: 66px; width: 100%; overflow: auto;}
 
 #gttLabels li {float: left; margin: 0 10px 5px 0; padding: 6px 12px; list-style: none; border-radius: 3px; border: 1px solid #ccc; border-top-width: 5px; cursor:pointer; background: #F2F2F2; font-size: 11px; font-weight: bold; color: #888;}
 #gttLabels li:hover, #gttLabels li.active:hover {border-color: #52A8D9; color: #1789C0;}

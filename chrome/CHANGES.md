@@ -4,9 +4,10 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
-Version 2.4.20
+Version 2.4.21
 ---------------
 - Make sure to clear out list and labels when no labels
+- Restrict labels space to two rows with scroll bar if longer
 
 Version 2.4.19
 ---------------
