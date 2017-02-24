@@ -4,6 +4,10 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.4.20
+---------------
+- Make sure to clear out list and labels when no labels
+
 Version 2.4.19
 ---------------
 - Add back steps to clear cache for Trello sign-out
