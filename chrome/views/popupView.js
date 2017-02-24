@@ -236,6 +236,8 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         var $labelsMsg = $('#gttLabelsMsg', self.$popup);
 
         $labels.html('').hide();
+        self.data.settings.labelsId = '';
+        self.data.settings.listId = '';
 
         if (boardId === '_') {
             $board.val("");
@@ -524,7 +526,7 @@ GmailToTrello.PopupView.prototype.updateLists = function() {
     var settings = this.data.settings;
     var orgId = $('#gttOrg', this.$popup).val();
     var boardId = $('#gttBoard', this.$popup).val();
-    var settingId = lists[0].id; // Default to first item
+    var settingId = (lists[0] ? lists[0].id : '0'); // Default to first item
     if (settings.orgId && settings.orgId == orgId && settings.boardId && settings.boardId == boardId && settings.listId) {
         settingId = settings.listId;
     }
@@ -550,7 +552,7 @@ GmailToTrello.PopupView.prototype.updateLabels = function() {
 
     for (var i = 0; i < labels.length; i++) {
         var item = labels[i];
-        if (item.name.length > 0) {
+        if (item.name && item.name.length > 0) {
             var $color = $("<div id='gtt_temp'>").css('color', item.color);
             var bkColor = self.parent.luminance($color.css('color')); // If you'd like to determine whether to make the background light or dark
             $gtt.append($('<li>')
