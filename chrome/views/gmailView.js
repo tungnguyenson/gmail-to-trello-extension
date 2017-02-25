@@ -216,7 +216,8 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     data.time = timeValue ? timeValue.toString(this.dateFormat || 'MMM d, yyyy') : 'recently';
 
     var from_raw = emailName + ' <' + emailAddress + '> on ' + data.time;
-    var from_md = '[' + emailName + '](mailto:' + emailAddress /*  + ' "Email ' + emailAddress + '"' */ + ') on '
+    var from_md = '[' + emailName + '](' /* mailto: */ + emailAddress /* Don't need 'mailto:' */
+        /*  + ' "Email ' + emailAddress + '"' */ + ') on '
         + data.time;  // FYI (Ace, 10-Jan-2017): [name](url "comment") is markdown syntax
 
     var subject = encodeURIComponent(data.subject);
@@ -237,18 +238,29 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     var $emailBody1 = $emailBody[0];
     var selectedText = this.parent.getSelectedText();
 
-    var email_md = '[' + emailName + '](' + emailAddress + ')';
-
-    var host_md = '[' + hostName + '](' + hostEmail + ')';
-
     var make_preprocess_mailto = function (name, email) {
-        var valLtGt = name + " <" + email + ">";
-        var valParen = name + " (" + email + ")";
-        var anchor_md = self.parent.anchorMarkdownify(name, 'mailto:' + email);
+        var forms = [
+            '%name% <%email%>',
+            '%name% (%email%)',
+            '%name% %email%',
+            '"%name%" <%email%>',
+            '"%name%" (%email%)',
+            '"%name%" %email%'
+        ];
+        
+        const dict = {
+            'name': name,
+            'email': email
+        };
+
+        var anchor_md = self.parent.anchorMarkdownify(name, email); // Don't need to add 'mailto:'
+
         var retn = {};
-        retn[valLtGt.toLowerCase()] = anchor_md;
-        retn[valParen.toLowerCase()] = anchor_md;
-        retn[name.toLowerCase()] = anchor_md;
+
+        $.each(forms, function(iter, item) {
+            var item1 = self.parent.replacer(item, dict);
+            retn[item1.toLowerCase()] = anchor_md;
+        });
 
         return retn;
     }

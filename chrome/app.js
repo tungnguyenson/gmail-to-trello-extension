@@ -195,17 +195,21 @@ GmailToTrello.App.prototype.uriForDisplay = function(uri) {
  */
 GmailToTrello.App.prototype.anchorMarkdownify = function(text, href, comment) {
     var text1 = (text || "").trim();
+    var text1lc = text1.toLowerCase();
     var href1 = (href || "").trim();
+    var href1lc = href1.toLowerCase();
     var comment1 = (comment || "").trim();
 
     var retn = '';
 
     if (text1.length < 1 && href1.length < 1) {
         // Intetionally blank
-    } else if (text1.toLowerCase() === href1.toLowerCase()) {
+    } else if (text1lc === href1lc) {
         retn = ' <' + href1 + '> '; // This renders correctly in Trello as a sole URL
        // NOTE (Ace, 17-Feb-2017): Turns out Trello doesn't support markdown [] only, so we'll construct a nice displayable text vs url:
        // text1 = this.uriForDisplay(text1);
+    } else if (('mailto:' + text1lc) === href1lc) {
+        retn = ' <' + text1 + '> '; // This renders correctly in Trello as a mailto: url
     } else {
         retn = " [" + text1 + "](" + href1 + (comment1 ? ' "' + comment1 + '"' : '') + ") ";
     }
@@ -226,8 +230,8 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
     const min_text_length_k = 4;
     const max_replace_attempts_k = 10;
     const regexp_k = {
-        'begin': '(^|\\s+|<|\\[|\\(|\\b)',
-        'end': '($|\\s+|>|\\]|\\)|\\b)'
+        'begin': '(^|\\s+|<|\\[|\\(|\\b|(?=\\W+))',
+        'end': '($|\\s+|>|\\]|\\)|\\b|(?=\\W+))'
     };
     const unique_placeholder_k = 'gtt:placeholder:'; // Unique placeholder tag
 
