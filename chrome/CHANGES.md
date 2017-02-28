@@ -4,6 +4,12 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.4.23
+---------------
+- Separate date and time inputs for due date
+- Smaller UI for Add Card button
+- Change nomenclature to "Add to Trello" to prep for adding to individual card
+
 Version 2.4.22
 ---------------
 - Fix "Name" <name> email pattern

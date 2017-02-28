@@ -43,7 +43,17 @@
 
 }
 #gttDesc {
-height: 100px; width: 339px; z-index: 1; position: relative; line-height: normal; font-size: 13px; -webkit-transition: none; transition: none; overflow: auto; background: transparent !important; 
+    height: 100px;
+    width: 339px;
+    z-index: 1;
+    position: relative;
+    line-height: normal;
+    font-size: 13px; 
+    -webkit-transition: none;
+    transition: none;
+    overflow: auto;
+    background: transparent
+    !important; 
 }
 
 #gttPopupSlider {
@@ -60,11 +70,26 @@ height: 100px; width: 339px; z-index: 1; position: relative; line-height: normal
 #gttPopup .inner {overflow: hidden; margin-left:3px;}
 
 #gttButton {
-    padding-left: 10px; padding-right: 10px; 
-    -webkit-user-select: none; margin-bottom:0px; margin-top:-2px; outline: none; 
+    padding-left: 10px; 
+    padding-right: 10px; 
+    -webkit-user-select: none; 
+    margin-bottom: 0px; 
+    margin-top:-2px; 
+    outline: none; 
 }
 #gttButton * {outline:none}
 #gttButton img {vertical-align: -4px; height: 16px; padding-right:2px}
+
+#gttButton .button-text {
+    position: absolute;
+    font-weight: bold;
+    font-size: 170%;
+}
+#gttButton:hover {
+    color: white;
+    background-color: black;
+    opacity: 0.8;
+}
 
 #gttPopup .content {
     position: relative; left: 0; 
@@ -80,7 +105,21 @@ height: 100px; width: 339px; z-index: 1; position: relative; line-height: normal
 
 ul#gttLabels {float: left; margin: 0; padding: 0; height: 66px; width: 100%; overflow: auto;}
 
-#gttLabels li {float: left; margin: 0 10px 5px 0; padding: 6px 12px; list-style: none; border-radius: 3px; border: 1px solid #ccc; border-top-width: 5px; cursor:pointer; background: #F2F2F2; font-size: 11px; font-weight: bold; color: #888;}
+#gttLabels li {
+    float: left; 
+    margin: 0 10px 5px 0; 
+    padding: 6px 12px; 
+    list-style: none; 
+    border-radius: 3px; 
+    border: 1px solid #ccc; 
+    border-top-width: 5px; 
+    cursor: pointer; 
+    background: #F2F2F2; 
+    font-size: 11px; 
+    font-weight: bold; 
+    color: #888;
+}
+
 #gttLabels li:hover, #gttLabels li.active:hover {border-color: #52A8D9; color: #1789C0;}
 #gttLabels li.active {border-color:inherit; color:black; padding:4px 10px; border: 3px solid; border-top-width:7px;}
 
@@ -89,11 +128,11 @@ ul#gttLabels {float: left; margin: 0; padding: 0; height: 66px; width: 100%; ove
 
 #gttPopup input,#gttPopup select,#gttPopup option {font-size:12px;}
 
-#gttPopup #addTrelloCard /* input[type=button] */ {font-size:14px; padding:5px 18px; color: white; background:linear-gradient(to top, #24a828 0, #1b7e1e 100%); border:0; border-radius:3px; cursor: pointer}
-#gttPopup #addTrelloCard:hover /* input[type=button]:hover */ {background:linear-gradient(to bottom, #1f9323 0, #166919 100%)}
+#gttPopup #addToTrello /* input[type=button] */ {font-size:14px; padding:5px 18px; color: white; background:linear-gradient(to top, #24a828 0, #1b7e1e 100%); border:0; border-radius:3px; cursor: pointer}
+#gttPopup #addToTrello:hover /* input[type=button]:hover */ {background:linear-gradient(to bottom, #1f9323 0, #166919 100%)}
 #gttPopup input[type=text], #gttPopup textarea {padding:3px; border:1px solid #A1A1A1; border-radius: 3px;}
 
-#gttPopup #addTrelloCard[disabled], #gttPopup #addTrelloCard[disabled]:hover, #gttPopup input[disabled], #gttPopup input[disabled]:hover {background: #ccc; color:#666; cursor:default;}
+#gttPopup #addToTrello[disabled], #gttPopup #addToTrello[disabled]:hover, #gttPopup input[disabled], #gttPopup input[disabled]:hover {background: #ccc; color:#666; cursor:default;}
 
 #gttPopup .hdr {font-weight: bold; vertical-align: middle; line-height: 30px; height: 30px; background:#ECEAED; border-bottom: 1px solid #ccc;}
 #gttPopup .hdr a {text-decoration: none; color: #1789C0;}

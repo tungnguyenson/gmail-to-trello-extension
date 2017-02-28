@@ -228,9 +228,9 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     
     data.link_raw = "\n\n---\nGmail: " + txtDirect + " | " + txtSearch;
     data.link_md = "\n\n---\nGmail: "
-        + self.parent.anchorMarkdownify("Search:Time", txtDirect, "Advanced search email subject + time")
+        + self.parent.anchorMarkdownify("Time", txtDirect, "Advanced search email subject + time")
         + " | "
-        + self.parent.anchorMarkdownify("Search:Subject", txtSearch, "Search email subject");
+        + self.parent.anchorMarkdownify("Subject", txtSearch, "Search email subject");
 
     
     // email body

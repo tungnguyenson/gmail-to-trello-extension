@@ -39,18 +39,18 @@ GmailToTrello.PopupView.prototype.init = function() {
 
     // inject a button & a popup
 
-    if (this.html && this.html['add_card'] && this.html['add_card'].length > 1) {
-	   log('add_card_html already exists');
+    if (this.html && this.html['add_to_trello'] && this.html['add_to_trello'].length > 1) {
+	   log('add_to_trello_html already exists');
     } else {
-		this.html['add_card'] =
+		this.html['add_to_trello'] =
 			'<div id="gttButton" class="T-I J-J5-Ji ar7 nf T-I-ax7 L3"'
-			  + 'data-tooltip="Add this email as a Trello card">'
+			  + 'data-tooltip="Add this email to Trello">'
 			  + '<div aria-haspopup="true" role="button" class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3" tabindex="0">'
 			  + '<img class="f tk3N6e-I-J3" height="13" width="13" src="'
 			  + chrome.extension.getURL('images/icon-13.jpg')
-			  + '"><span class="button-text">Add card</span></div></div>';
+			  + '"><span class="button-text">+</span></div></div>'; // was "Add card"
     }
-    this.$toolBar.append(this.html['add_card']);
+    this.$toolBar.append(this.html['add_to_trello']);
 
     if (this.html && this.html['popup'] && this.html['popup'].length > 1) {
 		this.$toolBar.append(this.html['popup']);
@@ -288,11 +288,11 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         update_body();
     });
 
-    $('#addTrelloCard', this.$popup).click(function() {
+    $('#addToTrello', this.$popup).click(function() {
         if (self.validateData()) {
-            //$('#addTrelloCard', this.$popup).attr('disabled', 'disabled');
+            //$('#addToTrello', this.$popup).attr('disabled', 'disabled');
             self.$popupContent.hide();
-            self.showMessage(self, 'Submiting new card...');
+            self.showMessage(self, 'Submiting to Trello...');
             self.event.fire('onSubmit');
         }
     });
@@ -354,7 +354,6 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
     $('#gttUsername', this.$popup).attr('href', user.url).text(user.username || '?');
 
     $('#gttSignOutButton', this.$popup).click(function() {
-        self.event.fire('onRequestDeauthorizeTrello');
         self.showMessage(self, '<a class="hideMsg" title="Dismiss message">&times;</a>'
             + '<ul><li>Trello token deauthorized.'
             + '<ol><li><a href="./">Reload</a> this page.</li>'
@@ -365,6 +364,7 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
             + '<li>Check "Clear data from hosted apps"</li>'
             + '<li>Press button "Clear browsing data"</li></ol></li></ul>'
         );
+        self.event.fire('onRequestDeauthorizeTrello');
     });
 	
     var orgs = data.trello.orgs;
@@ -656,7 +656,8 @@ GmailToTrello.PopupView.prototype.validateData = function() {
     var orgId = $('#gttOrg', this.$popup).val();
     var boardId = $('#gttBoard', this.$popup).val();
     var listId = $('#gttList', this.$popup).val();
-    var dueDate = $('#gttDueDate', this.$popup).val();
+    var due_Date = $('#gttDue_Date', this.$popup).val();
+    var due_Time = $('#gttDue_Time', this.$popup).val();
     var title = $('#gttTitle', this.$popup).val();
     var description = $('#gttDesc', this.$popup).val();
     var useBackLink = $('#chkBackLink', this.$popup).is(':checked');
@@ -696,7 +697,8 @@ GmailToTrello.PopupView.prototype.validateData = function() {
             boardId: boardId,
             listId: listId,
             labelsId: labelsId,
-            dueDate: dueDate,
+            due_Date: due_Date,
+            due_Time: due_Time,
             title: title,
             description: description,
             attachments: attachments,
@@ -711,7 +713,7 @@ GmailToTrello.PopupView.prototype.validateData = function() {
         $.extend(this.data.settings, newCard);
         this.parent.saveSettings();
     }
-    $('#addTrelloCard', this.$popup).attr('disabled', !validateStatus);
+    $('#addToTrello', this.$popup).attr('disabled', !validateStatus);
 
     return validateStatus;
 };
@@ -770,4 +772,7 @@ GmailToTrello.PopupView.prototype.displayAPIFailedForm = function(response) {
     
     this.showMessage(self, msg);
     this.$popupContent.hide();
+    if (errDisplay.status && errDisplay.status === '401') { // Invalid token, so deauthorize Trello
+        this.event.fire('onRequestDeauthorizeTrello');
+    }
 };
