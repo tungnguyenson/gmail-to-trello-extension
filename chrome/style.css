@@ -21,6 +21,11 @@
 /* toolbar holder */
 .iH div {position: static}
 
+.gtt-button-text {
+    font-weight: bold;
+    font-size: 200%
+}
+
 #gttPopup {
     position: absolute; 
     max-height: none; 

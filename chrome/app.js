@@ -26,7 +26,7 @@ GmailToTrello.App.prototype.bindEvents = function() {
     });
     
     this.model.event.addListener('onAuthorized', function() {
-        log('GmailToTrello.onAuthorized()');
+        log('GmailToTrello.onAuthorized');
         log("Status: " + Trello.authorized().toString());
     });
     
@@ -117,6 +117,7 @@ GmailToTrello.App.prototype.bindEvents = function() {
     });
 
     this.popupView.event.addListener('onRequestDeauthorizeTrello', function() {
+        log('GmailToTrello.onRequestDeauthorizeTrello');
         self.model.deauthorizeTrello();
     });
   

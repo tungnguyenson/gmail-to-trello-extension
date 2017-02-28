@@ -74,7 +74,7 @@ GmailToTrello.Model.prototype.initTrello = function() {
 };
 
 GmailToTrello.Model.prototype.deauthorizeTrello = function() {
-    log("GTT:deauthorizeTrello()");
+    log("GTT:deauthorizeTrello");
 
     Trello.deauthorize();
     this.isInitialized = false;
@@ -239,10 +239,22 @@ GmailToTrello.Model.prototype.submit = function() {
         trelloPostableData.idLabels = data.labelsId;
     }
 
-    if (data && data.dueDate && data.dueDate.length > 1) { // Will 400 if not valid date:
+    if (data && data.due_Date && data.due_Date.length > 1) { // Will 400 if not valid date:
+        /* Workaround for quirk in Date object,
+         * See: http://stackoverflow.com/questions/28234572/html5-datetime-local-chrome-how-to-input-datetime-in-current-time-zone
+         * Was: dueDate.replace('T', ' ').replace('-','/')
+         */
+        var due = data.due_Date.replace('-', '/');
+
+        if (data.due_Time && data.due_Time.length > 1) {
+            due += ' ' + data.due_Time;
+        } else {
+            due += ' 00:00'; // Must provide time
+        }
+        trelloPostableData.due = new Date(due).toISOString();
+        /* (NOTE (Ace, 27-Feb-2017): When we used datetime-local object, this was:
         trelloPostableData.due = new Date(data.dueDate.replace('T', ' ').replace('-','/')).toISOString();
-        /* Replaces work around quirk in Date object, see: http://stackoverflow.com/questions/28234572/
-        html5-datetime-local-chrome-how-to-input-datetime-in-current-time-zone */
+        */
     }
 
     if (data && data.position && data.position == 'top') {
