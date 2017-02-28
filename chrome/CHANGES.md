@@ -6,6 +6,9 @@ CHANGE LOG:
 
 Version 2.4.23
 ---------------
+- Separate date and time inputs for due date
+- Smaller UI for Add Card button
+- Change nomenclature to "Add to Trello" to prep for adding to individual card
 
 Version 2.4.22
 ---------------

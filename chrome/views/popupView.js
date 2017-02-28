@@ -39,18 +39,18 @@ GmailToTrello.PopupView.prototype.init = function() {
 
     // inject a button & a popup
 
-    if (this.html && this.html['add_card'] && this.html['add_card'].length > 1) {
-	   log('add_card_html already exists');
+    if (this.html && this.html['add_to_trello'] && this.html['add_to_trello'].length > 1) {
+	   log('add_to_trello_html already exists');
     } else {
-		this.html['add_card'] =
+		this.html['add_to_trello'] =
 			'<div id="gttButton" class="T-I J-J5-Ji ar7 nf T-I-ax7 L3"'
 			  + 'data-tooltip="Add this email to Trello">'
 			  + '<div aria-haspopup="true" role="button" class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3" tabindex="0">'
 			  + '<img class="f tk3N6e-I-J3" height="13" width="13" src="'
 			  + chrome.extension.getURL('images/icon-13.jpg')
-			  + '"><span class="gtt-button-text">+</span></div></div>'; // was "Add card"
+			  + '"><span class="button-text">+</span></div></div>'; // was "Add card"
     }
-    this.$toolBar.append(this.html['add_card']);
+    this.$toolBar.append(this.html['add_to_trello']);
 
     if (this.html && this.html['popup'] && this.html['popup'].length > 1) {
 		this.$toolBar.append(this.html['popup']);
@@ -288,11 +288,11 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         update_body();
     });
 
-    $('#addTrelloCard', this.$popup).click(function() {
+    $('#addToTrello', this.$popup).click(function() {
         if (self.validateData()) {
-            //$('#addTrelloCard', this.$popup).attr('disabled', 'disabled');
+            //$('#addToTrello', this.$popup).attr('disabled', 'disabled');
             self.$popupContent.hide();
-            self.showMessage(self, 'Submiting new card...');
+            self.showMessage(self, 'Submiting to Trello...');
             self.event.fire('onSubmit');
         }
     });
@@ -713,7 +713,7 @@ GmailToTrello.PopupView.prototype.validateData = function() {
         $.extend(this.data.settings, newCard);
         this.parent.saveSettings();
     }
-    $('#addTrelloCard', this.$popup).attr('disabled', !validateStatus);
+    $('#addToTrello', this.$popup).attr('disabled', !validateStatus);
 
     return validateStatus;
 };
