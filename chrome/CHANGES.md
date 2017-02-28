@@ -6,6 +6,7 @@ CHANGE LOG:
 
 Version 2.4.24
 ---------------
+- Use Gmail's down-facing widget instead of plus sign
 
 
 Version 2.4.23
