@@ -80,11 +80,6 @@
 #gttButton * {outline:none}
 #gttButton img {vertical-align: -4px; height: 16px; padding-right:2px}
 
-#gttButton .button-text {
-    position: absolute;
-    font-weight: bold;
-    font-size: 170%;
-}
 #gttButton:hover {
     color: white;
     background-color: black;
