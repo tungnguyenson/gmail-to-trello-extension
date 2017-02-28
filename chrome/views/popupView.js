@@ -48,7 +48,7 @@ GmailToTrello.PopupView.prototype.init = function() {
 			  + '<div aria-haspopup="true" role="button" class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3" tabindex="0">'
 			  + '<img class="f tk3N6e-I-J3" height="13" width="13" src="'
 			  + chrome.extension.getURL('images/icon-13.jpg')
-			  + '"><span class="button-text">+</span></div></div>'; // was "Add card"
+			  + '"><div class="G-asx T-I-J3 J-J5-Ji">&nbsp;</div></div></div>'; // <span class="button-text">+</span></div></div>'; // was "Add card"
     }
     this.$toolBar.append(this.html['add_to_trello']);
 

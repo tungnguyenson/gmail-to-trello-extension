@@ -4,6 +4,10 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.4.24
+---------------
+
+
 Version 2.4.23
 ---------------
 - Separate date and time inputs for due date
