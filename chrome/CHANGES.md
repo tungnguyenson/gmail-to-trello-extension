@@ -7,7 +7,7 @@ CHANGE LOG:
 Version 2.4.24
 ---------------
 - Use Gmail's down-facing widget instead of plus sign
-
+- Make window resizable and scrollable
 
 Version 2.4.23
 ---------------
