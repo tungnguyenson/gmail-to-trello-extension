@@ -8,10 +8,18 @@ GmailToTrello.PopupView = function(parent) {
 
     this.data = {settings:{}};
     
-    this.width_k = {
-        'min': 450,
-        'max': 1400,
-        'text_min': 111
+    this.size_k = {
+        'width': {
+            'min': 450,
+            'max': 1400
+        },
+        'height': {
+            'min': 530,
+            'max': 1400
+        },
+        'text': {
+            'min': 111
+        }
     };
 
     // process
@@ -69,14 +77,14 @@ GmailToTrello.PopupView.prototype.init = function() {
  * "Add card" button to the edge of the window and then center that under the "Add card" button:
  */
 GmailToTrello.PopupView.prototype.centerPopup = function(useWidth) {
-    var addCardLeft = this.$addCardButton.position().left;
-    var addCardCenter = addCardLeft + (this.$addCardButton.outerWidth() / 2);
+    var addCardLeft = this.$gttButton.position().left;
+    var addCardCenter = addCardLeft + (this.$gttButton.outerWidth() / 2);
     
-    var parent = this.$addCardButton.offsetParent();
+    var parent = this.$gttButton.offsetParent();
     var parentRight = parent.position().left + parent.width();
 
     // We'll make our popup 1.25x as wide as the button to the end of the window up to max width:
-    var newPopupWidth = this.width_k.min;
+    var newPopupWidth = this.size_k.width.min;
     if (useWidth && useWidth > 0) {
         newPopupWidth = useWidth; // May snap to min if necessary
         addCardCenter = this.$popup.position().left;
@@ -87,10 +95,10 @@ GmailToTrello.PopupView.prototype.centerPopup = function(useWidth) {
         newPopupWidth = 1.25*(parentRight - addCardLeft); // Make popup 1.25x as wide as the button to the end of the window up to max width
     }
 
-    if (newPopupWidth < this.width_k.min) {
-        newPopupWidth = this.width_k.min;
-    } else if (newPopupWidth > this.width_k.max) {
-        newPopupWidth = this.width_k.max;
+    if (newPopupWidth < this.size_k.width.min) {
+        newPopupWidth = this.size_k.width.min;
+    } else if (newPopupWidth > this.size_k.width.max) {
+        newPopupWidth = this.size_k.width.max;
     }
     
     this.$popup.css('width', newPopupWidth + 'px');
@@ -103,28 +111,9 @@ GmailToTrello.PopupView.prototype.centerPopup = function(useWidth) {
 };
 
 GmailToTrello.PopupView.prototype.init_popup = function() {
-    this.$addCardButton = $('#gttButton', this.$toolBar);
+    this.$gttButton = $('#gttButton', this.$toolBar);
     this.$popup = $('#gttPopup', this.$toolBar);
 
-    /* TODO (Ace, 16-Jan-2017): jQueryUI has a more elegant right-lower-corner resize experience, this is the start:
-    this.$popup.resizable({
-        maxHeight: self.width_k.max,
-        maxWidth: self.width_k.max,
-        minHeight: 150,
-        minWidth: self.width_k.min,
-        stop: function(event, ui) {
-            var constraintRight = $(window).width() - self.width_k.min;
-            var distance = ui.position.left - ui.originalPosition.left;
-            self.$popup.css('width', self.$popup.width()-distance+'px');
-            $slider.css('left', '0');
-            //self.$popup.css('left', (self.$popup.position().left + distance) + 'px');
-            //$slider.css('left', ui.originalPosition.left + 'px');
-            self.onResize();
-        }
-    });
-    */
-    this.$popup.draggable();
-    
     this.$popupMessage = $('.popupMsg', this.$popup);
     this.$popupContent = $('.content', this.$popup);
     
@@ -136,7 +125,6 @@ GmailToTrello.PopupView.prototype.init_popup = function() {
 };
 
 GmailToTrello.PopupView.prototype.detectPopup = function() {
-
     //detect duplicate toolBar
     var $button = $('#gttButton');
     var $popup = $('#gttPopup');
@@ -166,7 +154,7 @@ GmailToTrello.PopupView.prototype.detectPopup = function() {
 // NOTE (Ace, 15-Jan-2017): This resizes all the text areas to match the width of the popup:
 GmailToTrello.PopupView.prototype.onResize = function() {
     var origWidth = this.$popup.width();
-    var textWidth = origWidth - this.width_k.text_min;
+    var textWidth = origWidth - this.size_k.text.min;
     $('input[type=text],textarea,#gttAttachments', this.$popup).css('width', textWidth + 'px');
     this.validateData(); // Assures size is saved
 };
@@ -177,9 +165,11 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
 
     /** Popup's behavior **/
 
+    this.$popup.draggable();
+
     //slider (blue bar on left side of dialog to resize)
     var $slider = $("#gttPopupSlider", this.$popup);
-    var constraintRight = $(window).width() - this.width_k.min;
+    var constraintRight = $(window).width() - this.size_k.width.min;
 
     $slider.draggable({axis: "x", containment: [0, 0, constraintRight, 0],
         stop: function(event, ui) {
@@ -190,6 +180,24 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
             self.centerPopup(newWidth);
         }
     });
+
+    // TODO (Ace, 16-Jan-2017): jQueryUI has a more elegant right-lower-corner resize experience, this is the start:
+    this.$popupContent.resizable({
+        minHeight: self.size_k.height.min,
+        minWidth: self.size_k.width.min,
+        maxHeight: self.size_k.height.max,
+        maxWidth: self.size_k.width.max
+/*        stop: function(event, ui) {
+            var constraintRight = $(window).width() - self.size_k.width.min;
+            var distance = ui.position.left - ui.originalPosition.left;
+            var newWidth = self.$popup.width()-distance;
+            // self.$popup.css('width', newWidth + 'px');
+            $slider.css('left', '0');
+            self.centerPopup(newWidth);
+        }
+*/
+    });
+    //
 
     $('#close-button', this.$popup).click(function() {
         self.$popup.hide();
@@ -211,15 +219,21 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         self.validateData();
     });
 
+
+
     /** Add Card Panel's behavior **/
 
-    this.$addCardButton.click(function() {
+    this.$gttButton.click(function() {
         self.$popup.toggle();
         if (self.$popup.css('display') === 'block')
             self.event.fire('onPopupVisible');
         else {
             self.stopWaitingHiddenThread();
         }
+    }).hover(function() { // This is a google class that on hover highlights the button and arrow, darkens the background:
+        $(this).addClass('T-I-JW');
+    }, function() {
+        $(this).removeClass('T-I-JW');
     });
 
     $('#gttOrg', this.$popup).change(function() {
@@ -357,7 +371,8 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
         self.showMessage(self, '<a class="hideMsg" title="Dismiss message">&times;</a>'
             + '<ul><li>Trello token deauthorized.'
             + '<ol><li><a href="./">Reload</a> this page.</li>'
-            + '<li>Click on "Add Card" &mdash; a pop-up will request you "Authorize Trello".</li></ol></li>'
+            + '<li>Once reloaded, click this button again.</li>'
+            + '<li>A pop-up will request you "Authorize Trello".</li></ol></li>'
             + '<li style="padding-top: 1em;">To <b>completely</b> clear the Trello cookie:'
             + '<ol><li>Under menu "Chrome"</li>'
             + '<li>Select "Clear Browsing Data..."</li>'

@@ -32,7 +32,10 @@
           "app.js", 
           "content-script.js"
       ],
-      "css": ["style.css"]
+      "css": [
+        "style.css",
+        "lib/jquery-ui-1.12.1.min.css"
+      ]
     }
   ],
   "web_accessible_resources":[

@@ -67,7 +67,7 @@
 
 }
 
-#gttPopup .inner {overflow: hidden; margin-left:3px;}
+#gttPopup .inner {overflow: auto /* was hidden */; margin-left: 3px;}
 
 #gttButton {
     padding-left: 10px; 
@@ -79,12 +79,6 @@
 }
 #gttButton * {outline:none}
 #gttButton img {vertical-align: -4px; height: 16px; padding-right:2px}
-
-#gttButton:hover {
-    color: white;
-    background-color: black;
-    opacity: 0.8;
-}
 
 #gttPopup .content {
     position: relative; left: 0; 
