@@ -220,6 +220,10 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         else {
             self.stopWaitingHiddenThread();
         }
+    }).hover(function() { // This is a google class that on hover highlights the button and arrow, darkens the background:
+        $(this).addClass('T-I-JW');
+    }, function() {
+        $(this).removeClass('T-I-JW');
     });
 
     $('#gttOrg', this.$popup).change(function() {

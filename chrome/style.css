@@ -80,12 +80,6 @@
 #gttButton * {outline:none}
 #gttButton img {vertical-align: -4px; height: 16px; padding-right:2px}
 
-#gttButton:hover {
-    color: white;
-    background-color: black;
-    opacity: 0.8;
-}
-
 #gttPopup .content {
     position: relative; left: 0; 
     padding:5px; 
