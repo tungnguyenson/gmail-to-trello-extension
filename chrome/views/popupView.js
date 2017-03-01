@@ -69,10 +69,10 @@ GmailToTrello.PopupView.prototype.init = function() {
  * "Add card" button to the edge of the window and then center that under the "Add card" button:
  */
 GmailToTrello.PopupView.prototype.centerPopup = function(useWidth) {
-    var addCardLeft = this.$addCardButton.position().left;
-    var addCardCenter = addCardLeft + (this.$addCardButton.outerWidth() / 2);
+    var addCardLeft = this.$gttButton.position().left;
+    var addCardCenter = addCardLeft + (this.$gttButton.outerWidth() / 2);
     
-    var parent = this.$addCardButton.offsetParent();
+    var parent = this.$gttButton.offsetParent();
     var parentRight = parent.position().left + parent.width();
 
     // We'll make our popup 1.25x as wide as the button to the end of the window up to max width:
@@ -103,7 +103,7 @@ GmailToTrello.PopupView.prototype.centerPopup = function(useWidth) {
 };
 
 GmailToTrello.PopupView.prototype.init_popup = function() {
-    this.$addCardButton = $('#gttButton', this.$toolBar);
+    this.$gttButton = $('#gttButton', this.$toolBar);
     this.$popup = $('#gttPopup', this.$toolBar);
 
     /* TODO (Ace, 16-Jan-2017): jQueryUI has a more elegant right-lower-corner resize experience, this is the start:
@@ -213,7 +213,7 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
 
     /** Add Card Panel's behavior **/
 
-    this.$addCardButton.click(function() {
+    this.$gttButton.click(function() {
         self.$popup.toggle();
         if (self.$popup.css('display') === 'block')
             self.event.fire('onPopupVisible');
