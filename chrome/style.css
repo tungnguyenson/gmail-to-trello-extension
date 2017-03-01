@@ -67,7 +67,7 @@
 
 }
 
-#gttPopup .inner {overflow: hidden; margin-left:3px;}
+#gttPopup .inner {overflow: auto /* was hidden */; margin-left: 3px;}
 
 #gttButton {
     padding-left: 10px; 
