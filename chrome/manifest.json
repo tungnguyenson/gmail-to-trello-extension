@@ -1,7 +1,7 @@
 {
   "name": "GMail to Trello",
   "short_name": "GtT",
-  "version": "2.4.24",
+  "version": "2.4.25",
   "manifest_version": 2,
   "description": "GMail to Trello integration. Create new Trello cards from Google mail threads with backlinks.",
   "icons": {
@@ -25,7 +25,7 @@
           "lib/google-analytics-bundle.js", 
           "lib/eventTarget.js", 
           "lib/menuControl.js", 
-          "lib/waitCounter.js", 
+          "lib/waitCounter.js",
           "views/gmailView.js", 
           "views/popupView.js", 
           "model.js", 

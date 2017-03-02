@@ -249,17 +249,16 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         var $labels = $('#gttLabels', self.$popup);
         var $labelsMsg = $('#gttLabelsMsg', self.$popup);
 
-        $labels.html('').hide();
-        self.data.settings.labelsId = '';
-        self.data.settings.listId = '';
-
         if (boardId === '_') {
-            $board.val("");
+            $board.val('');
         }
 
         if (boardId === "_" || boardId === "") {
             $labelsMsg.text('...please pick a board...').show();
-            $list.html($('<option value="">...please pick a board...</option>')).val("");
+            $list.html($('<option value="">...please pick a board...</option>')).val('');
+            $('#gttLabels').html('').hide();
+            self.data.settings.labelsId = '';
+            self.data.settings.listId = '';
         } else {
             $labelsMsg.text('Loading...').show();
         }
@@ -288,7 +287,6 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         var link = useBackLink ? (markdown ? link_md : link_raw) : '';
 
         var desc = self.parent.truncate(body, self.MAX_BODY_SIZE - link.length, '...');
-
 
         $gttDesc.val(desc + link);
         $gttDesc.change();        
@@ -479,7 +477,6 @@ GmailToTrello.PopupView.prototype.hideMessage = function() {
 };
 
 GmailToTrello.PopupView.prototype.updateBoards = function() {
-
     var $org = $('#gttOrg', this.$popup);
     var orgId = $org.val();
 
@@ -516,12 +513,10 @@ GmailToTrello.PopupView.prototype.updateBoards = function() {
     var settingId = 0;
     if (settings.orgId && settings.orgId == orgId && settings.boardId) {
         settingId = settings.boardId;
-    } else {
-        log('Board missing data!');
     }
 
     var $board = $('#gttBoard', this.$popup);
-    $board.html(""); // Clear it.
+    $board.html(''); // Clear it.
 
     $board.append($('<option value="">Select a board....</option>'));
     
@@ -547,7 +542,7 @@ GmailToTrello.PopupView.prototype.updateLists = function() {
     }
 
     var $list = $('#gttList', this.$popup);
-    $list.html("");
+    $list.html('');
 
     $.each(lists, function(iter, item) {
         var id = item.id;
@@ -563,7 +558,7 @@ GmailToTrello.PopupView.prototype.updateLabels = function() {
     var self = this;
     var labels = this.data.trello.labels;
     var $gtt = $('#gttLabels', this.$popup);
-    $gtt.html(""); // Clear out
+    $gtt.html(''); // Clear out
 
     for (var i = 0; i < labels.length; i++) {
         var item = labels[i];
