@@ -204,6 +204,16 @@ GmailToTrello.GmailView.prototype.parseData = function() {
             }
         }
     });
+
+    // email thread id
+    var emailId = 0;
+    var class1 = '';
+    var classnames = $('.a3s.aXjCH').attr('class').split(' ');
+    while ((class1 = classnames.pop()) && emailId === 0) {
+        if (class1 && class1.indexOf('m') === 0) {
+            emailId = class1.substr(1);
+        }
+    }
     
     // timestamp
     var $time = $(this.selectors.timestamp, $visibleMail);
@@ -221,17 +231,26 @@ GmailToTrello.GmailView.prototype.parseData = function() {
         + data.time;  // FYI (Ace, 10-Jan-2017): [name](url "comment") is markdown syntax
 
     var subject = encodeURIComponent(data.subject);
-
     var dateSearch = encodeURIComponent(data.time);
-    var txtDirect = "https://mail.google.com/mail/#advanced-search/subset=all&has=" + subject + "&within=1d&date=" + dateSearch;
-    var txtSearch = "https://mail.google.com/mail/#search/" + subject;
     
-    data.link_raw = "\n\n---\nGmail: " + txtDirect + " | " + txtSearch;
-    data.link_md = "\n\n---\nGmail: "
-        + self.parent.anchorMarkdownify("Time", txtDirect, "Advanced search email subject + time")
-        + " | "
-        + self.parent.anchorMarkdownify("Subject", txtSearch, "Search email subject");
+    var txtAnchor = 'Search';
+    var txtDirect = "https://mail.google.com/mail/#search/" + subject;
+    var txtDirectComment = "Search email subject";
 
+    if (emailId && emailId.length > 1) {
+        txtAnchor = 'Id';
+        txtDirect = "https://mail.google.com/mail/u/0/#all/" + emailId;
+        txtDirectComment = "Open via id";
+    }
+   
+    var txtSearch = "https://mail.google.com/mail/#advanced-search/subset=all&has=" + subject + "&within=1d&date=" + dateSearch;
+    
+    data.link_raw = "\n\n---\nGmail: <" + txtDirect + "> | <" + txtSearch + '>';
+    data.link_md = "\n\n---\nGmail: "
+        + self.parent.anchorMarkdownify(txtAnchor, txtDirect, txtDirectComment)
+        + " | "
+        + self.parent.anchorMarkdownify("Time", txtSearch, "Advanced search email subject + time")
+        
     
     // email body
     var $emailBody = $(this.selectors.emailBody, $visibleMail);
