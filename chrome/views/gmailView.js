@@ -25,6 +25,7 @@ GmailToTrello.GmailView = function(parent) {
         emailSubject: '.hP',
         emailBody: '.adP:first', // Was: '.adO:first'
         emailAttachments: '.aZo', // Was: '.aQy',
+        emailThreadID: '.a3s.aXjCH',
         viewport: '.aeJ:first',
         viewportSplit: '.aNW:first', //reading panel
         expandedEmails: '.h7',
@@ -208,7 +209,7 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     // email thread id
     var emailId = 0;
     var class1 = '';
-    var classnames = $('.a3s.aXjCH').attr('class').split(' ');
+    var classnames = $(this.selectors.emailThreadID, $visibleMail).attr('class').split(' ');
     while ((class1 = classnames.pop()) && emailId === 0) {
         if (class1 && class1.indexOf('m') === 0) {
             emailId = class1.substr(1);
