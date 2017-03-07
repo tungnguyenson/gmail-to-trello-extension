@@ -50,13 +50,20 @@ GmailToTrello.PopupView.prototype.init = function() {
     if (this.html && this.html['add_to_trello'] && this.html['add_to_trello'].length > 1) {
 	   log('add_to_trello_html already exists');
     } else {
+        var img = 'GtT';
+        
+        if ($('div.asl.T-I-J3.J-J5-Ji', this.$toolBar).length > 0) {
+            img = '<img class="f tk3N6e-I-J3" height="13" width="13" src="'
+              + chrome.extension.getURL('images/icon-13.jpg')
+              + '">';
+        }
+
 		this.html['add_to_trello'] =
 			'<div id="gttButton" class="T-I J-J5-Ji ar7 nf T-I-ax7 L3"'
-			  + 'data-tooltip="Add this email to Trello">'
+			  + 'data-tooltip="Add this Gmail to Trello">'
 			  + '<div aria-haspopup="true" role="button" class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3" tabindex="0">'
-			  + '<img class="f tk3N6e-I-J3" height="13" width="13" src="'
-			  + chrome.extension.getURL('images/icon-13.jpg')
-			  + '"><div class="G-asx T-I-J3 J-J5-Ji">&nbsp;</div></div></div>';
+              + img
+			  + '<div class="G-asx T-I-J3 J-J5-Ji">&nbsp;</div></div></div>';
     }
     this.$toolBar.append(this.html['add_to_trello']);
 
