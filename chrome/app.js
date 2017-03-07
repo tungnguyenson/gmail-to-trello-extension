@@ -403,11 +403,11 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
     body = replaced;
 
     // Replace bullets following a CRLF:
-    replace = body.replace(/\s*[\n\r]+\s*[·•]+\s*/g, "<p />* ");
+    replaced = body.replace(/\s*[\n\r]+\s*[·•]+\s*/g, "<p />* "); // = [\u00B7\u2022]
     body = replaced;
 
-    // Replace bullets with <space>asterisk</space>:
-    replaced = body.replace(/\s*[·•]+\s*/g, ' * ');
+    // Replace remaining bullets with asterisks:
+    replaced = body.replace(/[·•]/g, '*');
     body = replaced;
     
     // ORDER MATTERS FOR THIS NEXT SET:

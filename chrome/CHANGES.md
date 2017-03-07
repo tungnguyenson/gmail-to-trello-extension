@@ -7,6 +7,7 @@ CHANGE LOG:
 Version 2.4.26
 ---------------
 - Make sure correct ThreadID is used for message
+- Better processing of hand-provided bullets to markdown
 
 
 Version 2.4.25
