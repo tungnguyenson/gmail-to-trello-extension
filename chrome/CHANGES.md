@@ -4,11 +4,14 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.4.27
+---------------
+- Support img vs text buttons
+
 Version 2.4.26
 ---------------
 - Make sure correct ThreadID is used for message
 - Better processing of hand-provided bullets to markdown
-
 
 Version 2.4.25
 ----------------
