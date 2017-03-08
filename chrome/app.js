@@ -54,7 +54,7 @@ GmailToTrello.App.prototype.bindEvents = function() {
     this.model.event.addListener('onCardSubmitComplete', function(target, params) {
         self.model.newCard.url = params.data.url;
         self.model.newCard.id = params.data.id;
-        self.model.event.fire('onSubmitAttachments', {data:self.model, attachments:params.attachments});
+        self.model.event.fire('onSubmitAttachments', {data:self.model, images:params.images, attachments:params.attachments});
     });
 
     this.model.event.addListener('onAPIFailure', function(target, params) {
@@ -62,16 +62,16 @@ GmailToTrello.App.prototype.bindEvents = function() {
     });
 
     this.model.event.addListener('onSubmitAttachments', function(target, params) {
-        var attach1 = params.attachments.shift();
+        var attach1 = params.images.shift() || params.attachments.shift();
         
         if (attach1) {
             if (!attach1.hasOwnProperty('checked') || attach1.checked !== true) { // Skip this attachment
-                params.data.event.fire('onSubmitAttachments', {data:params.data, attachments:params.attachments});
+                params.data.event.fire('onSubmitAttachments', {data:params.data, images:params.images, attachments:params.attachments});
             } else {
                 var trello_attach = {'mimeType': attach1.mimeType, 'name': attach1.name, 'url': attach1.url};
                 // self.Model.submitAttachments(params.data.newCard.id, params.attachments);
                 Trello.post('cards/' + params.data.newCard.id + '/attachments', trello_attach, function success(data) {
-                    params.data.event.fire('onSubmitAttachments', {data:params.data, attachments:params.attachments});
+                    params.data.event.fire('onSubmitAttachments', {data:params.data, images:params.images, attachments:params.attachments});
                 }, function failure(data) {
                     self.popupView.displayAPIFailedForm(data);
                 });
@@ -389,7 +389,6 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
         $('img', $html).each(function(index, value) {
             var text = ($(this).prop("alt") || "").trim(); // Was attr
             var href = ($(this).prop("src") || "").trim(); // Was attr
-            if (href && text && text.length > min_text_length)
             // var uri_display = self.uriForDisplay(href);
             if (href && text && text.length >= min_text_length_k) {
                 toProcess[text.toLowerCase()] = self.anchorMarkdownify(text, href); // Comment seemed like too much extra text // Intentionally overwrites duplicates
@@ -536,6 +535,7 @@ GmailToTrello.App.prototype.saveSettings = function() {
     settings.description = '';
     settings.title = '';
     settings.attachments = [];
+    settings.images = [];
 
     var hash = {};
     hash[setID] = JSON.stringify(settings);

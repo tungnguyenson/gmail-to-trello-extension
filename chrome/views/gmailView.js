@@ -293,6 +293,18 @@ GmailToTrello.GmailView.prototype.parseData = function() {
 
     data.attachments = emailAttachments;
 
+    var emailImages = [];
+
+    $('img', $emailBody1).each(function(index, value) {
+        var href = ($(this).prop("src") || "").trim(); // Was attr
+        var text = ($(this).prop("alt") || self.parent.uriForDisplay(href) || "").trim(); // Was attr
+        if (href && text && text.length > 0) {
+            emailImages.push({'mimeType': 'text/link', 'name': decodeURIComponent(text), 'url': href, 'checked': 'false'});
+        }
+    });
+
+    data.images = emailImages;
+
     var t = new Date().getTime();
     
     //log('Elapsed: '+(t-startTime)/1000);

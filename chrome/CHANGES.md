@@ -4,6 +4,10 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.5.0.001
+-------------------
+- Add support to attach images from Gmail
+
 Version 2.4.27
 ---------------
 - Support img vs text buttons
