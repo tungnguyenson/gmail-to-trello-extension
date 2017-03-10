@@ -133,9 +133,9 @@ ul#gttLabels {float: left; margin: 0; padding: 0; height: 66px; width: 100%; ove
 #gttPopup #close-button:hover, #gttPopup .popupMsg .hideMsg:hover {color:red; background:darkgray;}
 #gttPopup .popupMsg .hideMsg {background: #EDC967; font-size: 150%; padding: 0 5px; margin-top:-5px; margin-right:-10px;} /* hideMsg close box is smaller */
 
-#gttPopup #gttAttachments {height: 50px; width: 100%; display: inline-block; overflow: auto; padding: 0; margin: 0;}
-#gttPopup #gttAttachments input[type=checkbox] {width: 15px;}
-#gttPopup #gttAttachments label {display: inline-block; padding-left: 24px; text-indent: -18px;}
+#gttPopup #gttAttachments, #gttPopup #gttImages {height: 50px; width: 100%; display: inline-block; overflow: auto; padding: 0; margin: 0;}
+#gttPopup #gttAttachments input[type=checkbox], #gttPopup #gttImages input[type=checkbox] {width: 15px;}
+#gttPopup #gttAttachments, #gttPopup #gttImages label {display: inline-block; padding-left: 24px; text-indent: -18px;}
 
 #gttPopup #gttPosition {-webkit-transform: rotate(90deg); display: inline-block; padding-top: 2px; font-weight: bold; font-size: 200%; vertical-align: middle;}
 

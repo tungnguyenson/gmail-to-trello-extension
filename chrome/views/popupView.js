@@ -162,7 +162,7 @@ GmailToTrello.PopupView.prototype.detectPopup = function() {
 GmailToTrello.PopupView.prototype.onResize = function() {
     var origWidth = this.$popup.width();
     var textWidth = origWidth - this.size_k.text.min;
-    $('input[type=text],textarea,#gttAttachments', this.$popup).css('width', textWidth + 'px');
+    $('input[type=text],textarea,#gttAttachments,#gttImages', this.$popup).css('width', textWidth + 'px');
     this.validateData(); // Assures size is saved
 };
 
@@ -462,6 +462,20 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
     });
     
     $('#gttAttachments', this.$popup).html(attachments);
+
+    var images = '';
+    $.each(data.images, function(iter, item) {
+        var dict = {
+          'url': item.url,
+          'name': item.name
+        };
+        images += self.parent.replacer (
+          '<label><input type="checkbox" name="%name%" url="%url%" /> %name%</label><br />\n', /* checked="checked" */
+          dict);
+    });
+    
+    $('#gttImages', this.$popup).html(images);
+
     this.dataDirty = false;
 
 };
@@ -705,6 +719,17 @@ GmailToTrello.PopupView.prototype.validateData = function() {
 	 });
     });
 
+    var $images = $('#gttImages input[type="checkbox"]', self.$popup);
+    var images = [];
+    
+    $.each($images, function() {
+     images.push({
+       'url': $(this).attr('url'),
+       'name': $(this).attr('name'),
+       'checked': $(this).is(':checked')
+     });
+    });
+
     var validateStatus = (boardId && listId && title); // Labels are not required
     log('validateData: ' + boardId + ' - ' + listId + ' - ' + title);
 
@@ -719,6 +744,7 @@ GmailToTrello.PopupView.prototype.validateData = function() {
             title: title,
             description: description,
             attachments: attachments,
+            images: images,
             useBackLink: useBackLink,
             selfAssign: selfAssign,
             markdown: markdown,
