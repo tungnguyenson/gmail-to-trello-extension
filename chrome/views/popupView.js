@@ -25,7 +25,7 @@ GmailToTrello.PopupView = function(parent) {
     // process
     this.waitingHiddenThread = false;
     this.waitingHiddenThreadProcId = null;
-	
+    
     // html pieces
     this.html = {};
 
@@ -48,35 +48,35 @@ GmailToTrello.PopupView.prototype.init = function() {
     // inject a button & a popup
 
     if (this.html && this.html['add_to_trello'] && this.html['add_to_trello'].length > 1) {
-	   log('add_to_trello_html already exists');
+       log('add_to_trello_html already exists');
     } else {
         var img = 'GtT';
         
         if ($('div.asl.T-I-J3.J-J5-Ji', this.$toolBar).length > 0) {
             img = '<img class="f tk3N6e-I-J3" height="13" width="13" src="'
               + chrome.extension.getURL('images/icon-13.jpg')
-              + '">';
+              + '" />';
         }
 
-		this.html['add_to_trello'] =
-			'<div id="gttButton" class="T-I J-J5-Ji ar7 nf T-I-ax7 L3"'
-			  + 'data-tooltip="Add this Gmail to Trello">'
-			  + '<div aria-haspopup="true" role="button" class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3" tabindex="0">'
+        this.html['add_to_trello'] =
+            '<div id="gttButton" class="T-I J-J5-Ji ar7 nf T-I-ax7 L3"'
+              + 'data-tooltip="Add this Gmail to Trello">'
+              + '<div aria-haspopup="true" role="button" class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3" tabindex="0">'
               + img
-			  + '<div class="G-asx T-I-J3 J-J5-Ji">&nbsp;</div></div></div>';
+              + '<div class="G-asx T-I-J3 J-J5-Ji">&nbsp;</div></div></div>';
     }
     this.$toolBar.append(this.html['add_to_trello']);
 
     if (this.html && this.html['popup'] && this.html['popup'].length > 1) {
-		this.$toolBar.append(this.html['popup']);
+        this.$toolBar.append(this.html['popup']);
         this.parent.loadSettings(this);
-	} else {
-		$.get(chrome.extension.getURL('views/popupView.html'), function(data){
-			self.html['popup'] = data;
-			self.$toolBar.append(data);
-			self.parent.loadSettings(self);
-    	});
-	}
+    } else {
+        $.get(chrome.extension.getURL('views/popupView.html'), function(data){
+            self.html['popup'] = data;
+            self.$toolBar.append(data);
+            self.parent.loadSettings(self);
+        });
+    }
 };
 
 /** 
@@ -386,7 +386,7 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
         );
         self.event.fire('onRequestDeauthorizeTrello');
     });
-	
+    
     var orgs = data.trello.orgs;
     var $org = $('#gttOrg', this.$popup);
     $org.append($('<option value="all">All</option>'));
@@ -449,32 +449,40 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
         .attr('gmail-link-raw', data.link_raw)
         .attr('gmail-link-md', data.link_md);
     
-    var attachments = '';
-    $.each(data.attachments, function(iter, item) {
-        var dict = {
-          'url': item.url,
-          'name': item.name,
-          'mimeType': item.mimeType
-        };
-        attachments += self.parent.replacer (
-          '<label><input type="checkbox" mimeType="%mimeType%" name="%name%" url="%url%" /> %name%</label><br />\n', /* checked="checked" */
-          dict);
-    });
-    
-    $('#gttAttachments', this.$popup).html(attachments);
+    var mime_html = function(tag, isImage) {
+        var html = '';
+        var img = '';
+        const domTag_k = '#gtt' + tag[0].toUpperCase() + tag.substring(1);
+        var $domTag = $(domTag_k, self.$popup);
+        
+        if (isImage && isImage === true) {
+            img = '<img src="%url%" alt="%name%" height="32" width="32" style="vertical-align: middle;" /> ';
+        }
 
-    var images = '';
-    $.each(data.images, function(iter, item) {
-        var dict = {
-          'url': item.url,
-          'name': item.name
-        };
-        images += self.parent.replacer (
-          '<label><input type="checkbox" name="%name%" url="%url%" /> %name%</label><br />\n', /* checked="checked" */
-          dict);
-    });
-    
-    $('#gttImages', this.$popup).html(images);
+        $.each(data[tag], function(iter, item) {
+            var dict = {
+              'url': item.url,
+              'name': item.name,
+              'mimeType': item.mimeType
+            };
+
+            html += self.parent.replacer (
+              '<label><input type="checkbox" mimeType="%mimeType%" name="%name%" url="%url%" /> ' + img + '%name%</label><br />\n', /* checked="checked" */
+              dict
+            );
+        });
+
+        $domTag.html(html);
+
+        if (isImage && isImage === true) {
+            $('img', $domTag).on('error', function() {
+                $(this).attr('src', chrome.extension.getURL('images/doc-question-mark-512.png'));
+            });
+        }
+    };
+
+    mime_html('attachments');
+    mime_html('images', true /* isImage */);
 
     this.dataDirty = false;
 
@@ -707,29 +715,25 @@ GmailToTrello.PopupView.prototype.validateData = function() {
         labelsId = this.data.settings.labelsId; // We're not yet showing labels so override labelsId with settings
     }
 
-    var $attachments = $('#gttAttachments input[type="checkbox"]', self.$popup);
-    var attachments = [];
-	
-    $.each($attachments, function() {
-	 attachments.push({
-	   'url': $(this).attr('url'),
-	   'name': $(this).attr('name'),
-	   'mimeType': $(this).attr('mimeType'),
-	   'checked': $(this).is(':checked')
-	 });
-    });
+    var mime_array = function (tag) {
+        var $jTag = $('#' + tag + ' input[type="checkbox"]', self.$popup);
+        var array = [];
 
-    var $images = $('#gttImages input[type="checkbox"]', self.$popup);
-    var images = [];
+        $.each($jTag, function() {
+            array.push({
+                'url': $(this).attr('url'),
+                'name': $(this).attr('name'),
+                'mimeType': $(this).attr('mimeType'),
+                'checked': $(this).is(':checked')
+            });
+        });
+
+        return array;
+    };
+
+    var attachments = mime_array('gttAttachments');
+    var images = mime_array('gttImages');
     
-    $.each($images, function() {
-     images.push({
-       'url': $(this).attr('url'),
-       'name': $(this).attr('name'),
-       'checked': $(this).is(':checked')
-     });
-    });
-
     var validateStatus = (boardId && listId && title); // Labels are not required
     log('validateData: ' + boardId + ' - ' + listId + ' - ' + title);
 

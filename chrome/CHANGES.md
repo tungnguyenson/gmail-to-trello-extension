@@ -4,9 +4,11 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
-Version 2.5.0.001
+Version 2.5.0.1
 -------------------
 - Add support to attach images from Gmail
+- Fix typo with missing brace for uriForDisplay
+- To handle jQuery UI looking to Gmail for UI icons, must replace url("images... with url("chrome-extension://__MSG_@@extension_id__/images...
 
 Version 2.4.27
 ---------------
