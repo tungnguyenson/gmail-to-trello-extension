@@ -179,13 +179,22 @@ GmailToTrello.App.prototype.replacer = function(text, dict) {
  * Make displayable URI
  */
 GmailToTrello.App.prototype.uriForDisplay = function(uri) {
-    const uri_display_trigger_length_k = 10;
+    const uri_display_trigger_length_k = 20;
+    const uri_length_max_k = 40;
     var uri_display = uri || '';
-    if (uri_display && uri_display.length > uri_display_trigger_length_k) {
-        var re = RegExp("^\\w+:\/\/([\\w.\/_]+).*?([\\w._]*)$");
+    if (uri_display.length > uri_display_trigger_length_k) {
+        var re = RegExp("^\\w+:\/\/([\\w.\/_-]+).*?([\\w._-]*)$");
         var matched = uri_display.match(re);
         if (matched && matched.length > 0) {
-            uri_display = matched[1] + (matched[2] && matched[2].length > 0 ? ':' + matched[2] : ''); // Make a nicer looking visible text. [0] = text
+            var filename = matched[2] || '';
+            var prelude = matched[1].substr(0, uri_length_max_k);
+            if (matched[1].length > uri_length_max_k) {
+                prelude += '...';
+            } else if (filename.length > 0) {
+                prelude += ':';
+            }
+
+            uri_display = prelude + filename;
         }
     }
     return uri_display;
@@ -402,11 +411,11 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
     body = replaced;
 
     // Replace bullets following a CRLF:
-    replaced = body.replace(/\s*[\n\r]+\s*[·•]+\s*/g, "<p />* "); // = [\u00B7\u2022]
+    replaced = body.replace(/\s*[\n\r]+\s*[·-]+\s*/g, "<p />* "); // = [\u00B7\u2022]
     body = replaced;
 
     // Replace remaining bullets with asterisks:
-    replaced = body.replace(/[·•]/g, '*');
+    replaced = body.replace(/[·-]/g, '*');
     body = replaced;
     
     // ORDER MATTERS FOR THIS NEXT SET:
@@ -546,12 +555,18 @@ GmailToTrello.App.prototype.saveSettings = function() {
  * Encode entities
  */
 GmailToTrello.App.prototype.encodeEntities = function(s) {
-    return $("<div/>").text(s).html();
+    var ta = document.createElement('textarea');
+    ta.value = s;
+    return ta.innerHTML;    
+    // jQuery way, less safe: return $("<textarea />").text(s).html();
 };
 
 /**
  * Decode entities
  */
 GmailToTrello.App.prototype.decodeEntities = function(s) {
-    return $("<div/>").html(s).text();
+    var ta = document.createElement('textarea');
+    ta.innerHTML = s;
+    return ta.value;
+    // jQuery way, less safe: return $("<textarea />").html(s).text();
 };
