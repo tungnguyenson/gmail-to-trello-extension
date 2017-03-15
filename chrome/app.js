@@ -84,24 +84,23 @@ GmailToTrello.App.prototype.bindEvents = function() {
     /*** PopupView's events binding ***/
 
     this.popupView.event.addListener('onPopupVisible', function() {
-        var model = self.model;
-        if (!model.isInitialized) {
+        if (!self.model.isInitialized) {
             self.popupView.showMessage(self, 'Initializing...');
             self.popupView.$popupContent.hide();
-            model.init();
+            self.model.init();
         }
         else {
             self.popupView.reset();
         }
-        model.gmail = self.gmailView.parseData();
-        self.popupView.bindGmailData(model.gmail);
+        self.model.gmail = self.gmailView.parseData();
+        self.popupView.bindGmailData(self.model.gmail);
         //else log('GTT::Initializer closing:Data is already initialized');
 
     });
 
     this.popupView.event.addListener('onBoardChanged', function(target, params) {
         var boardId = params.boardId;
-        if (boardId !== "_" && boardId !== "" && boardId!==null) {
+        if (boardId !== "_" && boardId !== "" && boardId !== null) {
             self.model.loadTrelloLists(boardId);
             self.model.loadTrelloLabels(boardId);
         }

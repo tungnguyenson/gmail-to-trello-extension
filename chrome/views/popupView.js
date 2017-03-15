@@ -260,10 +260,10 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
             $board.val('');
         }
 
-        if (boardId === "_" || boardId === "") {
+        if (boardId === "_" || boardId === "" || boardId !== self.data.settings.boardId) {
             $labelsMsg.text('...please pick a board...').show();
+            $labels.html('').hide(); // clear it out
             $list.html($('<option value="">...please pick a board...</option>')).val('');
-            $('#gttLabels').html('').hide();
             self.data.settings.labelsId = '';
             self.data.settings.listId = '';
         } else {
@@ -273,7 +273,6 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         self.event.fire('onBoardChanged', {boardId: boardId});
 
         self.validateData();
-
     });
 
     $('#gttList', this.$popup).change(function() {
@@ -456,7 +455,7 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
         var $domTag = $(domTag_k, self.$popup);
         
         if (isImage && isImage === true) {
-            img = '<img src="%url%" alt="%name%" height="32" width="32" style="vertical-align: middle;" /> ';
+            img = '<img src="%url%" alt="%name%" height="32" width="32" /> '; // See style.css for #gttImage img style
         }
 
         $.each(data[tag], function(iter, item) {
@@ -526,7 +525,7 @@ GmailToTrello.PopupView.prototype.updateBoards = function() {
 
     for (var i = 0; i < filteredOrgs.length; i++) {
         var orgItem = filteredOrgs[i];
-        // This is unnessessary because a "please select" option is already existed above
+        // This is unnessessary because a "please select" option is already shown above
         // if (i > 0 && filteredOrgs.length > 1)
         //     $board.append($('<option value="_">-----</option>'));
         for (var j = 0; j < boards.length; j++) {
@@ -544,19 +543,19 @@ GmailToTrello.PopupView.prototype.updateBoards = function() {
         settingId = settings.boardId;
     }
 
-    var $board = $('#gttBoard', this.$popup);
-    $board.html(''); // Clear it.
+    var $gtt = $('#gttBoard', this.$popup);
+    $gtt.html(''); // Clear it.
 
-    $board.append($('<option value="">Select a board....</option>'));
+    $gtt.append($('<option value="">Select a board....</option>'));
     
     $.each(Object.keys(newBoards).sort(), function(iter, item) {
         var id = newBoards[item].id;
         var display = newBoards[item].display;
         var selected = (id == settingId);
-        $board.append($('<option>').attr('value', id).prop('selected', selected).append(display));
+        $gtt.append($('<option>').attr('value', id).prop('selected', selected).append(display));
     });
 
-    $board.change();
+    $gtt.change();
 };
 
 GmailToTrello.PopupView.prototype.updateLists = function() {
@@ -570,17 +569,17 @@ GmailToTrello.PopupView.prototype.updateLists = function() {
         settingId = settings.listId;
     }
 
-    var $list = $('#gttList', this.$popup);
-    $list.html('');
+    var $gtt = $('#gttList', this.$popup);
+    $gtt.html('');
 
     $.each(lists, function(iter, item) {
         var id = item.id;
         var display = item.name;
         var selected = (id == settingId);
-        $list.append($('<option>').attr('value', id).prop('selected', selected).append(display));
+        $gtt.append($('<option>').attr('value', id).prop('selected', selected).append(display));
     });
 
-    $list.change();
+    $gtt.change();
 };
 
 GmailToTrello.PopupView.prototype.updateLabels = function() {
@@ -623,7 +622,7 @@ GmailToTrello.PopupView.prototype.updateLabels = function() {
             }
         }
     } else {
-        // Labels do not have to be set, so no default.
+        settings.labelsId = ''; // Labels do not have to be set, so no default.
     }
 
     $gtt.show();

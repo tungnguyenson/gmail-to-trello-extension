@@ -4,6 +4,12 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.5.0.2
+-------------------
+- Try to fix parseData to always return a valid data block (even if empty data)
+- Update board changed to clear out list/labels when settings boardId is different than boardId
+- Gray box around imgs in image list to show "spacer" images
+
 Version 2.5.0.1
 -------------------
 - Add support to attach images from Gmail

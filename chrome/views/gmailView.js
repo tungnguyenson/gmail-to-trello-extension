@@ -160,8 +160,7 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     var data = {};
 
     // subject
-    this.$emailSubject = $(this.selectors.emailSubject, this.$root);
-    data.subject = this.$emailSubject.text().trim();
+    data.subject = ($(this.selectors.emailSubject, this.$root).text() || "").trim();
 
     // find active email
     if (this.layoutMode === this.LAYOUT_SPLIT)
@@ -180,9 +179,6 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     });
 
     // host name
-    /* <a class="gb_b gb_eb gb_R" href="https://accounts.google.com/SignOutOptions?hl=en&amp;continue=https://mail.google.com/mail&amp;service=mail"
-    title="Google Account: Andrew Coven (acoven@box.com)" role="button" tabindex="0" aria-expanded="true"><span class="gb_9a gbii"></span></a>
-    */
     var $host = $(this.selectors.host);
     var title  = ($host.attr('title') || "").trim();
     var matched = title.match(/[^:]+:\s+([^\(]+)\(([^\)]+)\)/);
@@ -194,8 +190,8 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     }
 
     // email name
-    var emailName = $(this.selectors.emailName, $visibleMail).attr('name').trim();
-    var emailAddress = $(this.selectors.emailAddress, $visibleMail).attr('email').trim();
+    var emailName = ($(this.selectors.emailName, $visibleMail).attr('name') || "").trim();
+    var emailAddress = ($(this.selectors.emailAddress, $visibleMail).attr('email') || "").trim();
     var emailAttachments = $(this.selectors.emailAttachments, $visibleMail).map(function() {
         var item = $(this).attr('download_url');
         if (item && item.length > 0) {
@@ -209,7 +205,7 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     // email thread id
     var emailId = 0;
     var class1 = '';
-    var classnames = $(this.selectors.emailThreadID, $visibleMail).attr('class').split(' ');
+    var classnames = ($(this.selectors.emailThreadID, $visibleMail).attr('class') || "").split(' ');
     while ((class1 = classnames.pop()) && emailId === 0) {
         if (class1 && class1.indexOf('m') === 0) {
             emailId = class1.substr(1);
@@ -218,7 +214,7 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     
     // timestamp
     var $time = $(this.selectors.timestamp, $visibleMail);
-    var timeValue = ($time) ? $time.attr('title') : '';
+    var timeValue = ($time) ? ($time.attr('title') || "") : '';
     timeValue = timeValue ? timeValue.replace(' at ', ' ') : ''; // BUG (Ace, 29-Jan-2017): Replacing 'at' without spaces will mess up "Sat" which will then cause Date.parse to fail.
     if (timeValue !== '') {
         timeValue = Date.parse(timeValue);
