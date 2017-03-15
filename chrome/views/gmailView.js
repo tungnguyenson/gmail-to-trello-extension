@@ -236,7 +236,7 @@ GmailToTrello.GmailView.prototype.parseData = function() {
 
     if (emailId && emailId.length > 1) {
         txtAnchor = 'Id';
-        txtDirect = "https://mail.google.com/mail/u/0/#all/" + emailId;
+        txtDirect = "https://mail.google.com" + window.location.pathname /* /mail/u/0/ */ + "#all/" + emailId;
         txtDirectComment = "Open via id";
     }
    

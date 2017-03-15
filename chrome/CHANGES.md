@@ -9,6 +9,7 @@ Version 2.5.0.2
 - Try to fix parseData to always return a valid data block (even if empty data)
 - Update board changed to clear out list/labels when settings boardId is different than boardId
 - Gray box around imgs in image list to show "spacer" images
+- Use window.location.pathname to provide "/mail/u/0/" or "/mail/u/1/" etc. for different gmail accounts
 
 Version 2.5.0.1
 -------------------
