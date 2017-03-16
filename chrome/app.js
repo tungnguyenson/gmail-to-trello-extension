@@ -92,6 +92,7 @@ GmailToTrello.App.prototype.bindEvents = function() {
         else {
             self.popupView.reset();
         }
+        self.gmailView.parsingData = false;
         self.model.gmail = self.gmailView.parseData();
         self.popupView.bindGmailData(self.model.gmail);
         //else log('GTT::Initializer closing:Data is already initialized');
@@ -111,6 +112,7 @@ GmailToTrello.App.prototype.bindEvents = function() {
     });
 
     this.popupView.event.addListener('onRequestUpdateGmailData', function() {
+        self.gmailView.parsingData = false;
         self.model.gmail = self.gmailView.parseData();
         self.popupView.bindGmailData(self.model.gmail);
     });
@@ -159,10 +161,10 @@ GmailToTrello.App.prototype.replacer = function(text, dict) {
   
   if (!text || text.length < 1) {
     console.log('Require text!');
-    return;
+    return "";
   } else if (!dict || dict.length < 2) {
     console.log('Require dictionary!');
-    return;
+    return text;
   }
   
   $.each(dict, function (key, value) {
@@ -263,8 +265,8 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
         return false;
     };
 
-    var body = $emailBody.innerText;
-    var $html = $emailBody.innerHTML;
+    var body = $emailBody.innerText || "";
+    var $html = $emailBody.innerHTML || "";
 
     // Replace hr:
     var replaced = body.replace(/\s*-{3,}\s*/g, "---\n");
