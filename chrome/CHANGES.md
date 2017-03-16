@@ -4,6 +4,10 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.5.0.3
+-------------------
+- Fix problem of email with no body
+
 Version 2.5.0.2
 -------------------
 - Try to fix parseData to always return a valid data block (even if empty data)
