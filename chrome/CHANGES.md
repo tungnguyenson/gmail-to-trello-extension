@@ -4,6 +4,12 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.5.0.4
+-------------------
+- Fix pInterest loads with white overlay on top of first 20 pinned items -- was conflicting with jQuery UI CSS
+- Moved jQuery-ui-css loading to top of popup
+- Changed matches to mail.google.com instead of all urls.
+
 Version 2.5.0.3
 -------------------
 - Fix problem of email with no body

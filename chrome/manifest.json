@@ -1,7 +1,7 @@
 {
   "name": "GMail to Trello",
   "short_name": "GtT",
-  "version": "2.5.0.3",
+  "version": "2.5.0.4",
   "manifest_version": 2,
   "description": "GMail to Trello integration. Create new Trello cards from Google mail threads with backlinks.",
   "icons": {
@@ -10,13 +10,13 @@
   },
   "page_action": {
     "default_icon": "images/icon-16.png",
-    "default_title": "GMail-to-Trello: GMail detected"
+    "default_title": "GMail-to-Trello"
   },
 
   "background": {"scripts": ["background.js"]},
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
+      "matches": ["https://mail.google.com/*"],
       "js": [
           "lib/jquery-3.1.1.min.js",
           "lib/jquery-ui-1.12.1.min.js",
@@ -33,8 +33,7 @@
           "content-script.js"
       ],
       "css": [
-        "style.css",
-        "lib/jquery-ui-1.12.1.min.css"
+        "style.css"
       ]
     }
   ],
@@ -46,7 +45,7 @@
     "images/doc-question-mark-512.png",
     "views/popupView.html",
     "lib/jquery-3.1.1.min.map",
-    "lib/jquery-3.1.1.min.js",
+    "lib/jquery-ui-1.12.1.min.css",
     "inject.js"
   ],
   "homepage_url": "https://trello.com/b/CGU9BYgd/gmail-to-trello-development",
