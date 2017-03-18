@@ -72,6 +72,7 @@ GmailToTrello.PopupView.prototype.init = function() {
         this.parent.loadSettings(this);
     } else {
         $.get(chrome.extension.getURL('views/popupView.html'), function(data){
+            data = self.parent.replacer(data, {'jquery-ui-css': chrome.extension.getURL('lib/jquery-ui-1.12.1.min.css')});
             self.html['popup'] = data;
             self.$toolBar.append(data);
             self.parent.loadSettings(self);

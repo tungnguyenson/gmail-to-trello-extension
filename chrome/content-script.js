@@ -34,7 +34,7 @@ function log(data) {
  * @param  sender       
  * @param  sendResponse Callback function
  */
-function requestHandler(request, sender, sendResponse) {
+ function requestHandler(request, sender, sendResponse) {
     switch (request.message) {
         case "initialize":
             log('GTT::GlobalInit: '+globalInit.toString());
@@ -49,7 +49,6 @@ function requestHandler(request, sender, sendResponse) {
                 });
             }, 1000);
             
-            /**/
             break;
     }
 }

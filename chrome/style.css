@@ -2,7 +2,8 @@
 
 .clearfix:after {
     content: "";
-    display: table; /* Seems to do better than "block" */
+    /* Seems to do better than "block": */
+    display: table; 
     clear: both;
 }
 
