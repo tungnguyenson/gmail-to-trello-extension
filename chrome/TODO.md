@@ -11,7 +11,7 @@
 - Fix bug: Stop detecting & parsing after user changed form's data
 
 - Add attachments as files instead of links: https://github.com/KartikTalwar/gmail.js/issues/134
-
+ 
 KartikTalwar commented on Jan 10, 2015
 @PANCAKES so turns out that fetching attachments follows a nice convention:
 
