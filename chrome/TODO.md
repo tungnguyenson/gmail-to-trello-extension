@@ -27,3 +27,34 @@ var url = "https://mail.google.com/mail/u/0/?ui=2&ik=" + ik + "&view=att&th=" + 
 
 console.log(url);
 
+http://stackoverflow.com/questions/2897619/using-html5-javascript-to-generate-and-save-a-file
+
+js:
+data = [];
+data.push("This is a test\n");
+data.push("Of creating a file\n");
+data.push("In a browser\n");
+properties = {type: 'plain/text'}; // Specify the file's mime-type.
+try {
+  // Specify the filename using the File constructor, but ...
+  file = new File(data, "file.txt", properties);
+} catch (e) {
+  // ... fall back to the Blob constructor if that isn't supported.
+  file = new Blob(data, properties);
+}
+url = URL.createObjectURL(file);
+document.getElementById('link').href = url;
+
+html:
+<a id="link" target="_blank" download="file.txt">Download</a>
+
+js:
+function download(content, filename, contentType)
+{
+    if(!contentType) contentType = 'application/octet-stream';
+        var a = document.createElement('a');
+        var blob = new Blob([content], {'type':contentType});
+        a.href = window.URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+}
