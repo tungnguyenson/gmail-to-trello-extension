@@ -163,7 +163,7 @@ GmailToTrello.PopupView.prototype.detectPopup = function() {
 GmailToTrello.PopupView.prototype.onResize = function() {
     var origWidth = this.$popup.width();
     var textWidth = origWidth - this.size_k.text.min;
-    $('input[type=text],textarea,#gttAttachments,#gttImages', this.$popup).css('width', textWidth + 'px');
+    $('input[type=text],textarea,#gttAttachments,#gttImages,#gttLabels,#gttMembers', this.$popup).css('width', textWidth + 'px');
     this.validateData(); // Assures size is saved
 };
 
@@ -256,19 +256,23 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         var $list = $('#gttList', self.$popup);
         var $labels = $('#gttLabels', self.$popup);
         var $labelsMsg = $('#gttLabelsMsg', self.$popup);
+        var $membersMsg = $('#gttMembersMsg', self.$popup);
 
         if (boardId === '_') {
             $board.val('');
         }
 
         if (boardId === "_" || boardId === "" || boardId !== self.data.settings.boardId) {
+            $membersMsg.text('...please pick a board...').show();
             $labelsMsg.text('...please pick a board...').show();
             $labels.html('').hide(); // clear it out
             $list.html($('<option value="">...please pick a board...</option>')).val('');
             self.data.settings.labelsId = '';
             self.data.settings.listId = '';
+            self.data.settings.membersId = '';
         } else {
             $labelsMsg.text('Loading...').show();
+            $membersMsg.text('Loading...').show();
         }
 
         self.event.fire('onBoardChanged', {boardId: boardId});
@@ -343,38 +347,31 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
     this.$popupContent.show();
 
     //bind trello data
-    var user = data.trello.user;
-    var $userAvatar = '';
-    var userAvatarSrc = user.avatarUrl || '';
-    var userAvatarText = '';
-    if (userAvatarSrc.length < 1 && user.username && user.username.length > 1) {
-        user.username.substr(0, 1).toUpperCase();
-    }
+    var me = data.trello.user; // First member is always this user
+    var avatarSrc = self.parent.model.makeAvatarUrl(me.avatarHash);
+    var avatarText = '';
 
-    if (user.avatarUrl) {
-        $userAvatar = $('<img class="member-avatar">').attr('src', user.avatarUrl);
-    }
-    else {
+    if (!avatarSrc) {
         var initials = '?';
-        if (user.initials && user.initials.length > 0) {
-            initials = user.initials;
-        } else if (user.fullName && user.fullName.length > 1) {
-            var matched = user.fullName.match(/^(\w).*?[\s\\W]+(\w)\w*$/);
+        if (me.initials && me.initials.length > 0) {
+            initials = me.initials;
+        } else if (me.fullName && me.fullName.length > 1) {
+            var matched = me.fullName.match(/^(\w).*?[\s\\W]+(\w)\w*$/);
             if (matched && matched.length > 1) {
                 initials = matched[1] + matched[2]; // 0 is whole string            
             }
-        } else if (user.username && user.username.length > 0) {
-            user.username.slice(0,1);
+        } else if (me.username && me.username.length > 0) {
+            initials = me.username.slice(0,1);
         }
 
-        $userAvatar = $('<span class="member-avatar">').text(initials.toUpperCase());
+        avatarText = initials.toUpperCase();
     }
 
     // NOTE (Ace, 6-Feb-2017): Assigning .userInfo to a variable and then updating it doesn't work right, so refer explicitly to item:
-    $('#gttAvatarURL', this.$popup).attr('href', user.url);
-    $('#gttAvatarText', this.$popup).text(userAvatarText);
-    $('#gttAvatarImg', this.$popup).attr('src', userAvatarSrc);
-    $('#gttUsername', this.$popup).attr('href', user.url).text(user.username || '?');
+    $('#gttAvatarURL', this.$popup).attr('href', me.url);
+    $('#gttAvatarText', this.$popup).text(avatarText);
+    $('#gttAvatarImg', this.$popup).attr('src', avatarSrc);
+    $('#gttUsername', this.$popup).attr('href', me.url).text(me.username || '?');
 
     $('#gttSignOutButton', this.$popup).click(function() {
         self.showMessage(self, '<a class="hideMsg" title="Dismiss message">&times;</a>'
@@ -415,10 +412,6 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
     
     if (data.settings.hasOwnProperty('useBackLink')) {
         $('#chkBackLink', this.$popup).prop('checked', data.settings.useBackLink);
-    }
-
-    if (data.settings.hasOwnProperty('selfAssign')) {
-        $('#chkSelfAssign', this.$popup).prop('checked', data.settings.selfAssign);
     }
 
     if (data.settings.hasOwnProperty('markdown')) {
@@ -599,7 +592,7 @@ GmailToTrello.PopupView.prototype.updateLabels = function() {
             var $color = $("<div id='gtt_temp'>").css('color', item.color);
             var bkColor = self.parent.luminance($color.css('color')); // If you'd like to determine whether to make the background light or dark
             $gtt.append($('<li>')
-                .attr('trello-label-id', item.id)
+                .attr('trelloId-label', item.id)
                 .css('border-color', item.color)
                 .css('background-color', bkColor)
                 .append(item.name)
@@ -609,8 +602,8 @@ GmailToTrello.PopupView.prototype.updateLabels = function() {
     
     $('#gttLabelsMsg', this.$popup).hide();
 
-    var labelsControl = new MenuControl({'selectors': '#gttLabels li', 'nonexclusive': true});
-    labelsControl.event.addListener('onMenuClick', function(e, params) {
+    var control = new MenuControl({'selectors': '#gttLabels li', 'nonexclusive': true});
+    control.event.addListener('onMenuClick', function(e, params) {
         self.validateData();
     });
 
@@ -623,11 +616,60 @@ GmailToTrello.PopupView.prototype.updateLabels = function() {
             var item = labels[i];
             // var settingId = settings.labelsId[item.id] || '0';
             if (settingId.indexOf(item.id) !== -1) {
-                $('#gttLabels li[trello-label-id="' + item.id + '"]').click();
+                $('#gttLabels li[trelloId-label="' + item.id + '"]').click();
             }
         }
     } else {
         settings.labelsId = ''; // Labels do not have to be set, so no default.
+    }
+
+    $gtt.show();
+};
+
+GmailToTrello.PopupView.prototype.updateMembers = function() {
+    var self = this;
+    var members = this.data.trello.members;
+    var $gtt = $('#gttMembers', this.$popup);
+    $gtt.html(''); // Clear out
+
+    for (var i = 0; i < members.length; i++) {
+        var item = members[i];
+        if (item && item.id) {
+            var txt = item.initials || item.username || '?';
+            var avatar = self.parent.model.makeAvatarUrl(item.avatarHash || '');
+            const size_k = 20;
+            $gtt.append($('<li>')
+                .attr('trelloId-member', item.id)
+                .attr('title', item.fullName + ' @' + item.username || '?')
+                .append($('<img>')
+                    .attr('src', avatar)
+                    .attr('width', size_k)
+                    .attr('height', size_k)
+                ).append(' ' + txt)
+            )
+        }
+    }
+    
+    $('#gttMembersMsg', this.$popup).hide();
+
+    var control = new MenuControl({'selectors': '#gttMembers li', 'nonexclusive': true});
+    control.event.addListener('onMenuClick', function(e, params) {
+        self.validateData();
+    });
+
+    var settings = this.data.settings;
+    var orgId = $('#gttOrg', this.$popup).val();
+    var boardId = $('#gttBoard', this.$popup).val();
+    if (settings.orgId && settings.orgId == orgId && settings.boardId && settings.boardId == boardId && settings.labelsId) {
+        var settingId = settings.membersId;
+        for (var i = 0; i < members.length; i++) {
+            var item = members[i];
+            if (settingId.indexOf(item.id) !== -1) {
+                $('#gttMembers li[trelloId-member="' + item.id + '"]').click();
+            }
+        }
+    } else {
+        settings.membersId = ''; // Members do not have to be set, so no default.
     }
 
     $gtt.show();
@@ -704,19 +746,28 @@ GmailToTrello.PopupView.prototype.validateData = function() {
     var title = $('#gttTitle', this.$popup).val();
     var description = $('#gttDesc', this.$popup).val();
     var useBackLink = $('#chkBackLink', this.$popup).is(':checked');
-    var selfAssign = $('#chkSelfAssign', this.$popup).is(':checked');
     var markdown = $('#chkMarkdown', this.$popup).is(':checked');
     var position = $('#gttPosition', this.$popup).prop('value');
     var timeStamp = $('.gH .gK .g3:first', this.$visibleMail).attr('title');
     var popupWidth = this.$popup.css('width');
     var labelsId = $('#gttLabels li.active', this.$popup).map(function(iter, item) {
-            var val = $(item).attr('trello-label-id');
+            var val = $(item).attr('trelloId-label');
             return val;
         }).get().join();
     var labelsCount = $('#gttLabels li', this.$popup).length;
 
     if (!labelsCount && labelsId.length < 1 && this.data && this.data.settings && this.data.settings.labelsId) {
         labelsId = this.data.settings.labelsId; // We're not yet showing labels so override labelsId with settings
+    }
+
+    var membersId = $('#gttMembers li.active', this.$popup).map(function(iter, item) {
+            var val = $(item).attr('trelloId-member');
+            return val;
+        }).get().join();
+    var membersCount = $('#gttMembers li', this.$popup).length;
+
+    if (!membersCount && membersId.length < 1 && this.data && this.data.settings && this.data.settings.labelsId) {
+        membersId = this.data.settings.membersId; // We're not yet showing labels so override labelsId with settings
     }
 
     var mime_array = function (tag) {
@@ -747,6 +798,7 @@ GmailToTrello.PopupView.prototype.validateData = function() {
             boardId: boardId,
             listId: listId,
             labelsId: labelsId,
+            membersId: membersId,
             due_Date: due_Date,
             due_Time: due_Time,
             title: title,
@@ -754,7 +806,6 @@ GmailToTrello.PopupView.prototype.validateData = function() {
             attachments: attachments,
             images: images,
             useBackLink: useBackLink,
-            selfAssign: selfAssign,
             markdown: markdown,
             popupWidth: popupWidth,
             position: position,

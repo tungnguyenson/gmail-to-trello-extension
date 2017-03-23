@@ -89,13 +89,13 @@
 #gttPopup .popupMsg {border:1px solid #EDC967; background: #F9EDB8; padding:5px 10px 15px; margin:10px}
 #gttPopup #resize-icon {position: relative; bottom: 24px; right: 24px;}
 
-#gttLabelsMsg {background: #F9EDB8;}
-
 #gttPopup .listrow {min-height: 31px}
 
-ul#gttLabels {float: left; margin: 0; padding: 0; height: 66px; width: 100%; overflow: auto;}
+#gttLabelsMsg, #gttMembersMsg {background: #F9EDB8;}
 
-#gttLabels li {
+ul#gttLabels, ul#gttMembers {float: left; margin: 0; padding: 0; height: 66px; width: 100%; overflow: auto;}
+
+#gttLabels li, #gttMembers li {
     float: left; 
     margin: 0 10px 5px 0; 
     padding: 6px 12px; 
@@ -110,8 +110,8 @@ ul#gttLabels {float: left; margin: 0; padding: 0; height: 66px; width: 100%; ove
     color: #888;
 }
 
-#gttLabels li:hover, #gttLabels li.active:hover {border-color: #52A8D9; color: #1789C0;}
-#gttLabels li.active {border-color:inherit; color:black; padding:4px 10px; border: 3px solid; border-top-width:7px;}
+#gttLabels li:hover, #gttMembers li:hover, #gttLabels li.active:hover, #gttMembers li.active:hover {border-color: #52A8D9; color: #1789C0;}
+#gttLabels li.active, #gttMembers li.active {border-color:inherit; color:black; padding:4px 10px; border: 3px solid; border-top-width:7px;}
 
 #gttPopup dt {width:70px; float:left; text-align:right; padding-right:5px;}
 #gttPopup dd {display:block; margin:8px; margin-left:75px;}

@@ -52,8 +52,8 @@ GmailToTrello.App.prototype.bindEvents = function() {
     });
 
     this.model.event.addListener('onLoadTrelloMembersSuccess', function() {
-        // self.popupView.updateMembers();
-        // self.popupView.validateData();
+        self.popupView.updateMembers();
+        self.popupView.validateData();
     })
 
     this.model.event.addListener('onCardSubmitComplete', function(target, params) {

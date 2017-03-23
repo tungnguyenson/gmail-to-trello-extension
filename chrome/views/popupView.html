@@ -2,12 +2,12 @@
 <div id="gttPopup" class="J-M jQjAxd open" style="display:none">
     <div id="gttPopupSlider"></div>
     <div class="inner">
-	<div class="hdr clearfix item">
-	    <a id="gttAvatarURL" target="_blank" title="Open your Trello homepage" class="member-avatar"><span id="gttAvatarText" /><img id="gttAvatarImg" src='' /></a>
-	    <a id="gttUsername" target="_blank" title="Open your Trello homepage" style="margin-left:5px;">Username</a>
-	    | <a id="gttSignOutButton" title="Sign out">Sign out</a>
-	    | <a href="https://trello.com/b/CGU9BYgd/gmail-to-trello-development" target="_blank" title="Open Gmail-to-Trello Feature/Bug board in a new window">Features/Bugs</a>
-	    <a id="close-button" title="Close">&times;</a>
+    <div class="hdr clearfix item">
+        <a id="gttAvatarURL" target="_blank" title="Open your Trello homepage" class="member-avatar"><span id="gttAvatarText" /><img id="gttAvatarImg" width='30' height='30' src='' /></a>
+        <a id="gttUsername" target="_blank" title="Open your Trello homepage" style="margin-left:5px;">Username</a>
+        | <a id="gttSignOutButton" title="Sign out">Sign out</a>
+        | <a href="https://trello.com/b/CGU9BYgd/gmail-to-trello-development" target="_blank" title="Open Gmail-to-Trello Feature/Bug board in a new window">Features/Bugs</a>
+        <a id="close-button" title="Close">&times;</a>
    </div>
    <div class="popupMsg">Loading...</div>
         <div class="content menuInnerContainer" style="display:none">
@@ -34,6 +34,11 @@
                     <span id="gttLabelsMsg">...please pick a board...</span>
                     <ul id="gttLabels" />
                 </dd>
+                <dt>Assign:</dt>
+                <dd class="clearfix listrow">
+                    <span id="gttMembersMsg">...please pick a board...</span>
+                    <ul id="gttMembers" />
+                </dd>
                 <dt>Due:</dt>
                 <dd><input type="date" id="gttDue_Date" /> <input type="time" id="gttDue_Time" /></dd>
                 <dt>Title:</dt>
@@ -45,8 +50,6 @@
                     <label for="chkBackLink">Add GMail link</label>
                     <input type="checkbox" checked="checked" id="chkMarkdown" style="margin-left:10px">
                     <label for="chkMarkdown">Markdown</label>
-                    <input type="checkbox" checked="checked" id="chkSelfAssign" style="margin-left:10px">
-                    <label for="chkSelfAssign">Assign to me</label>
                 </dd>
                 <dt>Attach:</dt>
                 <dd id="gttAttachments" />
