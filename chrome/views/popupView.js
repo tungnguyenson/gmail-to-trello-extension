@@ -71,7 +71,7 @@ GmailToTrello.PopupView.prototype.init = function() {
         this.$toolBar.append(this.html['popup']);
         this.parent.loadSettings(this);
     } else {
-        $.get(chrome.extension.getURL('views/popupView.html'), function(data){
+        $.get(chrome.extension.getURL('views/popupView.html'), function(data) {
             data = self.parent.replacer(data, {'jquery-ui-css': chrome.extension.getURL('lib/jquery-ui-1.12.1.min.css')});
             self.html['popup'] = data;
             self.$toolBar.append(data);
@@ -255,6 +255,7 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
 
         var $list = $('#gttList', self.$popup);
         var $labels = $('#gttLabels', self.$popup);
+        var $members = $('#gttMembers', self.$popup);
         var $labelsMsg = $('#gttLabelsMsg', self.$popup);
         var $membersMsg = $('#gttMembersMsg', self.$popup);
 
@@ -265,6 +266,7 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         if (boardId === "_" || boardId === "" || boardId !== self.data.settings.boardId) {
             $membersMsg.text('...please pick a board...').show();
             $labelsMsg.text('...please pick a board...').show();
+            $members.html('').hide(); // clear it out
             $labels.html('').hide(); // clear it out
             $list.html($('<option value="">...please pick a board...</option>')).val('');
             self.data.settings.labelsId = '';
@@ -374,18 +376,10 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
     $('#gttUsername', this.$popup).attr('href', me.url).text(me.username || '?');
 
     $('#gttSignOutButton', this.$popup).click(function() {
-        self.showMessage(self, '<a class="hideMsg" title="Dismiss message">&times;</a>'
-            + '<ul><li>Trello token deauthorized.'
-            + '<ol><li><a href="./">Reload</a> this page.</li>'
-            + '<li>Once reloaded, click this button again.</li>'
-            + '<li>A pop-up will request you "Authorize Trello".</li></ol></li>'
-            + '<li style="padding-top: 1em;">To <b>completely</b> clear the Trello cookie:'
-            + '<ol><li>Under menu "Chrome"</li>'
-            + '<li>Select "Clear Browsing Data..."</li>'
-            + '<li>Check "Clear data from hosted apps"</li>'
-            + '<li>Press button "Clear browsing data"</li></ol></li></ul>'
-        );
-        self.event.fire('onRequestDeauthorizeTrello');
+        $.get(chrome.extension.getURL('views/signOut.html'), function(data) {
+            self.showMessage(self, data);
+            self.event.fire('onRequestDeauthorizeTrello');
+        })
     });
     
     var orgs = data.trello.orgs;
@@ -500,6 +494,15 @@ GmailToTrello.PopupView.prototype.hideMessage = function() {
     } else {
         this.$popupMessage.hide();
    }
+};
+
+GmailToTrello.PopupView.prototype.clearBoard = function() {
+    var $gtt = $('#gttBoard', this.$popup);
+    $gtt.html(''); // Clear it.
+
+    $gtt.append($('<option value="">Select a board....</option>'));
+    
+    $gtt.change();
 };
 
 GmailToTrello.PopupView.prototype.updateBoards = function() {
@@ -660,7 +663,7 @@ GmailToTrello.PopupView.prototype.updateMembers = function() {
     var settings = this.data.settings;
     var orgId = $('#gttOrg', this.$popup).val();
     var boardId = $('#gttBoard', this.$popup).val();
-    if (settings.orgId && settings.orgId == orgId && settings.boardId && settings.boardId == boardId && settings.labelsId) {
+    if (settings.orgId && settings.orgId == orgId && settings.boardId && settings.boardId == boardId && settings.membersId) {
         var settingId = settings.membersId;
         for (var i = 0; i < members.length; i++) {
             var item = members[i];
@@ -859,22 +862,20 @@ GmailToTrello.PopupView.prototype.displayAPIFailedForm = function(response) {
         resp.title = this.data.newCard.title; // Put a temp copy of this over where we'll get the other data
     }
 
-    var errDisplay = ['title', 'status', 'statusText', 'responseText'];
-    
-    var replacer = {};
+    var dict = {
+        'title': resp.title || '?',
+        'status': resp.status || '?',
+        'statusText': resp.statusText || '?',
+        'responseText': resp.responseText || '?'
+    };
 
-    var msg = '<a class="hideMsg" title="Dismiss message">&times;</a>ERROR: Trello API FAILURE! <dl style="font-weight: bold;">';
-    var style = 'float: left; clear: left; width: 90px; text-align: right; color: red;';
-        
-    $.each (errDisplay, function (iter, item) {
-        msg += self.parent.bookend('dt', item + ':', style) + self.parent.bookend('dd', resp[item] || '?');
+    $.get(chrome.extension.getURL('views/error.html'), function(data) {
+        self.showMessage(self, self.parent.replacer(data, dict));
+        self.$popupContent.hide();
+        if (resp.status && resp.status === '401') { // Invalid token, so deauthorize Trello
+            self.event.fire('onRequestDeauthorizeTrello');
+        }
     });
-
-    msg += '</dl>';
-    
-    this.showMessage(self, msg);
-    this.$popupContent.hide();
-    if (errDisplay.status && errDisplay.status === '401') { // Invalid token, so deauthorize Trello
-        this.event.fire('onRequestDeauthorizeTrello');
-    }
 };
+
+// End, popupView.js

@@ -9,6 +9,9 @@ Version 2.5.1.0
 - Can now assign other users
 - Your id should always be first in Assign list
 - Remove "Assign to me" button
+- Move signout and error to chrome extension loaded html files
+- Make label and member msg boxes same height as label and member chicklets so things don't "jump" up and down when picking new boards
+
 
 Version 2.5.0.4
 -------------------

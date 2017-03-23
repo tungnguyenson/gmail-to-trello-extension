@@ -44,6 +44,8 @@
     "images/ui-icons_444444_256x240.png",
     "images/doc-question-mark-512.png",
     "views/popupView.html",
+    "views/signOut.html",
+    "views/error.html",
     "lib/jquery-3.1.1.min.map",
     "lib/jquery-ui-1.12.1.min.css",
     "inject.js"
