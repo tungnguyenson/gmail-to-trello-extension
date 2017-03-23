@@ -80,6 +80,14 @@ GmailToTrello.Model.prototype.deauthorizeTrello = function() {
     this.isInitialized = false;
 };
 
+GmailToTrello.Model.prototype.makeAvatarUrl = function(avatarHash) {
+    var retn = '';
+    if (avatarHash && avatarHash.length > 0) {
+        retn = 'https://trello-avatars.s3.amazonaws.com/' + avatarHash + '/30.png';
+    }
+    return retn;
+}
+
 GmailToTrello.Model.prototype.loadTrelloData = function() {
     log('loading trello data');
 
@@ -94,11 +102,6 @@ GmailToTrello.Model.prototype.loadTrelloData = function() {
     Trello.get('members/me', {}, function(data) {
         if (!data || !data.hasOwnProperty('id')) {
             return false;
-        }
-
-        data.avatarUrl = null;
-        if (data && data.avatarSource !== 'none' && data.avatarHash && data.avatarHash.length > 0) {
-            data.avatarUrl = 'https://trello-avatars.s3.amazonaws.com/' + data.avatarHash + '/30.png';
         }
 
         self.trello.user = data;
@@ -196,6 +199,32 @@ GmailToTrello.Model.prototype.loadTrelloLabels = function(boardId) {
     });
 };
 
+GmailToTrello.Model.prototype.loadTrelloMembers = function(boardId) {
+    log('loadTrelloMembers');
+
+    var self = this;
+    this.trello.members = null;
+
+    Trello.get('boards/' + boardId + '/members', {fields: "fullName,username,initials,avatarHash"}, function(data) {
+        var me = self.trello.user;
+        // Remove this user from the members list:
+        self.trello.members = $.map(data, function (item, iter) {
+            return (item.id !== me.id ? item : null);
+        });
+        // And shove this user in the first position:
+        self.trello.members.unshift({
+            'id': me.id,
+            'username': me.username,
+            'initials': me.initials,
+            'avatarHash': me.avatarHash,
+            'fullName': me.fullName
+        });
+        self.event.fire('onLoadTrelloMembersSuccess');
+    }, function failure(data) {
+        self.event.fire('onAPIFailure', {data:data});
+    });
+};
+
 GmailToTrello.Model.prototype.submit = function() {
     var self = this;
     if (this.newCard === null) {
@@ -205,35 +234,21 @@ GmailToTrello.Model.prototype.submit = function() {
     var data = this.newCard;
 
     this.parent.saveSettings();
-    /* OLD save settings
-    chrome.storage.sync.set({storage: self.CHROME_SETTINGS_ID, value: JSON.stringify({
-        orgId: data.orgId,
-        boardId: data.boardId,
-        listId: data.listId,
-        labelsId: data.labelsId,
-        dueDate: data.dueDate,
-        title: data.title,
-        desc: data.description,
-        attachments: data.attachments,
-        images: data.images,
-        useBackLink: data.useBackLink,
-        selfAssign: data.selfAssign,
-        markdown: data.markdown
-    })});
-    */
 
     var idMembers = null;
-    if (data.selfAssign) {
-        idMembers = this.trello.user.id;  
-    }
     
     var desc = this.parent.truncate(data.description, this.parent.popupView.MAX_BODY_SIZE, '...');
     
     //submit data
-    var trelloPostableData = {name: data.title, 
+    var trelloPostableData = {
+        name: data.title, 
         desc: desc,
-        idList: data.listId, idMembers:idMembers
+        idList: data.listId
     };
+
+    if (data && data.membersId && data.membersId.length > 1) {
+        trelloPostableData.idMembers = data.membersId;
+    }
 
     // NOTE (Ace, 10-Jan-2017): Can only post valid labels, this can be a comma-delimited list of valid label ids, will err 400 if any label id unknown:
     if (data && data.labelsId && data.labelsId.length > 1 && data.labelsId.indexOf('-1') === -1) { // Will 400 if we post invalid ids (such as -1):
