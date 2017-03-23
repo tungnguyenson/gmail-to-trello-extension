@@ -355,15 +355,19 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
         $userAvatar = $('<img class="member-avatar">').attr('src', user.avatarUrl);
     }
     else {
-        var initials = user.username && user.username.length > 0 ? user.username.slice(0,1) : '?';
-        if (user.fullName && user.fullName.length > 1) {
+        var initials = '?';
+        if (user.initials && user.initials.length > 0) {
+            initials = user.initials;
+        } else if (user.fullName && user.fullName.length > 1) {
             var matched = user.fullName.match(/^(\w).*?[\s\\W]+(\w)\w*$/);
             if (matched && matched.length > 1) {
                 initials = matched[1] + matched[2]; // 0 is whole string            
             }
+        } else if (user.username && user.username.length > 0) {
+            user.username.slice(0,1);
         }
-        $userAvatar = $('<span class="member-avatar">').text(initials.toUpperCase());
 
+        $userAvatar = $('<span class="member-avatar">').text(initials.toUpperCase());
     }
 
     // NOTE (Ace, 6-Feb-2017): Assigning .userInfo to a variable and then updating it doesn't work right, so refer explicitly to item:

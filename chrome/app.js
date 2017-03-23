@@ -51,6 +51,11 @@ GmailToTrello.App.prototype.bindEvents = function() {
         self.popupView.validateData();
     });
 
+    this.model.event.addListener('onLoadTrelloMembersSuccess', function() {
+        // self.popupView.updateMembers();
+        // self.popupView.validateData();
+    })
+
     this.model.event.addListener('onCardSubmitComplete', function(target, params) {
         self.model.newCard.url = params.data.url;
         self.model.newCard.id = params.data.id;
@@ -104,6 +109,7 @@ GmailToTrello.App.prototype.bindEvents = function() {
         if (boardId !== "_" && boardId !== "" && boardId !== null) {
             self.model.loadTrelloLists(boardId);
             self.model.loadTrelloLabels(boardId);
+            self.model.loadTrelloMembers(boardId);
         }
     });
     

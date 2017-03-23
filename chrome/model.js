@@ -196,6 +196,20 @@ GmailToTrello.Model.prototype.loadTrelloLabels = function(boardId) {
     });
 };
 
+GmailToTrello.Model.prototype.loadTrelloMembers = function(boardId) {
+    log('loadTrelloMembers');
+
+    var self = this;
+    this.trello.members = null;
+
+    Trello.get('boards/' + boardId + '/members', {fields: "fullName,username,initials,avatarHash"}, function(data) {
+        self.trello.members = data;
+        self.event.fire('onLoadTrelloMembersSuccess');
+    }, function failure(data) {
+        self.event.fire('onAPIFailure', {data:data});
+    });
+};
+
 GmailToTrello.Model.prototype.submit = function() {
     var self = this;
     if (this.newCard === null) {
