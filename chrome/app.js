@@ -126,6 +126,7 @@ GmailToTrello.App.prototype.bindEvents = function() {
     this.popupView.event.addListener('onRequestDeauthorizeTrello', function() {
         log('GmailToTrello.onRequestDeauthorizeTrello');
         self.model.deauthorizeTrello();
+        self.popupView.clearBoard();
     });
   
     this.gmailView.event.addListener('onDetected', function(){

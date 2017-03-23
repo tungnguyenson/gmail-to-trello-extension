@@ -79,19 +79,19 @@
     outline: none; 
 }
 #gttButton * {outline:none}
-#gttButton img {vertical-align: -4px; height: 16px; padding-right:2px}
+#gttButton img {vertical-align: -4px; height: 16px; padding-right:2px;}
 
 #gttPopup .content {
     position: relative; left: 0; 
     padding:5px; 
 }
 
-#gttPopup .popupMsg {border:1px solid #EDC967; background: #F9EDB8; padding:5px 10px 15px; margin:10px}
+#gttPopup .popupMsg {border:1px solid #EDC967; background: #F9EDB8; padding:5px 10px 15px; margin: 10px;}
 #gttPopup #resize-icon {position: relative; bottom: 24px; right: 24px;}
 
 #gttPopup .listrow {min-height: 31px}
 
-#gttLabelsMsg, #gttMembersMsg {background: #F9EDB8;}
+#gttLabelsMsg, #gttMembersMsg {background: #F9EDB8; height: 16px; width: 29%; padding-left: 1%; margin-right: 70%; margin-bottom: 50px;}
 
 ul#gttLabels, ul#gttMembers {float: left; margin: 0; padding: 0; height: 66px; width: 100%; overflow: auto;}
 
@@ -142,3 +142,7 @@ ul#gttLabels, ul#gttMembers {float: left; margin: 0; padding: 0; height: 66px; w
 
 #gttPopup #gttPosition {-webkit-transform: rotate(90deg); display: inline-block; padding-top: 2px; font-weight: bold; font-size: 200%; vertical-align: middle;}
 
+#gttPopup .popupMsg #error {font-weight: bold;}
+#gttPopup .popupMsg #error dt {float: left; clear: left; width: 90px; text-align: right; color: red;}
+
+/* End, style.css */
