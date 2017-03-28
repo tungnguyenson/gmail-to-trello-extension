@@ -19,10 +19,6 @@ GmailToTrello.Model.prototype.init = function() {
 
     this.isInitialized = true;
 
-    // load user settings
-    if (self.settings.orgId == '-1')
-        self.settings.orgId = 'all';
-
     // init Trello
     this.initTrello();
 

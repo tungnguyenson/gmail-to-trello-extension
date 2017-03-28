@@ -4,6 +4,11 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Verison 2.5.1.1
+------------------
+- Layout changes to accomodate smaller screens
+
+
 Version 2.5.1.0
 ------------------
 - Can now assign other users

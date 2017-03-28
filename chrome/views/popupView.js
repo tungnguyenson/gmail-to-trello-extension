@@ -244,11 +244,6 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         $(this).removeClass('T-I-JW');
     });
 
-    $('#gttOrg', this.$popup).change(function() {
-        //log(boardId);
-        self.updateBoards();
-    });
-
     var $board = $('#gttBoard', this.$popup);
     $board.change(function() {
         var boardId = $board.val();
@@ -382,26 +377,6 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
         })
     });
     
-    var orgs = data.trello.orgs;
-    var $org = $('#gttOrg', this.$popup);
-    $org.append($('<option value="all">All</option>'));
-    for (var i = 0; i < orgs.length; i++) {
-        var item = orgs[i];
-        $org.append($('<option>').attr('value', item.id).append(item.displayName));
-    }
-    $org.val('all');
-/* NOTE (Ace, 15-Jan-2017): This sets Org to 'All' and lists all boards for all orgs. Uncomment if you want org selection:
-    if (this.data.settings.orgId) {
-        var settingId = this.data.settings.orgId;
-        for (var i = 0; i < data.trello.orgs.length; i++) {
-            var item = data.trello.orgs[i];
-            if (item.id == settingId) {
-                $org.val(settingId);
-                break;
-            }
-        }
-    }
-*/
     this.updateBoards();
     
     if (data.settings.hasOwnProperty('useBackLink')) {
@@ -506,32 +481,16 @@ GmailToTrello.PopupView.prototype.clearBoard = function() {
 };
 
 GmailToTrello.PopupView.prototype.updateBoards = function() {
-    var $org = $('#gttOrg', this.$popup);
-    var orgId = $org.val();
-
     var orgs = this.data.trello.orgs;
-    var filteredOrgs = [];
-
-    if (orgId === 'all')
-        filteredOrgs = orgs;
-    else {
-        for (var i = 0; i < orgs.length; i++) {
-            if (orgs[i].id == orgId)
-                filteredOrgs.push(orgs[i]);
-        }
-    }
 
     var boards = this.data.trello.boards;
     var newBoards = {};
 
-    for (var i = 0; i < filteredOrgs.length; i++) {
-        var orgItem = filteredOrgs[i];
-        // This is unnessessary because a "please select" option is already shown above
-        // if (i > 0 && filteredOrgs.length > 1)
-        //     $board.append($('<option value="_">-----</option>'));
-        for (var j = 0; j < boards.length; j++) {
-            if (boards[j].idOrganization == orgItem.id) {
-                var item = boards[j];
+    for (var iter = 0; iter < orgs.length; iter++) {
+        var orgItem = orgs[iter];
+        for (var iter2 = 0; iter2 < boards.length; iter2++) {
+            if (boards[iter2].idOrganization == orgItem.id) {
+                var item = boards[iter2];
                 var display = orgItem.displayName + ' &raquo; ' + item.name;
                 newBoards[display.toLowerCase()] = {'id': item.id, 'display': display}; // For sorting later
             }
@@ -540,7 +499,7 @@ GmailToTrello.PopupView.prototype.updateBoards = function() {
 
     var settings = this.data.settings;
     var settingId = 0;
-    if (settings.orgId && settings.orgId == orgId && settings.boardId) {
+    if (settings.boardId) {
         settingId = settings.boardId;
     }
 
@@ -563,10 +522,9 @@ GmailToTrello.PopupView.prototype.updateLists = function() {
     var lists = this.data.trello.lists;
     
     var settings = this.data.settings;
-    var orgId = $('#gttOrg', this.$popup).val();
     var boardId = $('#gttBoard', this.$popup).val();
     var settingId = (lists[0] ? lists[0].id : '0'); // Default to first item
-    if (settings.orgId && settings.orgId == orgId && settings.boardId && settings.boardId == boardId && settings.listId) {
+    if (settings.boardId && settings.boardId == boardId && settings.listId) {
         settingId = settings.listId;
     }
 
@@ -611,13 +569,11 @@ GmailToTrello.PopupView.prototype.updateLabels = function() {
     });
 
     var settings = this.data.settings;
-    var orgId = $('#gttOrg', this.$popup).val();
     var boardId = $('#gttBoard', this.$popup).val();
-    if (settings.orgId && settings.orgId == orgId && settings.boardId && settings.boardId == boardId && settings.labelsId) {
+    if (settings.boardId && settings.boardId == boardId && settings.labelsId) {
         var settingId = settings.labelsId;
         for (var i = 0; i < labels.length; i++) {
             var item = labels[i];
-            // var settingId = settings.labelsId[item.id] || '0';
             if (settingId.indexOf(item.id) !== -1) {
                 $('#gttLabels li[trelloId-label="' + item.id + '"]').click();
             }
@@ -661,9 +617,8 @@ GmailToTrello.PopupView.prototype.updateMembers = function() {
     });
 
     var settings = this.data.settings;
-    var orgId = $('#gttOrg', this.$popup).val();
     var boardId = $('#gttBoard', this.$popup).val();
-    if (settings.orgId && settings.orgId == orgId && settings.boardId && settings.boardId == boardId && settings.membersId) {
+    if (settings.boardId && settings.boardId == boardId && settings.membersId) {
         var settingId = settings.membersId;
         for (var i = 0; i < members.length; i++) {
             var item = members[i];
@@ -741,7 +696,6 @@ GmailToTrello.PopupView.prototype.bindEventHiddenEmails = function() {
 GmailToTrello.PopupView.prototype.validateData = function() {
     var self = this;
     var newCard = {};
-    var orgId = $('#gttOrg', this.$popup).val();
     var boardId = $('#gttBoard', this.$popup).val();
     var listId = $('#gttList', this.$popup).val();
     var due_Date = $('#gttDue_Date', this.$popup).val();
@@ -797,7 +751,6 @@ GmailToTrello.PopupView.prototype.validateData = function() {
 
     if (validateStatus) {
         newCard = {
-            orgId: orgId,
             boardId: boardId,
             listId: listId,
             labelsId: labelsId,
