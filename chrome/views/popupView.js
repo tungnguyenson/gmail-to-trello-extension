@@ -309,12 +309,7 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
     });
 
     $('#addToTrello', this.$popup).click(function() {
-        if (self.validateData()) {
-            //$('#addToTrello', this.$popup).attr('disabled', 'disabled');
-            self.$popupContent.hide();
-            self.showMessage(self, 'Submiting to Trello...');
-            self.event.fire('onSubmit');
-        }
+       self.submit();
     });
 
     $('#gttLabelsHeader', this.$popup).click(function(event) {
@@ -330,6 +325,17 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
     })
 };
 
+GmailToTrello.PopupView.prototype.submit = function() {
+    var self = this;
+    
+    if (self.validateData()) {
+        //$('#addToTrello', this.$popup).attr('disabled', 'disabled');
+        self.$popupContent.hide();
+        self.showMessage(self, 'Submiting to Trello...');
+        self.event.fire('onSubmit');
+    }
+};
+
 GmailToTrello.PopupView.prototype.showPopup = function() {
     var self = this;
 
@@ -342,14 +348,20 @@ GmailToTrello.PopupView.prototype.showPopup = function() {
         $(document).on('keydown', function(event) { // Have to use keydown otherwise cmd/ctrl let off late will hold processing
             var visible = self.popupVisible();
             var isEscape = event.which === $.ui.keyCode.ESCAPE;
+            var isEnter = event.which === $.ui.keyCode.ENTER;
             var isPeriodASCII = event.which === periodASCII_k;
             var isPeriodNumPad = event.which === periodNumPad_k;
             var isPeriodKeyCode = event.which === periodKeyCode_k;
             var isPeriod = isPeriodASCII || isPeriodNumPad || isPeriodKeyCode;
             var isCtrlCmd = event.ctrlKey || event.metaKey;
             var isCtrlCmdPeriod = isCtrlCmd && isPeriod;
-            if (visible && (isEscape || isCtrlCmdPeriod)) {
-                self.hidePopup();
+            var isCtrlCmdEnter = isCtrlCmd && isEnter;
+            if (visible) {
+                if (isEscape || isCtrlCmdPeriod) {
+                    self.hidePopup();
+                } else if (isCtrlCmdEnter) {
+                    self.submit();
+                }
                 // To stop propagation: event.stopPropagation();
             }
         });
