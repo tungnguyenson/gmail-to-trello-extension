@@ -1,5 +1,5 @@
 /**
- * Detect GMail's URL everytimes a tab is reloaded or openned
+ * Detect Gmail's URL everytimes a tab is reloaded or openned
  */
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
     log(changeInfo.status);
