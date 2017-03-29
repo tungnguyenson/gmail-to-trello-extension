@@ -18,11 +18,21 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
             localStorage[request.storage] = request.value;
             log(localStorage);
         }
-        sendResponse({storage: localStorage[request.storage]});
+        sendResponse({'storage': localStorage[request.storage]});
     } else {
         sendResponse({});
     }
 });
+
+/**
+ * Manage Keyboard Shortcut
+ */
+chrome.commands.onCommand.addListener(function(command) {
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {'message': 'gtt:keyboard_shortcut'}, function(response) {});
+    });
+});
+
  
 /**
  * Check if current URL is on Gmail
@@ -37,20 +47,13 @@ function checkForValidUrl(tab) {
 
         // Call content-script initialize function
         chrome.tabs.sendMessage(
-                //Selected tab id
-                tab.id,
-                //Params inside a object data
-                {message: "initialize"},
-                //Optional callback function
-                function(response) {
-                    //console.log(response);
-                    //update panel status
-                    //app.tabs[tab.id].panel.visible = response.status;
-                    //updateIconStatus(tab.id) 
-                }
-                );
+            //Selected tab id
+            tab.id,
+            //Params inside a object data
+            {'message': 'gtt:initialize'}
+        );
 
-            }
+    }
 }
 
 /**

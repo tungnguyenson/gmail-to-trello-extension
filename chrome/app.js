@@ -15,7 +15,7 @@ GmailToTrello.App = function() {
 
 GmailToTrello.App.prototype.bindEvents = function() {
    var self = this;
-    
+
     /*** Data's events binding ***/
     this.model.event.addListener('onBeforeAuthorize', function() {
         self.popupView.showMessage(self, 'Authorizing...');    
@@ -100,8 +100,6 @@ GmailToTrello.App.prototype.bindEvents = function() {
         self.gmailView.parsingData = false;
         self.model.gmail = self.gmailView.parseData();
         self.popupView.bindGmailData(self.model.gmail);
-        //else log('GTT::Initializer closing:Data is already initialized');
-
     });
 
     this.popupView.event.addListener('onBoardChanged', function(target, params) {
@@ -136,6 +134,11 @@ GmailToTrello.App.prototype.bindEvents = function() {
 
     });
 
+    chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+        if (request && request.hasOwnProperty('message') && request.message === 'gtt:keyboard_shortcut') {
+            self.popupView.showPopup();
+        }
+    }); 
 };
 
 GmailToTrello.App.prototype.initialize = function() {
