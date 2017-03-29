@@ -426,7 +426,7 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
     body = replaced;
 
     // Replace remaining bullets with asterisks:
-    replaced = body.replace(/[·-]/g, '*');
+    replaced = body.replace(/[·]/g, '*');
     body = replaced;
     
     // ORDER MATTERS FOR THIS NEXT SET:
