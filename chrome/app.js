@@ -578,3 +578,43 @@ GmailToTrello.App.prototype.decodeEntities = function(s) {
     return ta.value;
     // jQuery way, less safe: return $("<textarea />").html(s).text();
 };
+
+/**
+ * Check for ctrl/alt/shift down:
+ */
+GmailToTrello.App.prototype.modKey = function(event) {
+    var retn = '';
+
+    if (event.ctrlKey) {
+        retn = 'ctrl-';
+        if (event.ctrlLeft) {
+            retn = 'left';
+        }
+    } else if (event.altKey) {
+        retn = 'alt-';
+        if (event.altLeft) {
+            retn = 'left';
+        }
+    } else if (event.shiftKey) {
+        retn = 'shift-';
+        if (event.shiftLeft) {
+            retn += 'left';
+        }
+    } else if (event.metaKey) {
+        retn = 'metakey-';
+        if (window.navigator.platform.indexOf('Mac') !== -1) {
+            retn += 'clover';
+        } else {
+            retn += 'windows';
+        }
+    }
+
+    // If the string is partial, then it was the right-side key:
+    if (retn.slice(-1) === '-') {
+        retn += 'right';
+    }
+
+    return retn;
+};
+
+// End, app.js

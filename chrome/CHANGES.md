@@ -4,10 +4,15 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Verison 2.5.1.2
+------------------
+- Fix member assignment buttons to persist across board changes
+- Shift-click "Labels:" or "Members:" to clear
+- Fix typos GMail -> Gmail
+
 Verison 2.5.1.1
 ------------------
 - Layout changes to accomodate smaller screens
-
 
 Version 2.5.1.0
 ------------------

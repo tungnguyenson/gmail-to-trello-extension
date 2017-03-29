@@ -136,7 +136,7 @@ GmailToTrello.PopupView.prototype.detectPopup = function() {
     //detect duplicate toolBar
     var $button = $('#gttButton');
     var $popup = $('#gttPopup');
-    if ($button.length>0) {
+    if ($button.length > 0) {
         log('GTT::Found Button at:');log($button);
         if ($button[0].clientWidth <= 0) {
             log('GTT::Button is in an inactive region. Moving...');
@@ -231,12 +231,16 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
 
     /** Add Card Panel's behavior **/
 
-    this.$gttButton.click(function() {
-        self.$popup.toggle();
-        if (self.$popup.css('display') === 'block')
-            self.event.fire('onPopupVisible');
-        else {
-            self.stopWaitingHiddenThread();
+    this.$gttButton.click(function(event) {
+        if (self.parent.modKey(event)) {
+            // TODO (Ace, 28-Mar-2017): Figure out how to reset layout here!
+        } else {
+            self.$popup.toggle();
+            if (self.$popup.css('display') === 'block') {
+                self.event.fire('onPopupVisible');                
+            } else {
+                self.stopWaitingHiddenThread();            
+            }
         }
     }).hover(function() { // This is a google class that on hover highlights the button and arrow, darkens the background:
         $(this).addClass('T-I-JW');
@@ -266,7 +270,7 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
             $list.html($('<option value="">...please pick a board...</option>')).val('');
             self.data.settings.labelsId = '';
             self.data.settings.listId = '';
-            self.data.settings.membersId = '';
+            // self.data.settings.membersId = ''; // NOTE (Ace, 28-Mar-2017): Do NOT clear membersId, as we can persist selections across boards
         } else {
             $labelsMsg.text('Loading...').show();
             $membersMsg.text('Loading...').show();
@@ -317,9 +321,17 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         }
     });
 
+    $('#gttLabelsHeader', this.$popup).click(function(event) {
+        if (self.parent.modKey(event)) {
+            self.clearLabels();
+        }
+    });
 
-    //this.bindEventHiddenEmails();
-
+    $('#gttMembersHeader', this.$popup).click(function(event) {
+        if (self.parent.modKey(event)) {
+            self.clearMembers();
+        }
+    })
 };
 
 GmailToTrello.PopupView.prototype.bindData = function(data) {
@@ -394,6 +406,7 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
             .prop('value', pos)
             .text(this.position[pos]);
     }
+
 };
     
 GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
@@ -541,6 +554,12 @@ GmailToTrello.PopupView.prototype.updateLists = function() {
     $gtt.change();
 };
 
+GmailToTrello.PopupView.prototype.clearLabels = function() {
+    this.data.settings.labelsId = '';
+    this.updateLabels();
+    this.validateData();
+};
+
 GmailToTrello.PopupView.prototype.updateLabels = function() {
     var self = this;
     var labels = this.data.trello.labels;
@@ -585,6 +604,12 @@ GmailToTrello.PopupView.prototype.updateLabels = function() {
     $gtt.show();
 };
 
+GmailToTrello.PopupView.prototype.clearMembers = function() {
+    this.data.settings.membersId = '';
+    this.updateMembers();
+    this.validateData();
+};
+
 GmailToTrello.PopupView.prototype.updateMembers = function() {
     var self = this;
     var members = this.data.trello.members;
@@ -617,8 +642,7 @@ GmailToTrello.PopupView.prototype.updateMembers = function() {
     });
 
     var settings = this.data.settings;
-    var boardId = $('#gttBoard', this.$popup).val();
-    if (settings.boardId && settings.boardId == boardId && settings.membersId) {
+    if (settings.membersId && settings.membersId.length > 0) {
         var settingId = settings.membersId;
         for (var i = 0; i < members.length; i++) {
             var item = members[i];
@@ -627,7 +651,7 @@ GmailToTrello.PopupView.prototype.updateMembers = function() {
             }
         }
     } else {
-        settings.membersId = ''; // Members do not have to be set, so no default.
+        settings.membersId = '';
     }
 
     $gtt.show();
@@ -639,58 +663,6 @@ GmailToTrello.PopupView.prototype.stopWaitingHiddenThread = function() {
         this.waitingHiddenThreadRetries = 0;
         clearInterval(this.waitingHiddenThreadProcId);
     }
-};
-
-GmailToTrello.PopupView.prototype.bindEventHiddenEmails = function() {
-    var self = this;
-    // update gmail thread on click
-    $('#gttTitle', this.$popup).change(function() {
-        self.dataDirty = true;
-    });
-    $('#gttDesc', this.$popup).change(function() {
-        self.dataDirty = true;
-    });
-
-    log('debug hidden threads');
-    this.$expandedEmails.parent().find('> .kx,> .kv,> .kQ,> .h7').click(function() {
-        if (self.$popup.css('display') === 'none')
-            return;
-
-        log('Hidden email thread clicked');
-        log(this.classList);
-        if (self.dataDirty)
-            return;
-
-        if (this.classList.contains('kx') || this.classList.contains('kQ'))
-            return;
-        else
-            self.parseData();
-
-        self.waitingHiddenThreadRetries = 10;
-        self.waitingHiddenThreadElement = this;
-
-        if (!self.waitingHiddenThread) {
-            //loading, give it a change 
-            self.waitingHiddenThread = true;
-            self.waitingHiddenThreadProcId = setInterval(function() {
-                log('waitingHiddenThread. round ' + self.waitingHiddenThreadRetries);
-                var elm = self.waitingHiddenThreadElement;
-                if (elm.classList.contains('h7') || elm.classList.contains('kv')) {
-                    self.stopWaitingHiddenThread();
-                    self.parseData();
-                }
-                if (self.waitingHiddenThreadRetries > 0)
-                    self.waitingHiddenThreadRetries--;
-                else
-                    self.stopWaitingHiddenThread();
-            }, 1000);
-        }
-    });
-    $(this.selectors.hiddenEmails).click(function() {
-        log(this.classList);
-        if (!self.dataDirty)
-            self.parseData();
-    });
 };
 
 GmailToTrello.PopupView.prototype.validateData = function() {
@@ -723,8 +695,8 @@ GmailToTrello.PopupView.prototype.validateData = function() {
         }).get().join();
     var membersCount = $('#gttMembers li', this.$popup).length;
 
-    if (!membersCount && membersId.length < 1 && this.data && this.data.settings && this.data.settings.labelsId) {
-        membersId = this.data.settings.membersId; // We're not yet showing labels so override labelsId with settings
+    if (!membersCount && membersId.length < 1 && this.data && this.data.settings && this.data.settings.membersId) {
+        membersId = this.data.settings.membersId; // We're not yet showing members so override membersId with settings
     }
 
     var mime_array = function (tag) {
