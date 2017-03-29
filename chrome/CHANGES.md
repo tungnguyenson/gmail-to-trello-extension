@@ -9,6 +9,7 @@ Version 2.5.1.3
 - Support keyboard shortcuts: Alt/Opt+Shift+G is the default to show the popup (once in Gmail and the button is visible)
 - While the Popup is showing, hitting ESCAPE or CTRL+. or CMD+. will dismiss the popup.
 - CTRL/CMD+ENTER will Add to Trello.
+- Change stray bullets to asterisks but not stray hyphens
 
 Verison 2.5.1.2
 ------------------
