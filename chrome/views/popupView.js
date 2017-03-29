@@ -205,10 +205,9 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         }
 */
     });
-    //
 
     $('#close-button', this.$popup).click(function() {
-        self.$popup.hide();
+        self.hidePopup();
     });
 
     $('#gttPosition', this.$popup).click(function() {
@@ -227,19 +226,16 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         self.validateData();
     });
 
-
-
     /** Add Card Panel's behavior **/
 
     this.$gttButton.click(function(event) {
         if (self.parent.modKey(event)) {
             // TODO (Ace, 28-Mar-2017): Figure out how to reset layout here!
         } else {
-            self.$popup.toggle();
-            if (self.$popup.css('display') === 'block') {
-                self.event.fire('onPopupVisible');                
+            if (self.popupVisible()) {
+                self.hidePopup();
             } else {
-                self.stopWaitingHiddenThread();            
+                self.showPopup();
             }
         }
     }).hover(function() { // This is a google class that on hover highlights the button and arrow, darkens the background:
@@ -333,6 +329,53 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         }
     })
 };
+
+GmailToTrello.PopupView.prototype.showPopup = function() {
+    var self = this;
+
+    const periodASCII_k = 46;
+    const periodNumPad_k = 110;
+    const periodKeyCode_k = 190;
+
+    if (self.$gttButton && self.$popup) {
+        self.$popup.show();
+        $(document).on('keydown', function(event) { // Have to use keydown otherwise cmd/ctrl let off late will hold processing
+            var visible = self.popupVisible();
+            var isEscape = event.which === $.ui.keyCode.ESCAPE;
+            var isPeriodASCII = event.which === periodASCII_k;
+            var isPeriodNumPad = event.which === periodNumPad_k;
+            var isPeriodKeyCode = event.which === periodKeyCode_k;
+            var isPeriod = isPeriodASCII || isPeriodNumPad || isPeriodKeyCode;
+            var isCtrlCmd = event.ctrlKey || event.metaKey;
+            var isCtrlCmdPeriod = isCtrlCmd && isPeriod;
+            if (visible && (isEscape || isCtrlCmdPeriod)) {
+                self.hidePopup();
+                // To stop propagation: event.stopPropagation();
+            }
+        });
+        self.event.fire('onPopupVisible');
+    }
+};
+
+GmailToTrello.PopupView.prototype.hidePopup = function() {
+    var self = this;
+
+    if (self.$gttButton && self.$popup) {
+        self.$popup.hide();
+    }
+    $(document).off('keydown');
+    self.stopWaitingHiddenThread();
+}
+
+GmailToTrello.PopupView.prototype.popupVisible = function() {
+    var self = this;
+    var visible = false;
+    if (self.$gttButton && self.$popup && self.$popup.css('display') === 'block') {
+        visible = true;
+    }
+
+    return visible;
+}
 
 GmailToTrello.PopupView.prototype.bindData = function(data) {
     var self = this;

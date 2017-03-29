@@ -35,21 +35,18 @@ function log(data) {
  * @param  sendResponse Callback function
  */
  function requestHandler(request, sender, sendResponse) {
-    switch (request.message) {
-        case "initialize":
-            log('GTT::GlobalInit: '+globalInit.toString());
-            globalInit = true;
-            // enough delay for gmail finishes rendering
-            log('GTT::tabs.onUpdated - complete');
-            setTimeout(function() {
-                jQuery(document).ready(function() {                    
-                    log('GTT::document.ready');
-                    getGmailObject();
-                    app.initialize();
-                });
-            }, 1000);
-            
-            break;
+    if (request && request.hasOwnProperty('message') && request.message === 'gtt:initialize') {
+        log('GTT::GlobalInit: '+globalInit.toString());
+        globalInit = true;
+        // enough delay for gmail finishes rendering
+        log('GTT::tabs.onUpdated - complete');
+        setTimeout(function() {
+            jQuery(document).ready(function() {                    
+                log('GTT::document.ready');
+                getGmailObject();
+                app.initialize();
+            });
+        }, 1000);
     }
 }
 
@@ -67,7 +64,7 @@ var app = new GmailToTrello.App();
  */
 
 function getGmailObject() {
-    document.addEventListener('GTT_connectExtension', function(e) {
+    document.addEventListener('gtt:connect_extension', function(e) {
         app.model.userEmail = e.detail.userEmail; // Was: e.detail[10];
     // console.log(app.data);
     });

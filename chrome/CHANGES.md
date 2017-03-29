@@ -4,6 +4,11 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.5.1.3
+-----------------
+- Support keyboard shortcuts: Alt/Opt+Shift+G is the default to show the popup (once in Gmail and the button is visible)
+- While the Popup is showing, hitting ESCAPE or CTRL+. or CMD+. will dismiss the popup.
+
 Verison 2.5.1.2
 ------------------
 - Fix member assignment buttons to persist across board changes
