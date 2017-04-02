@@ -281,3 +281,192 @@ GmailToTrello.Model.prototype.submit = function() {
         self.event.fire('onAPIFailure', {data:data});
     });
 };
+
+/**
+ * Go get a URL and return it as a blob
+ */
+GmailToTrello.Model.prototype.urlToData = function(attach1, callback) {
+    var self = this;
+
+    var encodeForTransfer = function(args) {
+        if (args && args.data) {
+            const dataView = new DataView(args.data); // arrayBuffer
+            const name = args.name || '?';
+            const filename = args.filename || '?.txt';
+            const mimeType = args.mimeType || 'text/plain';
+
+            const BOUNDARY = 'BOUNDARY1234';
+            const BOUNDARY_DASHES = '--';
+            const NEWLINE = '\r\n';
+            const ACTUAL_CONTENT_TYPE = 'Content-Type: ' + args.mimeType;
+            const ACTUAL_CONTENT_DISPOSITION = 'Content-Disposition: form-data; name="' + name + '"; filename="' + filename + '"';
+
+            const postDataStart = [
+              NEWLINE, BOUNDARY_DASHES, BOUNDARY, NEWLINE,
+              ACTUAL_CONTENT_DISPOSITION, NEWLINE, ACTUAL_CONTENT_TYPE, NEWLINE, NEWLINE
+            ].join('');
+
+            const postDataEnd = [NEWLINE, BOUNDARY_DASHES, BOUNDARY, BOUNDARY_DASHES, NEWLINE].join('');
+
+            const size = postDataStart.length + dataView.byteLength + postDataEnd.length;
+            const uint8Array = new Uint8Array(size);
+            let i = 0;
+
+            /*
+            for (; i < postDataStart.length; i++) {
+              uint8Array[i] = postDataStart.charCodeAt(i) & 0xFF;
+            }
+            */
+
+            for (let j = 0; j < dataView.byteLength; i++, j++) {
+              uint8Array[i] = dataView.getUint8(j);
+            }
+            /*
+            for (let j = 0; j < postDataEnd.length; i++, j++) {
+              uint8Array[i] = postDataEnd.charCodeAt(j) & 0xFF;
+            }
+            */
+
+            const buffer_k = uint8Array.buffer;
+
+            var encoder = new TextDecoder('utf-8');
+            const payload = encoder.decode(uint8Array);
+
+            return payload;
+        } else {
+            return '';
+        }
+    };
+
+    if (attach1 && attach1.url.length > 0) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('get', attach1.url);
+        xhr.responseType = 'blob'; // Use blob to get the mimetype
+        xhr.onload = function() {
+            var fileReader = new FileReader();
+            fileReader.onload = function() {
+                var result = this.result || '';
+                var mimeType = xhr.response.type || attach1.mimeType || '?';
+                var name = (attach1.name || '?') + ' [' + mimeType + ']';
+                var filename = (attach1.url.split('/').pop().split('#')[0].split('?')[0]) || attach1.url || '?.txt'; // Removes # or ? after filename
+                var data = encodeForTransfer({
+                    'mimeType': mimeType,
+                    'name': name,
+                    'filename': filename,
+                    'data': result
+                });
+                var hashRetn = {
+                    'mimeType': 'multipart/form-data; boundary=BOUNDARY1234',
+                    'Content-Type': 'multipart/form-data; boundary=BOUNDARY1234',
+                    'Content-Length': data.length,
+                    'name': name,
+                    'file': data
+                };
+
+                hashRetn = {'file': encodeURIComponent(data)};
+
+                callback(hashRetn);
+            };
+            fileReader.readAsArrayBuffer(xhr.response); // Use filereader on blob to get content
+        };
+        xhr.send();        
+    }
+};
+
+/*
+   var xhr = new XMLHttpRequest();
+    xhr.open('get', url);
+    xhr.responseType = 'blob';
+    xhr.onload = function() {
+        var fileReader = new FileReader();
+        fileReader.onload = function() {
+            var result = this.result || '';
+            var dataURL = result.split(',');
+            var base64 = dataURL.pop(); // Grab last item
+            callback(xhr.response.type, base64);
+        };
+        fileReader.readAsDataURL(xhr.response);
+    };
+    xhr.send();
+
+        var blob = xhr.response;
+        var file = new File([blob], name + ' [' + blob.type + ']');
+
+        var fileReader = new FileReader();
+        fileReader.onload = function() {
+            callback(xhr.response.type, encodeURIComponent(this.result || ''));
+        };
+        fileReader.readAsText(xhr.response);
+
+        var fr = new FileReader();
+        fr.onload = function() {
+            var base64 = this.result.split(',')[1];
+
+            callback(this.result || ''); // (this.result.split(',')[1]) || ''); // Only sends base64 encoded part into callback
+        };
+        fr.readAsDataURL(xhr.response); // readAsDataURL(xhr.response); // Returns something like: "data:image/png;base64,iVBORw..."
+    };
+    xhr.send();
+    var formData = new FormData();
+
+    formData.append("token", TOKEN);
+    formData.append("key", KEY);
+
+    // HTML file input, chosen by user
+    formData.append("file", document.getElementById('chooser').files[0]);
+
+  var request = new XMLHttpRequest();
+  request.open("POST", "https://api.trello.com/1/cards/" + CARD + "/attachments");
+  request.send(formData);
+  
+https://miguelmota.com/bytes/xmlhttprequest-multipart-post:
+const xhr = new XMLHttpRequest();
+const url = 'https://example.com';
+
+// (assume dataView contains binary audio data)
+const dataView = new DataView(buffer);
+
+xhr.open('POST', url, true);
+xhr.responseType = 'arraybuffer';
+xhr.onload = (event) => {
+  console.log(xhr.response);
+};
+
+xhr.onerror = (error) => {
+    console.error(error);
+};
+
+const BOUNDARY = 'BOUNDARY1234';
+const BOUNDARY_DASHES = '--';
+const NEWLINE = '\r\n';
+const AUDIO_CONTENT_TYPE = 'Content-Type: audio/L16; rate=16000; channels=1';
+const AUDIO_CONTENT_DISPOSITION = 'Content-Disposition: form-data; name="audio"';
+
+const postDataStart = [
+  NEWLINE, BOUNDARY_DASHES, BOUNDARY, NEWLINE,
+  AUDIO_CONTENT_DISPOSITION, NEWLINE, AUDIO_CONTENT_TYPE, NEWLINE, NEWLINE
+].join('');
+
+const postDataEnd = [NEWLINE, BOUNDARY_DASHES, BOUNDARY, BOUNDARY_DASHES, NEWLINE].join('');
+
+const size = postDataStart.length + dataView.byteLength + postDataEnd.length;
+const uint8Array = new Uint8Array(size);
+let i = 0;
+
+for (; i < postDataStart.length; i++) {
+  uint8Array[i] = postDataStart.charCodeAt(i) & 0xFF;
+}
+
+for (let j = 0; j < dataView.byteLength; i++, j++) {
+  uint8Array[i] = dataView.getUint8(j);
+}
+
+for (let j = 0; j < postDataEnd.length; i++, j++) {
+  uint8Array[i] = postDataEnd.charCodeAt(j) & 0xFF;
+}
+
+const payload = uint8Array.buffer;
+
+xhr.setRequestHeader('Content-Type', 'multipart/form-data; boundary=' + BOUNDARY);
+xhr.send(payload);
+*/
