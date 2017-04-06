@@ -310,29 +310,36 @@ GmailToTrello.Model.prototype.urlToData = function(attach1, callback) {
 
             const size = postDataStart.length + dataView.byteLength + postDataEnd.length;
             const uint8Array = new Uint8Array(size);
+            var str = postDataStart;
+
             let i = 0;
 
-            /*
             for (; i < postDataStart.length; i++) {
               uint8Array[i] = postDataStart.charCodeAt(i) & 0xFF;
+              // str += ('0' + (postDataStart.charCodeAt(i) & 0xFF).toString(16)).substr(1);
             }
-            */
 
             for (let j = 0; j < dataView.byteLength; i++, j++) {
               uint8Array[i] = dataView.getUint8(j);
+              str += ('00' + dataView.getUint8(j).toString(16)).substr(-2);
+              if ((1+j) % 2 === 0) {
+                str += ' ';
+              }
             }
-            /*
+
             for (let j = 0; j < postDataEnd.length; i++, j++) {
               uint8Array[i] = postDataEnd.charCodeAt(j) & 0xFF;
+              // str += ('0' + (postDataEnd.charCodeAt(j) & 0xFF).toString(16)).substr(1);
             }
-            */
+
+            str += postDataEnd;
 
             const buffer_k = uint8Array.buffer;
 
-            var encoder = new TextDecoder('utf-8');
-            const payload = encoder.decode(uint8Array);
+            // var encoder = new TextDecoder('utf-8');
+            // const payload = encoder.decode(uint8Array);
 
-            return payload;
+            return str; // payload;
         } else {
             return '';
         }
@@ -356,14 +363,12 @@ GmailToTrello.Model.prototype.urlToData = function(attach1, callback) {
                     'data': result
                 });
                 var hashRetn = {
-                    'mimeType': 'multipart/form-data; boundary=BOUNDARY1234',
-                    'Content-Type': 'multipart/form-data; boundary=BOUNDARY1234',
-                    'Content-Length': data.length,
+                    'mimeType': mimeType,
+                    'filename': filename,
                     'name': name,
+                    'content-type': 'multipart/form-data; boundary=BOUNDARY1234',
                     'file': data
                 };
-
-                hashRetn = {'file': encodeURIComponent(data)};
 
                 callback(hashRetn);
             };

@@ -207,3 +207,227 @@ Content-Type: text/html
 <!DOCTYPE html><title>Content of a.html.</title>
 
 -----------------------------9051914041544843365972754266--
+
+
+Request Headers
+Provisional headers are shown
+Accept:application/json, text/javascript, */*; q=0.01
+Content-Type:application/x-www-form-urlencoded; charset=UTF-8
+Origin:https://mail.google.com
+Referer:https://mail.google.com/mail/u/0/
+User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36
+
+Form Data
+view source
+view URL encoded
+key:c50413b23ee49ca49a5c75ccf32d0459
+token:e50e1d7ebd3e252477a38a41d6c1cd002bfc6b4ebab61366c9a09b3bd9c9088d
+mimeType:multipart/form-data; boundary=BOUNDARY1234
+Content-Type:multipart/form-data; boundary=BOUNDARY1234
+name:PDF file [image/png]
+file:
+--BOUNDARY1234
+Content-Disposition: form-data; name="PDF file [image/png]"; filename="icon_3_pdf_x32.png"
+Content-Type: image/png
+
+�PNG
+
+IHDR  szz�sBIT|d�<IDATX�핱J�P��s)�C�n�����ֽq�9��Ny'�.m����H�B禐'�.R���b���&�^�|SHN���r�����A!}؀�8��$�t<�2�������.��BaM�
+B_8�M�  �<@Kx˷_�5��>^W��.Oz7p����5z�O8���63�Sa���F�L��T'���}q����:FD�cRf\�Gi��@������+�02���*С4 ��m�������@�4e���8F�R맸̮T2 ��+����eq�7l4�AF�l:#\�'p �8��ٷj�����I���l�k��IEND�B`�
+--BOUNDARY1234--
+
+Trello Support via helpscout.net 
+Apr 3 (2 days ago)
+
+to me 
+Hi Andrew,
+
+Thanks for reaching out. I'm going to check in on this with our developer advocate. Either he or I will be back in touch once we've discussed your question.
+
+Let us know if you have any other questions or concerns in the meantime, and we'd be happy to help.
+
+All the best,
+
+Caity
+The Trello Team
+
+Need priority support for your business? Check out Trello Business Class.
+
+How satisfied were you with your interaction with Trello Support?
+Very Satisfied  Neutral   Not satisfied
+{#HS:343464622-184253#}   
+On Sun, Apr 2, 2017 at 5:08 AM EDT, Andrew Coven <a@cov.in> wrote:
+Andrew Coven (acoven) has authorized you to access their account. 
+Access Account (Be sure to use an Incognito Window.) 
+Disable Access (Expiration: Sun Apr 09 2017 05:08:26 GMT-0400 (EDT))
+
+
+
+On Sun, Apr 2, 2017 at 5:08 AM EDT, Andrew Coven <a@cov.in> wrote:
+Attaching a file to a card that exists in memory not on disk. Have tried all sorts of ideas from all over the web. Could you please point me at a working example of attaching a file to a card? Like a real file, not a "@[your/file/here]" example. Because it seems impossible. I don't know if it's supposed to be just binary data, or UUENCODED, or what. Postings suggest only form-data works, but I haven't yet been able to get that to work for me. PLEASE HELP.
+
+Trello Support via helpscout.net 
+Apr 3 (2 days ago)
+
+to me 
+Hey Andrew,
+
+Sorry that our docs are lacking on this. Can you give me some more details about what types of files you are wanting to attach?
+
+I attached a html file by grabbing the binary of it and copying and pasting it (using: xxd thing.html | pbcopy) into a curl command:
+curl -X POST -d key=mykey -d token=mytoken https://api.trello.com/1/cards/58e2a7bb3e6e4bfe3eaace42/attachments -d file="00000000: 3c68 746d 6c3e 3c2f 6874 6d6c 3e <html></html>" -d name="thing.html"
+
+This attached the html file as I would expect: https://trello.com/c/MQN6UicM/2-in-memory
+
+I also attached a file from my desktop using the @ annotation:
+curl --form "file=@./chorizo.png" https://api.trello.com/1/cards/58e2691ca29a7d21651dad51/attachments\?key\=mykey\&token\=mytoken
+
+And that attached the file here: https://trello.com/c/LxLyKKH3/1-chorizo
+
+Let me know if this isn't helpful. Also, once I hear back about context/file, I'll keep digging!
+
+All the best,
+
+Bentley
+The Trello Team
+
+Need priority support for your business? Check out Trello Business Class.
+
+How satisfied were you with your interaction with Trello Support?
+Very Satisfied  Neutral   Not satisfied
+{#HS:343464622-184253#}  
+
+
+Andrew Coven  
+This is super helpful, thank you. I'm trying to upload a jpg via javascript. ...
+Apr 4 (1 day ago)
+
+Trello Support via helpscout.net 
+11:34 AM (11 hours ago)
+
+to me 
+I made a gist with the verbose output from curl: https://gist.github.com/bentleycook/f7a71bba48a94e456ed23cfe5004bbe6.
+
+Just to confirm, you are currently using Client.js? I'm not deeply familiar with how it implements POSTing. Might be something we can update to accommodate your use-case.
+
+The binary data is just a straight hex dump.
+
+All the best,
+
+Bentley
+The Trello Team
+
+Need priority support for your business? Check out Trello Business Class.
+
+How satisfied were you with your interaction with Trello Support?
+Very Satisfied  Neutral   Not satisfied
+{#HS:343464622-184253#}  
+
+
+Andrew Coven <a@cov.in>
+1:45 PM (8 hours ago)
+
+to Trello 
+Awesome thanks. Yeah I'm currently using your Client.js. Want to try hacking it with me to give it a function that'll work for this case? Might be as easy as noticing a Content-Type passed in as an option and grabbing and using it. Do you have the source beyond the coffeesxeipt that's posted? I only have the minified version.
+
+
+Trello Support
+1:58 PM (8 hours ago)
+
+to me 
+Yeah, the full source is here: https://trello.com/1/client.coffee. It looks like it is doing some pretty basic stuff WRT passing through POST requests. Let me play around with it and see if we can't do better.
+
+All the best,
+
+Bentley
+The Trello Team
+
+Need priority support for your business? Check out Trello Business Class.
+
+How satisfied were you with your interaction with Trello Support?
+Very Satisfied  Neutral   Not satisfied
+{#HS:343464622-184253#}  
+
+curl --form "file=@./chorizo.png" https://api.trello.com/1/cards/58e2691ca29a7d21651dad51/attachments\?key\=myKey\&token\=myToken --verbose
+*   Trying 88.221.5.192...
+* TCP_NODELAY set
+* Connected to api.trello.com (88.221.5.192) port 443 (#0)
+* TLS 1.2 connection using TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+* Server certificate: *.trello.com
+* Server certificate: DigiCert SHA2 Secure Server CA
+* Server certificate: DigiCert Global Root CA
+> POST /1/cards/58e2691ca29a7d21651dad51/attachments?key=myKey&token=myToken HTTP/1.1
+> Host: api.trello.com
+> User-Agent: curl/7.51.0
+> Accept: */*
+> Content-Length: 100626
+> Expect: 100-continue
+> Content-Type: multipart/form-data; boundary=------------------------40a57310b3358855
+>
+< HTTP/1.1 100 Continue
+< HTTP/1.1 200 OK
+< Cache-Control: max-age=0, must-revalidate, no-cache, no-store
+< X-Content-Type-Options: nosniff
+< Strict-Transport-Security: max-age=15768000
+< X-XSS-Protection: 1; mode=block
+< X-FRAME-OPTIONS: DENY
+< X-Trello-Version: 1.928.2
+< X-Trello-Environment: Production
+< Access-Control-Allow-Origin: *
+< Access-Control-Allow-Methods: GET, PUT, POST, DELETE
+< Access-Control-Allow-Headers: Authorization, Accept, Content-Type
+< X-Server-Time: 1491416757193
+< Expires: Thu, 01 Jan 1970 00:00:00
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 363
+< ETag: W/"16b-eab2928f"
+< Vary: Accept-Encoding
+< Date: Wed, 05 Apr 2017 18:25:57 GMT
+< Connection: keep-alive
+<
+* Curl_http_done: called premature == 0
+* Connection #0 to host api.trello.com left intact
+{"id":"58e536b15d3355e71a1bae36","bytes":100423,"date":"2017-04-05T18:25:53.860Z","edgeColor":null,"idMember":"5589c3ea49b40cedc28cf70e","isUpload":true,"mimeType":null,"name":"chorizo.png","previews":[],"url":"https://trello-attachments.s3.amazonaws.com/58e2690d7d9c2211e3d30a52/58e2691ca29a7d
+POSTing w/ binary .html file
+
+curl -X POST -d key=myKey -d token=myToken https://api.trello.com/1/cards/58e2a7bb3e6e4bfe3eaace42/attachments -d file="00000000: 3c68 746d 6c3e 3c2f 6874 6d6c 3e0a       <html></html>." -d name="thing.html" --verbose
+Note: Unnecessary use of -X or --request, POST is already inferred.
+*   Trying 88.221.5.192...
+* TCP_NODELAY set
+* Connected to api.trello.com (88.221.5.192) port 443 (#0)
+* TLS 1.2 connection using TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+* Server certificate: *.trello.com
+* Server certificate: DigiCert SHA2 Secure Server CA
+* Server certificate: DigiCert Global Root CA
+> POST /1/cards/58e2a7bb3e6e4bfe3eaace42/attachments HTTP/1.1
+> Host: api.trello.com
+> User-Agent: curl/7.51.0
+> Accept: */*
+> Content-Length: 194
+> Content-Type: application/x-www-form-urlencoded
+>
+* upload completely sent off: 194 out of 194 bytes
+< HTTP/1.1 200 OK
+< Cache-Control: max-age=0, must-revalidate, no-cache, no-store
+< X-Content-Type-Options: nosniff
+< Strict-Transport-Security: max-age=15768000
+< X-XSS-Protection: 1; mode=block
+< X-FRAME-OPTIONS: DENY
+< X-Trello-Version: 1.928.2
+< X-Trello-Environment: Production
+< Access-Control-Allow-Origin: *
+< Access-Control-Allow-Methods: GET, PUT, POST, DELETE
+< Access-Control-Allow-Headers: Authorization, Accept, Content-Type
+< X-Server-Time: 1491417023779
+< Expires: Thu, 01 Jan 1970 00:00:00
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 353
+< ETag: W/"161-b7ce52f2"
+< Vary: Accept-Encoding
+< Date: Wed, 05 Apr 2017 18:30:23 GMT
+< Connection: keep-alive
+<
+* Curl_http_done: called premature == 0
+* Connection #0 to host api.trello.com left intact
+{"id":"58e537bf6948e339416afbd0","bytes":65,"date":"2017-04-05T18:30:23.614Z","edgeColor":null,"idMember":"5589c3ea49b40cedc28cf70e","isUpload":true,"mimeType":null,"name":"thing.html","previews":[],"url":"https://trello-attachments.s3.amazonaws.com/58e2690d7d9c2211e3d30a52/58e2a7bb3e6e4bfe3eaace42/5f5131a51646e02a18667eeb5fdcb76d/Upload","pos":65536}%
+
