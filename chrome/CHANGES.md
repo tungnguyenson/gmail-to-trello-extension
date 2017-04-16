@@ -4,6 +4,11 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.5.3.0
+-----------------
+- Make minimum width bigger for popup
+
+
 Version 2.5.2.0
 -----------------
 - Attachments downloaded to memory and uploaded to Trello instead of just providing links

@@ -10,7 +10,7 @@ GmailToTrello.PopupView = function(parent) {
     
     this.size_k = {
         'width': {
-            'min': 450,
+            'min': 620,
             'max': 1400
         },
         'height': {
