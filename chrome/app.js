@@ -73,12 +73,13 @@ GmailToTrello.App.prototype.bindEvents = function() {
             if (!attach1.hasOwnProperty('checked') || attach1.checked !== true) { // Skip this attachment
                 params.data.event.fire('onSubmitAttachments', {data:params.data, images:params.images, attachments:params.attachments});
             } else {
-                var trello_attach = {'mimeType': attach1.mimeType, 'name': attach1.name, 'url': attach1.url};
-                // self.Model.submitAttachments(params.data.newCard.id, params.attachments);
-                Trello.post('cards/' + params.data.newCard.id + '/attachments', trello_attach, function success(data) {
-                    params.data.event.fire('onSubmitAttachments', {data:params.data, images:params.images, attachments:params.attachments});
-                }, function failure(data) {
-                    self.popupView.displayAPIFailedForm(data);
+                self.model.urlToData(attach1, function(trello_attach) {
+                    // self.Model.submitAttachments(params.data.newCard.id, params.attachments);
+                    Trello.post('cards/' + params.data.newCard.id + '/attachments', trello_attach, function success(data) {
+                        params.data.event.fire('onSubmitAttachments', {data:params.data, images:params.images, attachments:params.attachments});
+                    }, function failure(data) {
+                        self.popupView.displayAPIFailedForm(data);
+                    });
                 });
             }
         } else { // Done with attach list
@@ -518,8 +519,8 @@ GmailToTrello.App.prototype.getSelectedText = function() {
  * Truncate a string
  */
 GmailToTrello.App.prototype.truncate = function(text, max, add) {
-    var retn = text || "";
-    const add_k = add || "";
+    var retn = text || '';
+    const add_k = add || '';
     const max_k = max - add_k.length;
 
     if (text && text.length > max_k) {

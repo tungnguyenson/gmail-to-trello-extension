@@ -10,7 +10,7 @@ GmailToTrello.PopupView = function(parent) {
     
     this.size_k = {
         'width': {
-            'min': 450,
+            'min': 620,
             'max': 1400
         },
         'height': {
@@ -281,6 +281,78 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         self.validateData();
     });
 
+    $('#gttDue_Shortcuts', this.$popup).change(function() {
+        const dayOfWeek_k = {
+            'sun': 0, 'sunday': 0,
+            'mon': 1, 'monday': 1,
+            'tue': 2, 'tuesday': 2,
+            'wed': 3, 'wednesday': 3,
+            'thu': 4, 'thursday': 4,
+            'fri': 5, 'friday': 5,
+            'sat': 6, 'saturday': 6
+        };
+        const dom_date_format_k = 'yyyy-MM-dd';
+        const dom_time_format_k = 'HH:mm';
+
+        var due = $(this).val().split(' '); // Examples: d=monday am=2 | d+0 pm=3:00
+
+        var d = new Date();
+
+        var due_date = (due[0] || '');
+        var due_time = due[1] || '';
+
+        var new_date = '';
+        var new_time = '';
+
+        if (due_date.substr(1,1) === '+') {
+            d.setDate(d.getDate() + parseInt(due_date.substr(2)), 10);
+            new_date = d.toString(dom_date_format_k);
+        } else if (due_date.substr(1,1) === '=') {
+            d.setDate(d.getDate() + 1); // advance to tomorrow, don't return today for "next x"
+            const weekday_k = due_date.substr(2).toLowerCase();
+            if (weekday_k === '0') {
+                new_date = '';
+            } else {
+                const weekday_num_k = dayOfWeek_k[weekday_k];
+                while (d.getDay() !== weekday_num_k) {
+                    d.setDate(d.getDate() + 1);
+                }
+                new_date = d.toString(dom_date_format_k);                
+            }
+        } else {
+            log('Unknown due date shortcut: "' + due_date + '"');
+        }
+
+        if (due_time.substr(2,1) === '+') {
+            d.setTime(d.getTime() + parseInt(due_time.substr(3)), 10);
+            new_time = d.toString(dom_time_format_k);
+        } else if (due_time.substr(2,1) === '=') {
+            if (due_time.substr(3) === '0') {
+                new_time = '';
+            } else {
+                const am_k = due_time.substr(0,1).toLowerCase() === 'a';
+                const hhmm_k = due_time.substr(3).split(':');
+                var hours = parseInt(hhmm_k[0], 10);
+                // http://stackoverflow.com/questions/15083548/convert-12-hour-hhmm-am-pm-to-24-hour-hhmm:
+                if (hours === 12) {
+                    hours = 0;
+                }
+                if (!am_k) {
+                    hours += 12;
+                }
+                new_time = ('0' + hours.toString()).substr(-2)
+                    + ':' + ('0' + (hhmm_k[1] || 0).toString()).substr(-2);
+            }
+        } else {
+            log('Unknown due time shortcut: "' + due_time + '"');
+        }
+
+        $('#gttDue_Date', this.$popup).val(new_date || '');
+        $('#gttDue_Time', this.$popup).val(new_time || '');
+
+        self.validateData();
+    });
+
     var update_body = function() {
         var useBackLink = $('#chkBackLink', self.$popup).is(':checked');
         var markdown = $('#chkMarkdown', self.$popup).is(':checked');
@@ -443,9 +515,7 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
             self.event.fire('onRequestDeauthorizeTrello');
         })
     });
-    
-    this.updateBoards();
-    
+        
     if (data.settings.hasOwnProperty('useBackLink')) {
         $('#chkBackLink', this.$popup).prop('checked', data.settings.useBackLink);
     }
@@ -453,6 +523,71 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
     if (data.settings.hasOwnProperty('markdown')) {
         $('#chkMarkdown', this.$popup).prop('checked', data.settings.markdown);
     }
+
+    if (data.settings.hasOwnProperty('due_Date')) {
+        $('#gttDue_Date', this.$popup).val(data.settings.due_Date);
+    }
+
+    if (data.settings.hasOwnProperty('due_Time')) {
+        $('#gttDue_Time', this.$popup).val(data.settings.due_Time);
+    }
+
+    chrome.storage.sync.get('dueShortcuts', function(response) {
+        // Borrowed from options file until this gets persisted everywhere:
+        const dueShortcuts_k = JSON.stringify({
+          "today": {
+            "am": "d+0 am=9:00",
+            "noon": "d+0 pm=12:00",
+            "pm": "d+0 pm=3:00",
+            "end": "d+0 pm=6:00",
+            "eve": "d+0 pm=11:00"
+          },
+          "tomorrow": {
+            "am": "d+1 am=9:00",
+            "noon": "d+1 pm=12:00",
+            "pm": "d+1 pm=3:00",
+            "end": "d+1 pm=6:00",
+            "eve": "d+1 pm=11:00"
+          },
+          "next monday": {
+            "am": "d=monday am=9:00",
+            "noon": "d=monday pm=12:00",
+            "pm": "d=monday pm=3:00",
+            "end": "d=monday pm=6:00",
+            "eve": "d=monday pm=11:00"    
+          },
+          "next friday": {
+            "am": "d=friday am=9:00",
+            "noon": "d=friday pm=12:00",
+            "pm": "d=friday pm=3:00",
+            "end": "d=friday pm=6:00",
+            "eve": "d=friday pm=11:00"    
+          }
+        });
+
+        var due = JSON.parse(response.dueShortcuts || dueShortcuts_k);
+
+        var $gtt = $('#gttDue_Shortcuts', this.$popup);
+        $gtt.html(''); // Clear it.
+
+        var opt = '<option value="d=0 am=0">--</option>';
+
+        $.each(due, function(key, value) {
+            if (typeof (value) === 'object') {
+                opt += '<optgroup label="' + key + '">';
+                $.each(value, function (key1, value1) {
+                    opt += '<option value="' + value1 + '">' + key1 + '</option>';
+                });
+                opt += '</optgroup>';
+            } else {
+                opt += '<option value="' + value + '">' + key + '</option>';
+            }
+        });
+
+        if (opt) {
+            $gtt.append($(opt));
+        }
+    });
 
     if (data.settings.hasOwnProperty('position')) {
         var pos = data.settings.position || 'bottom';
@@ -462,6 +597,7 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
             .text(this.position[pos]);
     }
 
+    this.updateBoards();
 };
     
 GmailToTrello.PopupView.prototype.bindGmailData = function(data) {

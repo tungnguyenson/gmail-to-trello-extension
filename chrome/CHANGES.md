@@ -4,6 +4,17 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.5.3.0
+-----------------
+- Make minimum width bigger for popup
+- Create shortcut dropdown for due date
+- Create option entry to add more to shortcut dropdown
+- Persist previous due date and time
+
+Version 2.5.2.0
+-----------------
+- Attachments downloaded to memory and uploaded to Trello instead of just providing links
+
 Version 2.5.1.3
 -----------------
 - Support keyboard shortcuts: Alt/Opt+Shift+G is the default to show the popup (once in Gmail and the button is visible)
