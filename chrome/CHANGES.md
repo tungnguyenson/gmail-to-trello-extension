@@ -7,7 +7,9 @@ CHANGE LOG:
 Version 2.5.3.0
 -----------------
 - Make minimum width bigger for popup
-
+- Create shortcut dropdown for due date
+- Create option entry to add more to shortcut dropdown
+- Persist previous due date and time
 
 Version 2.5.2.0
 -----------------

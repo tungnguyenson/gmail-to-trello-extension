@@ -519,8 +519,8 @@ GmailToTrello.App.prototype.getSelectedText = function() {
  * Truncate a string
  */
 GmailToTrello.App.prototype.truncate = function(text, max, add) {
-    var retn = text || "";
-    const add_k = add || "";
+    var retn = text || '';
+    const add_k = add || '';
     const max_k = max - add_k.length;
 
     if (text && text.length > max_k) {
