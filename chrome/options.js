@@ -61,7 +61,7 @@ function restore_options() {
   chrome.storage.sync.get(['debugMode', 'dateFormat', 'dueShortcuts'], function(response) {
     document.getElementById("debugmode").checked = response.debugMode || false;
     document.getElementById("dateformat").value = response.dateFormat || dateFormat_k;
-    document.getElementById("dueshortcuts").value = response.dueShortcuts || "Due shortcuts";
+    document.getElementById("dueshortcuts").value = response.dueShortcuts || dueShortcuts_k;
   });  
 }
 
