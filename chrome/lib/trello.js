@@ -54,12 +54,37 @@
           opts.data.token = token;
         }
         if (params != null) {
-          if (params['content-type']) {
-            opts['content-type'] = params['content-type'];
-          }
-          $.extend(opts.data, params);
+          $.extend(opts.data, params);            
         }
-        return $.ajax(opts);
+        if (method === 'UPLOAD' && typeof (params) === "string" && params.length > 5) {
+          var xhr = new XMLHttpRequest();
+          xhr.open('get', params);
+          xhr.responseType = 'blob'; // Use blob to get the mimetype
+          xhr.onload = function() {
+            var fileReader = new FileReader();
+            fileReader.onload = function() {
+              var filename = (params.split('/').pop().split('#')[0].split('?')[0]) || params || '?'; // Removes # or ? after filename
+              var file = new File([this.result], filename);
+              var form = new FormData();
+              form.append("file", file);
+              $.each(['key', 'token'], function(iter, item) {
+                form.append(item, opts.data[item] || 'ERROR! Missing "' + item + '"');
+              });
+              $.extend(opts, {
+                method: "POST",
+                data: form,
+                cache: false,
+                contentType: false,
+                processData: false
+              });
+              return $.ajax(opts);
+            };
+            fileReader.readAsArrayBuffer(xhr.response); // Use filereader on blob to get content
+          };
+          xhr.send();
+        } else {
+          return $.ajax(opts);
+        }
       },
       authorized: function() {
         return token != null;
@@ -218,7 +243,7 @@
         }
       }
     };
-    ref = ["GET", "PUT", "POST", "DELETE"];
+    ref = ["GET", "PUT", "POST", "DELETE", "UPLOAD"];
     fn = function(type) {
       return Trello[type.toLowerCase()] = function() {
         return this.rest.apply(this, [type].concat(slice.call(arguments)));

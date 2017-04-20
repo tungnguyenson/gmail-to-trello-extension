@@ -11,6 +11,7 @@ GmailToTrello.App = function() {
     this.bindEvents();
 
     this.CHROME_SETTINGS_ID = 'gtt_user_settings';
+    this.UNIQUE_URI_VAR = 'gtt_filename';
 };
 
 GmailToTrello.App.prototype.bindEvents = function() {
@@ -70,16 +71,13 @@ GmailToTrello.App.prototype.bindEvents = function() {
         var attach1 = params.images.shift() || params.attachments.shift();
         
         if (attach1) {
-            if (!attach1.hasOwnProperty('checked') || attach1.checked !== true) { // Skip this attachment
+            if (!attach1.hasOwnProperty('checked') || attach1.checked !== true || !attach1.url || attach1.url.length < 6) { // Skip this attachment
                 params.data.event.fire('onSubmitAttachments', {data:params.data, images:params.images, attachments:params.attachments});
             } else {
-                self.model.urlToData(attach1, function(trello_attach) {
-                    // self.Model.submitAttachments(params.data.newCard.id, params.attachments);
-                    Trello.post('cards/' + params.data.newCard.id + '/attachments', trello_attach, function success(data) {
-                        params.data.event.fire('onSubmitAttachments', {data:params.data, images:params.images, attachments:params.attachments});
-                    }, function failure(data) {
-                        self.popupView.displayAPIFailedForm(data);
-                    });
+                Trello.upload('cards/' + params.data.newCard.id + '/attachments', attach1.url, function success(data) {
+                    params.data.event.fire('onSubmitAttachments', {data:params.data, images:params.images, attachments:params.attachments});
+                }, function failure(data) {
+                    self.popupView.displayAPIFailedForm(data);
                 });
             }
         } else { // Done with attach list

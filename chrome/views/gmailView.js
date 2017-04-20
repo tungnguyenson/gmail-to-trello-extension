@@ -197,7 +197,18 @@ GmailToTrello.GmailView.prototype.parseData = function() {
         if (item && item.length > 0) {
             var attachment = item.match(/^([^:]+)\s*:\s*([^:]+)\s*:\s*(.+)$/);
             if (attachment && attachment.length > 3) {
-                return {'mimeType': attachment[1], 'name': decodeURIComponent(attachment[2]), 'url': attachment[3], 'checked': 'false'}; // [0] is the whole string
+                var name = decodeURIComponent(attachment[2]);
+                var add = '&';
+                if (attachment[3].indexOf('?') === -1) {
+                    add = '?';
+                }
+                return {
+                   'mimeType': attachment[1],
+                   'name': name,
+                    // NOTE (Ace@2017-04-20): Adding this explicitly at the end of the URL so it'll pick up the "filename":
+                   'url': attachment[3] + add + self.parent.UNIQUE_URI_VAR + '=/' + name,
+                   'checked': 'false'
+                }; // [0] is the whole string
             }
         }
     });
