@@ -179,6 +179,20 @@ GmailToTrello.Model.prototype.loadTrelloLists = function(boardId) {
     });
 };
 
+GmailToTrello.Model.prototype.loadTrelloCards = function(listId) {
+    log('loadTrelloCards');
+
+    var self = this;
+    this.trello.cards = null;
+
+    Trello.get('lists/' + listId + '/cards', {fields: "name,pos"}, function(data) {
+        self.trello.cards = data;
+        self.event.fire('onLoadTrelloCardsSuccess');
+    }, function failure(data) {
+            self.event.fire('onAPIFailure', {data:data});
+    });
+};
+
 GmailToTrello.Model.prototype.loadTrelloLabels = function(boardId) {
     log('loadTrelloLabels');
 
@@ -187,8 +201,6 @@ GmailToTrello.Model.prototype.loadTrelloLabels = function(boardId) {
 
     Trello.get('boards/' + boardId + '/labels', {fields: "color,name"}, function(data) {
         self.trello.labels = data;
-        // If you want to add a "none" label, do:
-        // self.trello.labels.unshift ({color:'gray', name:'none', id:'-1'});
         self.event.fire('onLoadTrelloLabelsSuccess');
     }, function failure(data) {
         self.event.fire('onAPIFailure', {data:data});
@@ -269,7 +281,7 @@ GmailToTrello.Model.prototype.submit = function() {
         */
     }
 
-    if (data && data.position && data.position == 'top') {
+    if (data && data.position && data.position === 'above') {
         trelloPostableData.pos = 'top'; // Bottom is default, only need to indicate top
     }
 
