@@ -281,8 +281,25 @@ GmailToTrello.Model.prototype.submit = function() {
         */
     }
 
-    if (data && data.position && data.position === 'above') {
-        trelloPostableData.pos = 'top'; // Bottom is default, only need to indicate top
+    if (data && data.position) {
+        switch (data.position) {
+            case 'above':
+                trelloPostableData.pos = 'top'; // Bottom is default, only need to indicate top
+                if (data.cardPos && data.cardPos > 0) {
+                    trelloPostableData.pos = data.cardPos-1;
+                }
+                break;
+            case 'below':
+                if (data.cardPos && data.cardPos > 0) {
+                    trelloPostableData.pos = data.cardPos+1;
+                }
+                break;
+            case 'to card':
+                // Intentionally blank
+                break;
+            default:
+                log('ERROR: Got unknown case: ' + data.position);
+        }
     }
 
     Trello.post('cards', trelloPostableData, function success(data) {

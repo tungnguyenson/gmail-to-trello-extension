@@ -240,7 +240,7 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         var boardId = $board.val();
 
         var $list = $('#gttList', self.$popup);
-        var $cards = $('#gttCard', self.$popup);
+        var $card = $('#gttCard', self.$popup);
         var $labels = $('#gttLabels', self.$popup);
         var $members = $('#gttMembers', self.$popup);
         var $labelsMsg = $('#gttLabelsMsg', self.$popup);
@@ -256,7 +256,7 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
             $members.html('').hide(); // clear it out
             $labels.html('').hide(); // clear it out
             $list.html($('<option value="">...please pick a board...</option>')).val('');
-            $cards.html($('<option value="">...please pick a list...</option>')).val('');
+            $card.html($('<option value="">...please pick a list...</option>')).val('');
             self.data.settings.labelsId = '';
             self.data.settings.listId = '';
             self.data.settings.cardId = '';
@@ -762,13 +762,17 @@ GmailToTrello.PopupView.prototype.updateCards = function() {
     }
 
     var $gtt = $('#gttCard', this.$popup);
-    $gtt.html($(newcard_k));
+    $gtt.html(newcard_k);
 
     $.each(cards, function(iter, item) {
         var id = item.id;
         var display = item.name;
         var selected = (id === settingId);
-        $gtt.append($('<option>').attr('value', id).prop('selected', selected).append(display));
+        $gtt.append($('<option>')
+            .attr('value', id)
+            .prop('pos', item.pos)
+            .prop('selected', selected)
+            .append(display));
     });
 
     $gtt.change();
@@ -890,7 +894,9 @@ GmailToTrello.PopupView.prototype.validateData = function() {
     var newCard = {};
     var boardId = $('#gttBoard', this.$popup).val();
     var listId = $('#gttList', this.$popup).val();
-    var cardId = $('#gttCard', this.$popup).val();
+    var $card = $('#gttCard', this.$popup).find(':selected').first();
+    var cardId = $card.val() || '';
+    var cardPos = $card.prop('pos') || '';
     var due_Date = $('#gttDue_Date', this.$popup).val();
     var due_Time = $('#gttDue_Time', this.$popup).val();
     var title = $('#gttTitle', this.$popup).val();
@@ -947,6 +953,7 @@ GmailToTrello.PopupView.prototype.validateData = function() {
             boardId: boardId,
             listId: listId,
             cardId: cardId,
+            cardPos: cardPos,
             labelsId: labelsId,
             membersId: membersId,
             due_Date: due_Date,
