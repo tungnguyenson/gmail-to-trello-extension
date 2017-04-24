@@ -750,7 +750,7 @@ GmailToTrello.PopupView.prototype.updateLists = function() {
 GmailToTrello.PopupView.prototype.updateCards = function() {
     var self = this;
 
-    const newcard_k = '<option value="-1">new card</option>';
+    const newcard_k = '<option value="-1">(new card)</option>';
 
     var cards = this.data.trello.cards;
     
@@ -767,10 +767,12 @@ GmailToTrello.PopupView.prototype.updateCards = function() {
     $.each(cards, function(iter, item) {
         var id = item.id;
         var display = item.name;
-        var selected = (id === settingId);
+        var selected = (id == settingId);
         $gtt.append($('<option>')
             .attr('value', id)
             .prop('pos', item.pos)
+            .prop('members', item.idMembers)
+            .prop('labels', item.idLabels)
             .prop('selected', selected)
             .append(display));
     });
@@ -897,6 +899,8 @@ GmailToTrello.PopupView.prototype.validateData = function() {
     var $card = $('#gttCard', this.$popup).find(':selected').first();
     var cardId = $card.val() || '';
     var cardPos = $card.prop('pos') || '';
+    var cardMembers = $card.prop('members') || '';
+    var cardLabels = $card.prop('labels') || '';
     var due_Date = $('#gttDue_Date', this.$popup).val();
     var due_Time = $('#gttDue_Time', this.$popup).val();
     var title = $('#gttTitle', this.$popup).val();
@@ -954,6 +958,8 @@ GmailToTrello.PopupView.prototype.validateData = function() {
             listId: listId,
             cardId: cardId,
             cardPos: cardPos,
+            cardMembers: cardMembers,
+            cardLabels: cardLabels,
             labelsId: labelsId,
             membersId: membersId,
             due_Date: due_Date,
@@ -995,7 +1001,7 @@ GmailToTrello.PopupView.prototype.displaySubmitCompleteForm = function() {
     var jQueryToRawHtml = function(jQueryObject) {
         return jQueryObject.prop('outerHTML');
     }
-    this.showMessage(self, '<a class="hideMsg" title="Dismiss message">&times;</a>Trello card created: ' + 
+    this.showMessage(self, '<a class="hideMsg" title="Dismiss message">&times;</a>Trello card updated: ' + 
         jQueryToRawHtml($('<a>')
             .attr('href', data.url)
             .attr('target', '_blank')
@@ -1020,7 +1026,7 @@ GmailToTrello.PopupView.prototype.displayAPIFailedForm = function(response) {
         'title': resp.title || '?',
         'status': resp.status || '?',
         'statusText': resp.statusText || '?',
-        'responseText': resp.responseText || '?'
+        'responseText': resp.responseText || JSON.stringify(response)
     };
 
     $.get(chrome.extension.getURL('views/error.html'), function(data) {
