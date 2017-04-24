@@ -1020,7 +1020,7 @@ GmailToTrello.PopupView.prototype.displayAPIFailedForm = function(response) {
         'title': resp.title || '?',
         'status': resp.status || '?',
         'statusText': resp.statusText || '?',
-        'responseText': resp.responseText || '?'
+        'responseText': resp.responseText || JSON.stringify(response)
     };
 
     $.get(chrome.extension.getURL('views/error.html'), function(data) {

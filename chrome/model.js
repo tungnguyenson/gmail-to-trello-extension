@@ -329,16 +329,27 @@ GmailToTrello.Model.prototype.submit = function() {
         if (followon_.length > 0) {
             var followon_process = function(followonp) {
                 var followon1 = followonp.shift();
-                if (followon1 && follwon1.length > 0) {
-                    Trello.post (followon1.post, {'value': followon1.value}, function success(data) {
-                        followon_process(followonp);
+                if (followon1 && followon1.post && followon1.post.length > 0) {
+                    var method = 'post';
+                    if (followon1.post.indexOf('due') !== -1) {
+                        method = 'put';
+                    }
+                    Trello.rest(method, followon1.post, {'value': followon1.value}, function success(data) {
+                        if (followonp && followonp.length > 0) {
+                            followon_process(followonp);
+                        } else {
+                            self.event.fire('onCardSubmitComplete', {data:data, images:self.newCard.images, attachments:self.newCard.attachments});
+                        }
                     }, function failure(data) {
                         self.event.fire('onAPIFailure', {data:data});
-                    });                   
-                }
+                    });
+                }                   
             };
+            followon_process(followon_);
+        } else {
+            self.event.fire('onCardSubmitComplete', {data:data, images:self.newCard.images, attachments:self.newCard.attachments});
         }
-        self.event.fire('onCardSubmitComplete', {data:data, images:self.newCard.images, attachments:self.newCard.attachments});
+    
         log(data);
         //setTimeout(function() {self.popupNode.hide();}, 10000);
     }, function failure(data) {
