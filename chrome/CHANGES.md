@@ -6,7 +6,8 @@ CHANGE LOG:
 
 Version 2.7.0.0.
 -----------------
-- Add as a comment to an existing card first cut
+- Add to an existing card!
+- Had to change UI a little to account for card selection and "where" to put the card
 
 Version 2.6.0.0
 -----------------
