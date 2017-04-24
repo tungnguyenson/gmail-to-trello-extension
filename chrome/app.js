@@ -27,8 +27,8 @@ GmailToTrello.App.prototype.bindEvents = function() {
     });
     
     this.model.event.addListener('onAuthorized', function() {
-        log('GmailToTrello.onAuthorized');
-        log("Status: " + Trello.authorized().toString());
+        console.log('GmailToTrello.onAuthorized');
+        console.log("Status: " + Trello.authorized().toString());
     });
     
     this.model.event.addListener('onBeforeLoadTrello', function() {
@@ -63,8 +63,22 @@ GmailToTrello.App.prototype.bindEvents = function() {
     })
 
     this.model.event.addListener('onCardSubmitComplete', function(target, params) {
-        self.model.newCard.url = params.data.url;
-        self.model.newCard.id = params.data.id;
+        var paramsData = self.deep_link(params, ['data']);
+        var url = self.deep_link(paramsData, ['url']);
+        var id = self.deep_link(paramsData, ['id']);
+
+        var paramsDataDataCard = self.deep_link(paramsData, ['data', 'card']);
+        var shortLink = self.deep_link(paramsDataDataCard, ['shortLink']);
+        if (shortLink && shortLink.length > 0) {
+            shortLink = 'https://trello.com/c/' + shortLink;
+        }
+        var add_id = self.deep_link(paramsDataDataCard, ['id']);
+        var add_title = self.deep_link(paramsDataDataCard, ['name']);
+        self.model.newCard.url = shortLink || url;
+        self.model.newCard.id = add_id || id;
+        if (add_title && add_title.length > 0) {
+            self.model.newCard.title = add_title;
+        }
         self.model.event.fire('onSubmitAttachments', {data:self.model, images:params.images, attachments:params.attachments});
     });
 
@@ -131,7 +145,7 @@ GmailToTrello.App.prototype.bindEvents = function() {
     });
 
     this.popupView.event.addListener('onRequestDeauthorizeTrello', function() {
-        log('GmailToTrello.onRequestDeauthorizeTrello');
+        console.log('GmailToTrello.onRequestDeauthorizeTrello');
         self.model.deauthorizeTrello();
         self.popupView.clearBoard();
     });
@@ -186,9 +200,10 @@ GmailToTrello.App.prototype.replacer = function(text, dict) {
     return text;
   }
   
+  var re, new_text;
   $.each(dict, function (key, value) {
-    var re = new RegExp('%' + self.escapeRegExp(key) + '%', "gi");
-    var new_text = text.replace(re, value);
+    re = new RegExp('%' + self.escapeRegExp(key) + '%', "gi");
+    new_text = text.replace(re, value);
     text = new_text;
   });
   
@@ -252,7 +267,7 @@ GmailToTrello.App.prototype.anchorMarkdownify = function(text, href, comment) {
  */
 GmailToTrello.App.prototype.markdownify = function($emailBody, features, preprocess) {
     if (!$emailBody || $emailBody.length < 1) {
-        log('markdownify requires emailBody');
+        console.log('markdownify requires emailBody');
         return;
     }
     var self = this;
@@ -528,7 +543,7 @@ GmailToTrello.App.prototype.getSelectedText = function() {
  */
 GmailToTrello.App.prototype.truncate = function(text, max, add) {
     var retn = text || '';
-    const add_k = add || '';
+    const add_k = this.decodeEntities(add || '');
     const max_k = max - add_k.length;
 
     if (text && text.length > max_k) {
@@ -585,6 +600,14 @@ GmailToTrello.App.prototype.encodeEntities = function(s) {
  * Decode entities
  */
 GmailToTrello.App.prototype.decodeEntities = function(s) {
+    var self = this;
+    const dict_k = { '...': '&hellip;' };
+    var re, new_s;
+    $.each(dict_k, function (key, value) {
+        re = new RegExp(self.escapeRegExp(key), "gi");
+        new_s = s.replace(re, value);
+        s = new_s;
+    });
     var ta = document.createElement('textarea');
     ta.innerHTML = s;
     return ta.value;
@@ -627,6 +650,28 @@ GmailToTrello.App.prototype.modKey = function(event) {
     }
 
     return retn;
+};
+
+/**
+ * Validate deep link or return empty object:
+ */
+GmailToTrello.App.prototype.deep_link = function(obj, fields) {
+    if (!obj) { 
+        console.log('ERROR: Require object!');
+        return '';
+    } else if (!fields) {
+        console.log('ERROR: Require fields!');
+        return '';
+    }
+
+    var field1, obj_ptr = obj;
+    var valid = true;
+    while ((field1 = fields.shift()) && valid) {
+        if (valid = obj_ptr.hasOwnProperty(field1)) {
+            obj_ptr = obj_ptr[field1];
+        }
+    }
+    return valid ? obj_ptr : '';
 };
 
 // End, app.js

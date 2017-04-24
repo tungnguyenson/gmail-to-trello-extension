@@ -750,7 +750,7 @@ GmailToTrello.PopupView.prototype.updateLists = function() {
 GmailToTrello.PopupView.prototype.updateCards = function() {
     var self = this;
 
-    const newcard_k = '<option value="-1">new card</option>';
+    const newcard_k = '<option value="-1">(new card)</option>';
 
     var cards = this.data.trello.cards;
     
@@ -995,7 +995,7 @@ GmailToTrello.PopupView.prototype.displaySubmitCompleteForm = function() {
     var jQueryToRawHtml = function(jQueryObject) {
         return jQueryObject.prop('outerHTML');
     }
-    this.showMessage(self, '<a class="hideMsg" title="Dismiss message">&times;</a>Trello card created: ' + 
+    this.showMessage(self, '<a class="hideMsg" title="Dismiss message">&times;</a>Trello card updated: ' + 
         jQueryToRawHtml($('<a>')
             .attr('href', data.url)
             .attr('target', '_blank')
