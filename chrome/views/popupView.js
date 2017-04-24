@@ -903,7 +903,7 @@ GmailToTrello.PopupView.prototype.validateData = function() {
     var description = $('#gttDesc', this.$popup).val();
     var useBackLink = $('#chkBackLink', this.$popup).is(':checked');
     var markdown = $('#chkMarkdown', this.$popup).is(':checked');
-    var position = $('input[type=radio][name=gttPosition]:checked', this.$popup).prop('value');
+    var position = $('input[type=radio][name=gttPosition]:checked', this.$popup).val();
     var timeStamp = $('.gH .gK .g3:first', this.$visibleMail).attr('title');
     var popupWidth = this.$popup.css('width');
     var labelsId = $('#gttLabels li.active', this.$popup).map(function(iter, item) {
