@@ -767,10 +767,12 @@ GmailToTrello.PopupView.prototype.updateCards = function() {
     $.each(cards, function(iter, item) {
         var id = item.id;
         var display = item.name;
-        var selected = (id === settingId);
+        var selected = (id == settingId);
         $gtt.append($('<option>')
             .attr('value', id)
             .prop('pos', item.pos)
+            .prop('members', item.idMembers)
+            .prop('labels', item.idLabels)
             .prop('selected', selected)
             .append(display));
     });
@@ -897,6 +899,8 @@ GmailToTrello.PopupView.prototype.validateData = function() {
     var $card = $('#gttCard', this.$popup).find(':selected').first();
     var cardId = $card.val() || '';
     var cardPos = $card.prop('pos') || '';
+    var cardMembers = $card.prop('members') || '';
+    var cardLabels = $card.prop('labels') || '';
     var due_Date = $('#gttDue_Date', this.$popup).val();
     var due_Time = $('#gttDue_Time', this.$popup).val();
     var title = $('#gttTitle', this.$popup).val();
@@ -954,6 +958,8 @@ GmailToTrello.PopupView.prototype.validateData = function() {
             listId: listId,
             cardId: cardId,
             cardPos: cardPos,
+            cardMembers: cardMembers,
+            cardLabels: cardLabels,
             labelsId: labelsId,
             membersId: membersId,
             due_Date: due_Date,

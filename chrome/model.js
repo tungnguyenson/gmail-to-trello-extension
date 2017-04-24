@@ -185,7 +185,7 @@ GmailToTrello.Model.prototype.loadTrelloCards = function(listId) {
     var self = this;
     this.trello.cards = null;
 
-    Trello.get('lists/' + listId + '/cards', {fields: "name,pos"}, function(data) {
+    Trello.get('lists/' + listId + '/cards', {fields: "name,pos,idMembers,idLabels"}, function(data) {
         self.trello.cards = data;
         self.event.fire('onLoadTrelloCardsSuccess');
     }, function failure(data) {
@@ -246,9 +246,20 @@ GmailToTrello.Model.prototype.submit = function() {
     var post = 'cards';
 
     var followon_ = [];
-    var followon = function (post1, data1) {
+    var followon = function (post1, data1, dataExclude) {
         if (post1 && post1.length > 0 && data1 && data1.length > 0 && data.cardId && data.cardId.length > 0) {
-            followon_.push({'post': 'cards/' + data.cardId + '/' + post1, 'value': data1});
+            if (dataExclude && dataExclude.length > 0) {
+                var data1new = '';
+                $.each(data1.split(','), function(iter, item) {
+                    if (dataExclude.indexOf(item) === -1) {
+                        data1new += (data1new.length > 0 ? ',' : '') + item;
+                    }
+                data1 = data1new;
+                });
+            }
+            if (data1.length > 0) {
+                followon_.push({'post': 'cards/' + data.cardId + '/' + post1, 'value': data1});
+            }
         }
     }
     
@@ -275,13 +286,13 @@ GmailToTrello.Model.prototype.submit = function() {
 
     if (data && data.membersId && data.membersId.length > 1) {
         trelloPostableData.idMembers = data.membersId;
-        followon('idMembers', data.membersId)
+        followon('idMembers', data.membersId, data.cardMembers);
     }
 
     // NOTE (Ace, 10-Jan-2017): Can only post valid labels, this can be a comma-delimited list of valid label ids, will err 400 if any label id unknown:
     if (data && data.labelsId && data.labelsId.length > 1 && data.labelsId.indexOf('-1') === -1) { // Will 400 if we post invalid ids (such as -1):
         trelloPostableData.idLabels = data.labelsId;
-        followon('idLabels', data.labelsId);
+        followon('idLabels', data.labelsId, data.cardLabels);
     }
 
     if (data && data.due_Date && data.due_Date.length > 1) { // Will 400 if not valid date:
