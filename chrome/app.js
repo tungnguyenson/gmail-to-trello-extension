@@ -46,11 +46,6 @@ GmailToTrello.App.prototype.bindEvents = function() {
         self.popupView.updateLists();
         self.popupView.validateData();
     });
-
-    this.model.event.addListener('onLoadTrelloCardsSuccess', function() {
-        self.popupView.updateCards();
-        self.popupView.validateData();
-    });
     
     this.model.event.addListener('onLoadTrelloLabelsSuccess', function() {
         self.popupView.updateLabels();
@@ -112,13 +107,6 @@ GmailToTrello.App.prototype.bindEvents = function() {
             self.model.loadTrelloLists(boardId);
             self.model.loadTrelloLabels(boardId);
             self.model.loadTrelloMembers(boardId);
-        }
-    });
-
-    this.popupView.event.addListener('onListChanged', function(target, params) {
-        var listId = params.listId;
-        if (listId && listId.length > 0) {
-            self.model.loadTrelloCards(listId);
         }
     });
     
@@ -530,25 +518,11 @@ GmailToTrello.App.prototype.getSelectedText = function() {
  */
 GmailToTrello.App.prototype.truncate = function(text, max, add) {
     var retn = text || '';
-    const add_k = this.decodeEntities(add || '');
+    const add_k = add || '';
     const max_k = max - add_k.length;
 
     if (text && text.length > max_k) {
         retn = text.slice(0, max_k) + add_k;
-    }
-    return retn;
-};
-
-/**
- * Right Truncate a string
- */
-GmailToTrello.App.prototype.truncateRight = function(text, max, add) {
-    var retn = text || '';
-    const add_k = this.decodeEntities(add || '');
-    const max_k = max - add_k.length;
-
-    if (text && text.length > max_k) {
-        retn = add_k + text.slice(-max_k);
     }
     return retn;
 };
@@ -601,17 +575,6 @@ GmailToTrello.App.prototype.encodeEntities = function(s) {
  * Decode entities
  */
 GmailToTrello.App.prototype.decodeEntities = function(s) {
-     // Common cases that have better representations:
-    const swap_dict_k = {
-        '...': '&hellip;'
-    };
-    
-    var swap_s = '%' + s + '%';
-    new_s = this.replacer(swap_s, swap_dict_k);
-    if (new_s !== swap_s) {
-        s = new_s;
-    }
-
     var ta = document.createElement('textarea');
     ta.innerHTML = s;
     return ta.value;

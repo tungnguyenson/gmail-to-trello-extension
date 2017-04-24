@@ -32,10 +32,10 @@ GmailToTrello.PopupView = function(parent) {
     this.MAX_BODY_SIZE = 16384;
 
     this.position = {
-        'below': {'char': parent.decodeEntities('&larrb;'), 'rotate': 270},
-        'at': {'char': parent.decodeEntities('&larrb;'), 'rotate': 0},
-        'above': {'char': parent.decodeEntities('&larrb;'), 'rotate': 90},
-        'next': {'below': 'at', 'at': 'above', 'above': 'below'},
+        'below': {'char': parent.decodeEntities('&mapstodown;'), 'rotate': 0, 'vertical': '0px', 'next': 'to-'},
+        'to-': {'char': parent.decodeEntities('&DownArrowBar;'), 'rotate': 90, 'vertical': 'middle', 'next': 'above'},
+        'above': {'char': parent.decodeEntities('&mapstoup;'), 'rotate': 0, 'vertical': '0px', 'next': 'to_'},
+        'to_': {'char': parent.decodeEntities('&DownArrowBar;'), 'rotate': 90, 'vertical': 'middle', 'next': 'below'},
         'default': 'below'
     };
 };
@@ -170,22 +170,6 @@ GmailToTrello.PopupView.prototype.onResize = function() {
     this.validateData(); // Assures size is saved
 };
 
-GmailToTrello.PopupView.prototype.positionIcon = function(pos) {
-    if (!pos || pos.length < 1 || !this.position.hasOwnProperty(pos)) {
-        pos = this.position.default;
-    }
-
-    const rotate_k = 'rotate(' + this.position[pos].rotate + 'deg)';
-
-    $('#gttPosition', this.$popup)
-        .prop('title', 'Add ' + pos)
-        .prop('value', pos)
-        .text(this.position[pos].char)
-        .css('-ms-transform', rotate_k)
-        .css('-webkit-transform', rotate_k)
-        .css('transform', rotate_k);
-};
-
 GmailToTrello.PopupView.prototype.bindEvents = function() {
     // bind events
     var self = this;
@@ -229,16 +213,7 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         self.hidePopup();
     });
 
-    $('#gttPosition', this.$popup).click(function() {
-        var pos = $(this).prop('value');
-        if (self.position.next.hasOwnProperty(pos)) {
-            pos = self.position.next[pos];
-        } else {
-            pos = self.position.default;
-        }
-
-        self.positionIcon(pos);
-
+    $('input[type=radio][name=gttPosition]', this.$popup).click(function() {
         self.validateData();
     });
 
@@ -616,7 +591,10 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
     });
 
     if (data.settings.hasOwnProperty('position')) {
-        self.positionIcon(data.settings.position);
+        $('input[type=radio][name=gttPosition]:checked', this.$popup).prop('checked', '');
+        $('input[type=radio][name=gttPosition][value='
+            + data.settings.position
+            + ']', this.$popup).prop('checked', 'checked');
     }
 
     this.updateBoards();
@@ -919,7 +897,7 @@ GmailToTrello.PopupView.prototype.validateData = function() {
     var description = $('#gttDesc', this.$popup).val();
     var useBackLink = $('#chkBackLink', this.$popup).is(':checked');
     var markdown = $('#chkMarkdown', this.$popup).is(':checked');
-    var position = $('#gttPosition', this.$popup).prop('value');
+    var position = $('input[type=radio][name=gttPosition]:checked', this.$popup).prop('value');
     var timeStamp = $('.gH .gK .g3:first', this.$visibleMail).attr('title');
     var popupWidth = this.$popup.css('width');
     var labelsId = $('#gttLabels li.active', this.$popup).map(function(iter, item) {

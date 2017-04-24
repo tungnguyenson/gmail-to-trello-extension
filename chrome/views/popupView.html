@@ -12,8 +12,15 @@
         <div class="popupMsg">Loading...</div>
         <div class="content menuInnerContainer" style="display: none;">
             <div class="gttTopRight">
-                <a id="gttPosition" value="bottom" title="Add to bottom">&rarrb;</a>
-                <input type="button" disabled="true" id="addToTrello" value="Add to Trello" />
+                <table border="0">
+                    <tr>
+                        <td style="font-size: 80%;"><label><input type="radio" name="gttPosition" value="above" /> above</label><br />
+                        <label><input type="radio" name="gttPosition" value="to" /> to card</label><br />
+                        <label><input type="radio" name="gttPosition" value="below" checked="checked"/> below</label>
+                        </td>
+                        <td><input type="button" disabled="true" id="addToTrello" value="Add to Trello" /></td>
+                    </tr>
+                </table>
             </div>
             <dl>
                 <dt>Where:</dt>

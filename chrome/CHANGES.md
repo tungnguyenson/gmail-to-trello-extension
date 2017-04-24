@@ -6,7 +6,7 @@ CHANGE LOG:
 
 Version 2.7.0.0.
 -----------------
-- Add as a comment to an existing card
+- Add as a comment to an existing card first cut
 
 Version 2.6.0.0
 -----------------
