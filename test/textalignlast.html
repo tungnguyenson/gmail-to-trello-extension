@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+
+<script>
+$(document).ready(function() {
+	alert('hi');
+	$('#select').change(function () {
+		alert('changed: val:' + $(this).val() + ' text:' + $(this).text());
+	}).mousedown(function () {
+		// $(this).css('text-align', 'right');
+		// $(this).css('text-align-last', 'right');
+	});
+});
+
+</script>
+
+<body>
+<select id="select" style="text-align: right; text-align-last: right;">
+	<option>Aaa aaaa aaaaa</option>
+	<option>Bbb bbbb bbbbb bbbbbb</option>
+	<option>Ccc cccc ccccc cccccc ccccccc</option>
+</select>
+</body>
+</html>

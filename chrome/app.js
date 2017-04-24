@@ -46,6 +46,11 @@ GmailToTrello.App.prototype.bindEvents = function() {
         self.popupView.updateLists();
         self.popupView.validateData();
     });
+
+    this.model.event.addListener('onLoadTrelloCardsSuccess', function() {
+        self.popupView.updateCards();
+        self.popupView.validateData();
+    });    
     
     this.model.event.addListener('onLoadTrelloLabelsSuccess', function() {
         self.popupView.updateLabels();
@@ -108,6 +113,11 @@ GmailToTrello.App.prototype.bindEvents = function() {
             self.model.loadTrelloLabels(boardId);
             self.model.loadTrelloMembers(boardId);
         }
+    });
+
+    this.popupView.event.addListener('onListChanged', function(target, params) {
+        var listId = params.listId;
+        self.model.loadTrelloCards(listId);
     });
     
     this.popupView.event.addListener('onSubmit', function() {

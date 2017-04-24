@@ -12,16 +12,23 @@
         <div class="popupMsg">Loading...</div>
         <div class="content menuInnerContainer" style="display: none;">
             <div class="gttTopRight">
-                <a id="gttPosition" value="bottom" title="Add to bottom">&rarrb;</a>
-                <input type="button" disabled="true" id="addToTrello" value="Add to Trello" />
+                <div style="font-size: 75%; float: left; margin-right: 3px;">
+                <label><input type="radio" name="gttPosition" value="above" /> above</label><br />
+                    <label><input type="radio" name="gttPosition" value="to" /> to card</label><br />
+                    <label><input type="radio" name="gttPosition" value="below" checked="checked"/> below</label>
+                </div>
+                <div style="float: left;"><input type="button" disabled="true" id="addToTrello" value="Add to Trello" /></div>
             </div>
             <dl>
-                <dt>Board/list:</dt>
-                <dd><select id="gttBoard">
-                    <option value="">Select a board...</option>
-                </select>
-                    <select id="gttList">
+                <dt>Where:</dt>
+                <dd><select id="gttBoard" class="gttWhere">
+                        <option value="">Select a board...</option>
+                    </select>
+                    <select id="gttList" class="gttWhere">
                         <option value="">...please pick a board...</option>
+                    </select>
+                    <select id="gttCard" class="gttWhere">
+                        <option value="">...please pick a list...</option>
                     </select>
                 </dd>
                 <dt id="gttLabelsHeader" title="Shift-click me to clear all labels">Labels:</dt>

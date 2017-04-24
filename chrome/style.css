@@ -145,9 +145,11 @@ dl#gttPopup {vertical-align: baseline;}
 
 #gttPopup #gttImages img {vertical-align: middle; border: 1px solid lightgray; margin: 1px; padding: 1px;}
 
-#gttPopup #gttPosition {-webkit-transform: rotate(90deg); display: inline-block; padding-top: 2px; font-weight: bold; font-size: 200%; vertical-align: middle;}
+#gttPopup #gttPosition {display: inline-block; padding-top: 2px; font-weight: bold; font-size: 200%; vertical-align: middle;}
 
 #gttPopup .popupMsg #error {font-weight: bold;}
 #gttPopup .popupMsg #error dt {float: left; clear: left; width: 90px; text-align: right; color: red;}
+
+#gttPopup .gttWhere {width: 180px;}
 
 /* End, style.css */

@@ -179,6 +179,20 @@ GmailToTrello.Model.prototype.loadTrelloLists = function(boardId) {
     });
 };
 
+GmailToTrello.Model.prototype.loadTrelloCards = function(listId) {
+    log('loadTrelloCards');
+
+    var self = this;
+    this.trello.cards = null;
+
+    Trello.get('lists/' + listId + '/cards', {fields: "name,pos"}, function(data) {
+        self.trello.cards = data;
+        self.event.fire('onLoadTrelloCardsSuccess');
+    }, function failure(data) {
+            self.event.fire('onAPIFailure', {data:data});
+    });
+};
+
 GmailToTrello.Model.prototype.loadTrelloLabels = function(boardId) {
     log('loadTrelloLabels');
 
@@ -187,8 +201,6 @@ GmailToTrello.Model.prototype.loadTrelloLabels = function(boardId) {
 
     Trello.get('boards/' + boardId + '/labels', {fields: "color,name"}, function(data) {
         self.trello.labels = data;
-        // If you want to add a "none" label, do:
-        // self.trello.labels.unshift ({color:'gray', name:'none', id:'-1'});
         self.event.fire('onLoadTrelloLabelsSuccess');
     }, function failure(data) {
         self.event.fire('onAPIFailure', {data:data});
@@ -231,8 +243,13 @@ GmailToTrello.Model.prototype.submit = function() {
 
     this.parent.saveSettings();
 
+    var post = 'cards';
+    
     var idMembers = null;
     
+    var text = this.parent.truncate((data.title && data.title.length > 0 ? data.title + '\n' : '')
+            + data.description, this.parent.popupView.MAX_BODY_SIZE, '...');
+
     var desc = this.parent.truncate(data.description, this.parent.popupView.MAX_BODY_SIZE, '...');
     
     //submit data
@@ -269,11 +286,33 @@ GmailToTrello.Model.prototype.submit = function() {
         */
     }
 
-    if (data && data.position && data.position == 'top') {
-        trelloPostableData.pos = 'top'; // Bottom is default, only need to indicate top
+    if (data && data.position) {
+        switch (data.position) {
+            case 'above':
+                trelloPostableData.pos = 'top'; // Bottom is default, only need to indicate top
+                if (data.cardPos && data.cardPos > 0) {
+                    trelloPostableData.pos = data.cardPos-1;
+                }
+                break;
+            case 'below':
+                if (data.cardPos && data.cardPos > 0) {
+                    trelloPostableData.pos = data.cardPos+1;
+                }
+                break;
+            case 'to':
+                if (data.cardId && data.cardId.length > 0) {
+                    post = 'cards/' + data.cardId + '/actions/comments';
+                    trelloPostableData = {'text': text};
+                    // TODO (Ace, 2017.04.23): Due date, labels, members, all have to be called separately
+                }
+                break;
+            default:
+                log('ERROR: Got unknown case: ' + data.position);
+        }
     }
 
-    Trello.post('cards', trelloPostableData, function success(data) {
+
+    Trello.post(post, trelloPostableData, function success(data) {
         self.event.fire('onCardSubmitComplete', {data:data, images:self.newCard.images, attachments:self.newCard.attachments});
         log(data);
         //setTimeout(function() {self.popupNode.hide();}, 10000);
