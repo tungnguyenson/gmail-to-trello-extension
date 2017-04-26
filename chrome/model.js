@@ -247,7 +247,7 @@ GmailToTrello.Model.prototype.submit = function() {
 
     var followon_ = [];
     var followon = function (post1, data1, dataExclude) {
-        if (post1 && post1.length > 0 && data1 && data1.length > 0 && data.cardId && data.cardId.length > 0) {
+        if (post1 && post1.length > 0 && data1 && data1.length > 0 && data.cardId && data.cardId.length > 0 && data.cardId !== '-1') {
             if (dataExclude && dataExclude.length > 0) {
                 var data1new = '';
                 $.each(data1.split(','), function(iter, item) {
@@ -323,7 +323,7 @@ GmailToTrello.Model.prototype.submit = function() {
                 }
                 break;
             case 'to':
-                if (data.cardId && data.cardId.length > 0) {
+                if (data.cardId && data.cardId.length > 0 && data.cardId !== '-1') {
                     post = 'cards/' + data.cardId + '/actions/comments';
                     trelloPostableData = {'text': text};
                     // TODO (Ace, 2017.04.23): Due date, labels, members, all have to be called separately

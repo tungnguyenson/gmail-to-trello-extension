@@ -66,7 +66,6 @@ var app = new GmailToTrello.App();
 function getGmailObject() {
     document.addEventListener('gtt:connect_extension', function(e) {
         app.model.userEmail = e.detail.userEmail; // Was: e.detail[10];
-    // console.log(app.data);
     });
 
     ['inject.js'].forEach (function (item, iter) {

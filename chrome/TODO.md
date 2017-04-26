@@ -7,4 +7,6 @@
 - [done] add due date
 - [done] Include "From <email> to Description"
 - [done] Add attachments as files instead of links: https://github.com/KartikTalwar/gmail.js/issues/134
-- Add to an existing card
+- [done] Add to an existing card
+- [done] Remove console.log() to use our log()
+- Move attachment upload logic to model.js
