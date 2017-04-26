@@ -97,10 +97,12 @@ ul#gttLabels {float: left; margin: 0; padding: 0; height: 65px; width: 100%; ove
 
 ul#gttMembers {float: left; margin: 0; padding: 0; height: 53px; width: 100%; overflow: auto;}
 
+ul#gttPosition {display: inline-block; float: left; padding: 0; margin: 0 0 2px 0;}
+
 #gttLabels li, #gttMembers li {
     float: left; 
-    margin: 0 10px 5px 0; 
-    padding: 6px 12px; 
+    margin: 0 2px 2px 0; 
+    padding: 6px 6px; 
     list-style: none; 
     border-radius: 3px; 
     border: 1px solid #ccc; 
@@ -112,20 +114,56 @@ ul#gttMembers {float: left; margin: 0; padding: 0; height: 53px; width: 100%; ov
     color: #888;
 }
 
+#gttPositionOBSOLETE li {
+    float: left; 
+    margin: 0 2px 2px 0; 
+    padding: 6px 6px; 
+    list-style: none; 
+    border-radius: 3px; 
+    border: 1px solid darkgreen;
+    border-top-width: 5px; 
+    cursor: pointer; 
+    background: #F2F2F2; 
+    font-size: 12px; 
+    font-weight: bold;
+    color: #888;
+    height: 10px;
+    width: 10px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+#gttPosition li {
+    float: left; 
+    cursor: pointer;
+    list-style: none;
+    /* background: #F2F2F2; */
+    font-size: 20px; 
+    font-weight: bold; 
+    color: #ccc;
+    height: 26px;
+    width: 22px;
+    line-height: 26px;
+    text-align: center;
+    vertical-align: middle;
+}
+
 #gttLabels li:hover, #gttMembers li:hover, #gttLabels li.active:hover, #gttMembers li.active:hover {border-color: #52A8D9; color: #1789C0;}
-#gttLabels li.active, #gttMembers li.active {border-color:inherit; color:black; padding:4px 10px; border: 3px solid; border-top-width:7px;}
+#gttLabels li.active, #gttMembers li.active {border-color: inherit; color: black; padding: 4px 4px; border: 3px solid; border-top-width:7px;}
+#gttPosition li:hover, #gttPosition li.active:hover {color: black;}
+#gttPosition li.active {color: darkgreen; background: #F2F2F2;}
 
 dl#gttPopup {vertical-align: baseline;}
-#gttPopup dt {width:70px; float:left; text-align:right; padding-right:5px; vertical-align: baseline;}
-#gttPopup dd {display:block; margin:8px; margin-left:75px;}
+#gttPopup dt {width: 70px; float: left; text-align: right; padding-right: 5px; vertical-align: baseline;}
+#gttPopup dd {display: block; margin: 8px; margin-left: 75px;}
 
 #gttPopup input,#gttPopup select,#gttPopup option {font-size:12px;}
 
 #gttPopup .gttTopRight {float: right; vertical-align: top; margin: 0;}
 
-#gttPopup #addToTrello /* input[type=button] */ {font-size:14px; padding:5px 18px; color: white; background:linear-gradient(to top, #24a828 0, #1b7e1e 100%); border:0; border-radius:3px; cursor: pointer}
+#gttPopup #addToTrello /* input[type=button] */ {font-size: 14px; padding: 5px 18px; color: white; background:linear-gradient(to top, #24a828 0, #1b7e1e 100%); border: 0; border-radius: 3px; cursor: pointer}
 #gttPopup #addToTrello:hover /* input[type=button]:hover */ {background:linear-gradient(to bottom, #1f9323 0, #166919 100%)}
-#gttPopup input[type=text], #gttPopup textarea {padding:3px; border:1px solid #A1A1A1; border-radius: 3px;}
+#gttPopup input[type=text], #gttPopup textarea {padding: 3px; border: 1px solid #A1A1A1; border-radius: 3px;}
 
 #gttPopup #addToTrello[disabled], #gttPopup #addToTrello[disabled]:hover, #gttPopup input[disabled], #gttPopup input[disabled]:hover {background: #ccc; color:#666; cursor:default;}
 
@@ -145,11 +183,37 @@ dl#gttPopup {vertical-align: baseline;}
 
 #gttPopup #gttImages img {vertical-align: middle; border: 1px solid lightgray; margin: 1px; padding: 1px;}
 
-#gttPopup #gttPosition {display: inline-block; padding-top: 2px; font-weight: bold; font-size: 200%; vertical-align: middle;}
+#gttPopup #gttPositionOBSOLETE {display: inline-block; padding-top: 2px; font-weight: bold; font-size: 200%; vertical-align: middle;}
 
 #gttPopup .popupMsg #error {font-weight: bold;}
 #gttPopup .popupMsg #error dt {float: left; clear: left; width: 90px; text-align: right; color: red;}
 
 #gttPopup .gttWhere {width: 180px;}
+
+#gttPopup .positionGroup .gtt-button {
+    background-color: lightgray;
+    border: 1px solid black;
+    color: black;
+    padding: 2px 2px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 24px;
+    cursor: pointer;
+    width: 30px;
+    display: block;
+}
+
+#gttPopup .positionGroup .gtt-button:not(:last-child) {
+    border-bottom: none; /* Prevent double borders */
+}
+
+#gttPopup .positionGroup .gtt-button:hover {
+    background-color: #3e8e41;
+}
+
+#gttPopup .positionGroup .gtt-button:active {
+    background-color: darkgray;
+}
 
 /* End, style.css */

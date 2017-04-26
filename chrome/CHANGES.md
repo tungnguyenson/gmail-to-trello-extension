@@ -4,7 +4,12 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
-Version 2.7.0.0.
+Version 2.7.0.1
+-----------------
+- Fix bug in creating new card
+- Simplify UI for adding to a card vs. adding new card below
+
+Version 2.7.0.0
 -----------------
 - Add to an existing card!
 - Had to change UI a little to account for card selection and "where" to put the card
