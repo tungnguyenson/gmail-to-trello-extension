@@ -674,4 +674,26 @@ GmailToTrello.App.prototype.deep_link = function(obj, fields) {
     return valid ? obj_ptr : '';
 };
 
+/**
+ * Validate hash table entries are non-blank
+ */
+GmailToTrello.App.prototype.validHash = function(args) {
+    if (!args) {
+        log('ERROR: Require args!');
+        return false;
+    }
+
+    var field1, fields = Object.keys(args);
+    var valid = true;
+
+    while ((field1 = fields.shift()) && valid) {
+        if (!args.hasOwnProperty(field1) || args[field1].length < 1) {
+            valid = false;
+        }
+    }
+
+    return valid;
+}
+
+
 // End, app.js

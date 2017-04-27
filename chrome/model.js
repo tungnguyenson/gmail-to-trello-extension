@@ -245,9 +245,15 @@ GmailToTrello.Model.prototype.submit = function() {
 
     var post = 'cards';
 
+    const newCard_k = (data.cardId && data.cardId.length > 0 && data.cardId === '-1')
+        || (data.position && data.position === 'below');
+    
     var followon_ = [];
-    var followon = function (post1, data1, dataExclude) {
-        if (post1 && post1.length > 0 && data1 && data1.length > 0 && data.cardId && data.cardId.length > 0 && data.cardId !== '-1') {
+    var followon = function (args) {
+        if (!self.parent.validHash(args)) return;
+
+        var method = args.method || ''; post1, data1, dataExclude) {
+        if (method && method.length > 0 && post1 && post1.length > 0 && data1 && data1.length > 0 && data.cardId && data.cardId.length > 0 && data.cardId !== '-1') {
             if (dataExclude && dataExclude.length > 0) {
                 var data1new = '';
                 $.each(data1.split(','), function(iter, item) {
@@ -258,11 +264,32 @@ GmailToTrello.Model.prototype.submit = function() {
                 });
             }
             if (data1.length > 0) {
-                followon_.push({'post': 'cards/' + data.cardId + '/' + post1, 'value': data1});
+                followon_.push({'method': method, 'post': 'cards/' + data.cardId + '/' + post1, 'value': data1});
             }
         }
     }
     
+    if (data.position) {
+        switch (data.position) {
+            case 'below':
+                if (data.cardPos && data.cardPos > 0) {
+                    trelloPostableData.pos = data.cardPos+1;
+                }
+                break;
+            case 'to':
+                if (data.cardId && data.cardId.length > 0 && data.cardId !== '-1') {
+                    post = 'cards/' + data.cardId + '/actions/comments';
+                    trelloPostableData = {'text': text};
+                    // TODO (Ace, 2017.04.23): Due date, labels, members, all have to be called separately
+                } else {
+                    trelloPostableData.pos = 'top';
+                }
+                break;
+            default:
+                log('ERROR: Got unknown case: ' + data.position);
+        }
+    }
+
     var idMembers = null;
     
     var text = data.title || '';
@@ -286,16 +313,16 @@ GmailToTrello.Model.prototype.submit = function() {
 
     if (data && data.membersId && data.membersId.length > 1) {
         trelloPostableData.idMembers = data.membersId;
-        followon('idMembers', data.membersId, data.cardMembers);
+        followon('post', 'idMembers', data.membersId, data.cardMembers);
     }
 
     // NOTE (Ace, 10-Jan-2017): Can only post valid labels, this can be a comma-delimited list of valid label ids, will err 400 if any label id unknown:
-    if (data && data.labelsId && data.labelsId.length > 1 && data.labelsId.indexOf('-1') === -1) { // Will 400 if we post invalid ids (such as -1):
+    if (data.labelsId && data.labelsId.length > 1 && data.labelsId.indexOf('-1') === -1) { // Will 400 if we post invalid ids (such as -1):
         trelloPostableData.idLabels = data.labelsId;
-        followon('idLabels', data.labelsId, data.cardLabels);
+        followon('post', 'idLabels', data.labelsId, data.cardLabels);
     }
 
-    if (data && data.due_Date && data.due_Date.length > 1) { // Will 400 if not valid date:
+    if (data.due_Date && data.due_Date.length > 1) { // Will 400 if not valid date:
         /* Workaround for quirk in Date object,
          * See: http://stackoverflow.com/questions/28234572/html5-datetime-local-chrome-how-to-input-datetime-in-current-time-zone
          * Was: dueDate.replace('T', ' ').replace('-','/')
@@ -312,28 +339,7 @@ GmailToTrello.Model.prototype.submit = function() {
         trelloPostableData.due = new Date(data.dueDate.replace('T', ' ').replace('-','/')).toISOString();
         */
         trelloPostableData.due = due_text;
-        followon('due', due_text);
-    }
-
-    if (data && data.position) {
-        switch (data.position) {
-            case 'below':
-                if (data.cardPos && data.cardPos > 0) {
-                    trelloPostableData.pos = data.cardPos+1;
-                }
-                break;
-            case 'to':
-                if (data.cardId && data.cardId.length > 0 && data.cardId !== '-1') {
-                    post = 'cards/' + data.cardId + '/actions/comments';
-                    trelloPostableData = {'text': text};
-                    // TODO (Ace, 2017.04.23): Due date, labels, members, all have to be called separately
-                } else {
-                    trelloPostableData.pos = 'top';
-                }
-                break;
-            default:
-                log('ERROR: Got unknown case: ' + data.position);
-        }
+        followon('put', 'due', due_text);
     }
 
     Trello.post(post, trelloPostableData, function success(data) {
