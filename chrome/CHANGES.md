@@ -4,6 +4,10 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.7.0.2
+-----------------
+- Refactor upload code to pull it all into model work, add model.Uploader class
+
 Version 2.7.0.1
 -----------------
 - Fix bug in creating new card

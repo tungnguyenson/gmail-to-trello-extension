@@ -233,37 +233,105 @@ GmailToTrello.Model.prototype.loadTrelloMembers = function(boardId) {
     });
 };
 
+GmailToTrello.Model.prototype.Uploader = function(parent_in, cardId_in) {
+    this.parent = parent_in;
+    this.data = [];
+    this.cardId = cardId_in && cardId_in !== '-1' ? cardId_in : '';
+    if (!this.cardId) {
+        this.data.push({'property': 'cards'}); // Seed array for new card
+    } 
+};
+
+GmailToTrello.Model.prototype.Uploader.prototype = {
+    'exclude': function(list, exclude) {
+        let list_new = [];
+        $.each(list.split(','), function(iter, item) {
+            if (exclude.indexOf(item) === -1) {
+                list_new.push(item);
+            }
+        });
+        return list_new.join(',');
+    },
+    
+    'add': function(args) {
+        if (this.parent.parent.validHash(args)) {
+            if (!this.cardId && args.method !== 'upload') { // It's a new card so add to the existing hash:
+                this.data[0][args.property] = args.value;
+            } else {
+                args.property = 'cards/' + (this.cardId || '%cardId%') + '/' + args.property;
+                this.data.push(args);
+            }
+        }
+        return this;
+    },
+    
+    'process_response': function(data_in) {
+        const dl_k = this.parent.parent.deep_link; // Pointer to function for expedience
+
+        const url_k = dl_k(data_in, ['url']);
+        const id_k = dl_k(data_in, ['id']);
+        const card_k = dl_k(data_in, ['data', 'card']);
+
+        let shortLink = dl_k(card_k, ['shortLink']);
+        if (shortLink && shortLink.length > 0) {
+            shortLink = 'https://trello.com/c/' + shortLink;
+        }
+        
+        const add_id_k = dl_k(card_k, ['id']);
+        const add_title_k = dl_k(card_k, ['name']);
+
+        const new_url_k = shortLink || url_k || '';
+        const new_id_k = add_id_k || id_k || '';
+
+        if (new_url_k) {
+            this.parent.newCard.url = new_url_k;
+        }
+        if (new_id_k) {
+            this.parent.newCard.id = new_id_k;
+            this.cardId = new_id_k;
+        }
+        if (add_title_k && add_title_k.length > 0) {
+            this.parent.newCard.title = add_title_k;
+        }
+    },
+
+    'upload': function() {
+        let upload1 = this.data.shift();
+        if (!upload1) this.event.fire('onCardSubmitComplete');
+
+        const dict_k = {'cardId': this.cardId};
+
+        let method = upload1.method || 'post';
+        let property = this.parent.parent.replacer(upload1.property, dict_k);
+        delete upload1.method;
+        delete upload1.property;
+
+        let self = this;
+        Trello.rest(method, property, upload1, function success(data) {
+            self.process_response(data);
+            if (self.data && self.data.length > 0) {
+                this.upload();
+            } else {
+                self.parent.event.fire('onCardSubmitComplete');
+            }
+        }, function failure(data) {
+            self.parent.event.fire('onAPIFailure', {data: data});
+        });
+    }
+};
+
 GmailToTrello.Model.prototype.submit = function() {
-    var self = this;
+    let self = this;
     if (this.newCard === null) {
         log('Submit data is empty');
         return false;
     }
-    var data = this.newCard;
 
     this.parent.saveSettings();
 
-    var post = 'cards';
+    var data = this.newCard;
 
-    var followon_ = [];
-    var followon = function (post1, data1, dataExclude) {
-        if (post1 && post1.length > 0 && data1 && data1.length > 0 && data.cardId && data.cardId.length > 0 && data.cardId !== '-1') {
-            if (dataExclude && dataExclude.length > 0) {
-                var data1new = '';
-                $.each(data1.split(','), function(iter, item) {
-                    if (dataExclude.indexOf(item) === -1) {
-                        data1new += (data1new.length > 0 ? ',' : '') + item;
-                    }
-                data1 = data1new;
-                });
-            }
-            if (data1.length > 0) {
-                followon_.push({'post': 'cards/' + data.cardId + '/' + post1, 'value': data1});
-            }
-        }
-    }
-    
-    var idMembers = null;
+    let uploader = new this.Uploader(self, data.cardId);
     
     var text = data.title || '';
     if (text.length > 0) {
@@ -276,96 +344,71 @@ GmailToTrello.Model.prototype.submit = function() {
     text = this.parent.truncate(text, this.parent.popupView.MAX_BODY_SIZE, '...');
 
     var desc = this.parent.truncate(data.description, this.parent.popupView.MAX_BODY_SIZE, '...');
-    
-    //submit data
-    var trelloPostableData = {
-        name: data.title, 
-        desc: desc,
-        idList: data.listId
-    };
 
-    if (data && data.membersId && data.membersId.length > 1) {
-        trelloPostableData.idMembers = data.membersId;
-        followon('idMembers', data.membersId, data.cardMembers);
-    }
+    var due_text = '';
 
-    // NOTE (Ace, 10-Jan-2017): Can only post valid labels, this can be a comma-delimited list of valid label ids, will err 400 if any label id unknown:
-    if (data && data.labelsId && data.labelsId.length > 1 && data.labelsId.indexOf('-1') === -1) { // Will 400 if we post invalid ids (such as -1):
-        trelloPostableData.idLabels = data.labelsId;
-        followon('idLabels', data.labelsId, data.cardLabels);
-    }
-
-    if (data && data.due_Date && data.due_Date.length > 1) { // Will 400 if not valid date:
+    if (data.due_Date && data.due_Date.length > 1) { // Will 400 if not valid date:
         /* Workaround for quirk in Date object,
          * See: http://stackoverflow.com/questions/28234572/html5-datetime-local-chrome-how-to-input-datetime-in-current-time-zone
          * Was: dueDate.replace('T', ' ').replace('-','/')
          */
-        var due = data.due_Date.replace('-', '/');
+        let due = data.due_Date.replace('-', '/');
 
         if (data.due_Time && data.due_Time.length > 1) {
             due += ' ' + data.due_Time;
         } else {
             due += ' 00:00'; // Must provide time
         }
-        var due_text = new Date(due).toISOString();
+        due_text = new Date(due).toISOString();
         /* (NOTE (Ace, 27-Feb-2017): When we used datetime-local object, this was:
         trelloPostableData.due = new Date(data.dueDate.replace('T', ' ').replace('-','/')).toISOString();
         */
-        trelloPostableData.due = due_text;
-        followon('due', due_text);
     }
 
-    if (data && data.position) {
-        switch (data.position) {
-            case 'below':
-                if (data.cardPos && data.cardPos > 0) {
-                    trelloPostableData.pos = data.cardPos+1;
-                }
-                break;
-            case 'to':
-                if (data.cardId && data.cardId.length > 0 && data.cardId !== '-1') {
-                    post = 'cards/' + data.cardId + '/actions/comments';
-                    trelloPostableData = {'text': text};
-                    // TODO (Ace, 2017.04.23): Due date, labels, members, all have to be called separately
-                } else {
-                    trelloPostableData.pos = 'top';
-                }
-                break;
-            default:
-                log('ERROR: Got unknown case: ' + data.position);
-        }
+    switch (data.position || 'below') {
+        case 'below':
+            let pos = parseInt(data.cardPos || 0, 10);
+            if (pos) {
+                pos++;
+            } else {
+                pos ='bottom';
+            }
+            uploader
+                .add({'property': 'pos', 'value': pos})
+                .add({'property': 'name', 'value': data.title})
+                .add({'property': 'desc', 'value': desc})
+                .add({'property': 'idList', 'value': data.listId});
+            break;
+        case 'to':
+            if (!data.cardId || data.cardId.length < 1 || data.cardId === '-1') {
+                uploader
+                    .add({'property': 'pos', 'value': 'top'})
+                    .add({'property': 'name', 'value': data.title})
+                    .add({'property': 'desc', 'value': desc})
+                    .add({'property': 'idList', 'value': data.listId});
+            } else {
+                uploader.add({'property': 'actions/comments', 'text': text});
+            }
+            break;
+        default:
+            log('ERROR: Got unknown case: ' + data.position || '<empty position>');
     }
 
-    Trello.post(post, trelloPostableData, function success(data) {
-        if (followon_.length > 0) {
-            var followon_process = function(followonp) {
-                var followon1 = followonp.shift();
-                if (followon1 && followon1.post && followon1.post.length > 0) {
-                    var method = 'post';
-                    if (followon1.post.indexOf('due') !== -1) {
-                        method = 'put';
-                    }
-                    Trello.rest(method, followon1.post, {'value': followon1.value}, function success(data) {
-                        if (followonp && followonp.length > 0) {
-                            followon_process(followonp);
-                        } else {
-                            self.event.fire('onCardSubmitComplete', {data:data, images:self.newCard.images, attachments:self.newCard.attachments});
-                        }
-                    }, function failure(data) {
-                        self.event.fire('onAPIFailure', {data:data});
-                    });
-                }                   
-            };
-            followon_process(followon_);
-        } else {
-            self.event.fire('onCardSubmitComplete', {data:data, images:self.newCard.images, attachments:self.newCard.attachments});
+    uploader
+        .add({'property': 'idMembers', 'value': uploader.exclude(data.membersId, data.cardMembers)})
+        .add({'property': 'idLabels', 'value': uploader.exclude(data.labelsId, data.cardLabels)})
+        .add({'property': 'due', 'value': due_text, 'method': 'put'})
+
+
+    let imagesAndAttachments = (data.images || []).concat(data.attachments || []);
+
+    $.each(imagesAndAttachments, function(iter, item) {
+        if (item.hasOwnProperty('checked') && item.checked && item.url && item.url.length > 5) {
+            uploader.add({'property': 'attachments', 'value': item.url, 'method': 'upload'});
         }
-    
-        log(data);
-        //setTimeout(function() {self.popupNode.hide();}, 10000);
-    }, function failure(data) {
-        self.event.fire('onAPIFailure', {data:data});
     });
+
+  uploader.upload();
 };
 
 // End, model.js
