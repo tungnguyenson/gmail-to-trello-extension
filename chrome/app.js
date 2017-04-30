@@ -60,48 +60,14 @@ GmailToTrello.App.prototype.bindEvents = function() {
     this.model.event.addListener('onLoadTrelloMembersSuccess', function() {
         self.popupView.updateMembers();
         self.popupView.validateData();
-    })
+    });
 
     this.model.event.addListener('onCardSubmitComplete', function(target, params) {
-        var paramsData = self.deep_link(params, ['data']);
-        var url = self.deep_link(paramsData, ['url']);
-        var id = self.deep_link(paramsData, ['id']);
-
-        var paramsDataDataCard = self.deep_link(paramsData, ['data', 'card']);
-        var shortLink = self.deep_link(paramsDataDataCard, ['shortLink']);
-        if (shortLink && shortLink.length > 0) {
-            shortLink = 'https://trello.com/c/' + shortLink;
-        }
-        var add_id = self.deep_link(paramsDataDataCard, ['id']);
-        var add_title = self.deep_link(paramsDataDataCard, ['name']);
-        self.model.newCard.url = shortLink || url;
-        self.model.newCard.id = add_id || id;
-        if (add_title && add_title.length > 0) {
-            self.model.newCard.title = add_title;
-        }
-        self.model.event.fire('onSubmitAttachments', {data:self.model, images:params.images, attachments:params.attachments});
+        self.popupView.displaySubmitCompleteForm();
     });
 
     this.model.event.addListener('onAPIFailure', function(target, params) {
         self.popupView.displayAPIFailedForm(params);
-    });
-
-    this.model.event.addListener('onSubmitAttachments', function(target, params) {
-        var attach1 = params.images.shift() || params.attachments.shift();
-        
-        if (attach1) {
-            if (!attach1.hasOwnProperty('checked') || attach1.checked !== true || !attach1.url || attach1.url.length < 6) { // Skip this attachment
-                params.data.event.fire('onSubmitAttachments', {data:params.data, images:params.images, attachments:params.attachments});
-            } else {
-                Trello.upload('cards/' + params.data.newCard.id + '/attachments', attach1.url, function success(data) {
-                    params.data.event.fire('onSubmitAttachments', {data:params.data, images:params.images, attachments:params.attachments});
-                }, function failure(data) {
-                    self.popupView.displayAPIFailedForm(data);
-                });
-            }
-        } else { // Done with attach list
-            self.popupView.displaySubmitCompleteForm();
-        }
     });
 
     /*** PopupView's events binding ***/
@@ -573,7 +539,7 @@ GmailToTrello.App.prototype.loadSettings = function(popup) {
  */
 GmailToTrello.App.prototype.saveSettings = function() {
     const setID = this.CHROME_SETTINGS_ID;
-    const settings = this.popupView.data.settings;
+    let settings = $.extend({}, this.popupView.data.settings);
     
     // Delete large, potentially needing secure, data bits:
     settings.description = '';
@@ -581,7 +547,7 @@ GmailToTrello.App.prototype.saveSettings = function() {
     settings.attachments = [];
     settings.images = [];
 
-    var hash = {};
+    let hash = {};
     hash[setID] = JSON.stringify(settings);
     chrome.storage.sync.set(hash);  // NOTE (Ace, 7-Feb-2017): Might need to store these off the app object
 };
@@ -656,13 +622,8 @@ GmailToTrello.App.prototype.modKey = function(event) {
  * Validate deep link or return empty object:
  */
 GmailToTrello.App.prototype.deep_link = function(obj, fields) {
-    if (!obj) { 
-        log('ERROR: Require object!');
-        return '';
-    } else if (!fields) {
-        log('ERROR: Require fields!');
-        return '';
-    }
+    if (!obj) return '';
+    if (!fields) return '';
 
     var field1, obj_ptr = obj;
     var valid = true;
