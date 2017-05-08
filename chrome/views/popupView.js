@@ -672,7 +672,7 @@ GmailToTrello.PopupView.prototype.initPosition = function() {
         .append('&#11013;'));
 
     $gtt.append($('<li>')
-        .attr('trelloId-position', 'bottom')
+        .attr('trelloId-position', 'below')
         .attr('title', 'New card below')
         .append('&#11015;'));
 
@@ -682,7 +682,7 @@ GmailToTrello.PopupView.prototype.initPosition = function() {
     });
 
     var settings = this.data.settings;
-    var settingId = settings.position || 'bottom';
+    var settingId = settings.position || 'below';
     $('#gttPosition li[trelloId-position="' + settingId + '"]', self.$popup).click();
  
     $gtt.show();
