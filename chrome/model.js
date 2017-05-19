@@ -310,9 +310,9 @@ GmailToTrello.Model.prototype.Uploader.prototype = {
         Trello.rest(method, property, upload1, function success(data) {
             self.process_response(data);
             if (self.data && self.data.length > 0) {
-                this.upload();
+                self.upload();
             } else {
-                self.parent.event.fire('onCardSubmitComplete');
+                self.parent.event.fire('onCardSubmitComplete', {data: data});
             }
         }, function failure(data) {
             self.parent.event.fire('onAPIFailure', {data: data});

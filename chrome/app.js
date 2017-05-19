@@ -64,6 +64,23 @@ GmailToTrello.App.prototype.bindEvents = function() {
 
     this.model.event.addListener('onCardSubmitComplete', function(target, params) {
         self.popupView.displaySubmitCompleteForm();
+        // If card lists or labels have been updated, reload:
+        const listId_k = self.deep_link(params, ['data', 'data', 'list', 'id']);
+        const boardId_k = self.deep_link(params, ['data', 'data', 'board', 'id']);
+        const idList_k = self.deep_link(params, ['data', 'idList']);
+        const idBoard_k = self.deep_link(params, ['data', 'idBoard']);
+        if (boardId_k || idBoard_k) {
+            self.model.loadTrelloLabels(boardId);
+            self.popupView.updateLabels();
+        }
+        if (listId_k || idList_k) {            
+            self.model.loadTrelloCards(listId_k || idList_k);
+            self.popupView.updateMembers();
+        }
+        if (boardId_k || idBoard_k || listId_k || idList_k) {
+            self.popupView.updateCards();
+            self.popupView.validateData();
+        }
     });
 
     this.model.event.addListener('onAPIFailure', function(target, params) {
