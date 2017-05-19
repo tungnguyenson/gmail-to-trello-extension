@@ -243,6 +243,8 @@ GmailToTrello.Model.prototype.Uploader = function(parent_in, cardId_in) {
 };
 
 GmailToTrello.Model.prototype.Uploader.prototype = {
+    'self': this,
+
     'exclude': function(list, exclude) {
         let list_new = [];
         $.each(list.split(','), function(iter, item) {
@@ -293,6 +295,62 @@ GmailToTrello.Model.prototype.Uploader.prototype = {
         if (add_title_k && add_title_k.length > 0) {
             this.parent.newCard.title = add_title_k;
         }
+    },
+
+    'attach': function(uri) {
+        if (!uri || uri.length < 6) return;
+        /*
+        var opts = {
+          url: "" + baseURL + path, // apiEndpoint + "/" + version + "/";
+          type: method,
+          data: {},
+          dataType: "json",
+          success: success,
+          error: error
+        };
+        if (key) {
+          opts.data.key = key;
+        }
+        if (token) {
+          opts.data.token = token;
+        }
+        if (params != null) {
+          $.extend(opts.data, params);            
+        }
+        if (method === 'UPLOAD' && typeof (params) === "string" && params.length > 5) {
+          var xhr = new XMLHttpRequest();
+          xhr.open('get', params);
+          xhr.responseType = 'blob'; // Use blob to get the mimetype
+          xhr.onload = function() {
+            var fileReader = new FileReader();
+            fileReader.onload = function() {
+              var filename = (params.split('/').pop().split('#')[0].split('?')[0]) || params || '?'; // Removes # or ? after filename
+              var file = new File([this.result], filename);
+              var form = new FormData();
+              form.append("file", file);
+              $.each(['key', 'token'], function(iter, item) {
+                form.append(item, opts.data[item] || 'ERROR! Missing "' + item + '"');
+              });
+              form
+                .append('key', Trello.key())
+                .append('token', Trello.token());
+
+              $.extend(opts, {
+                method: "POST",
+                data: form,
+                cache: false,
+                contentType: false,
+                processData: false
+              });
+              return $.ajax(opts);
+            };
+            fileReader.readAsArrayBuffer(xhr.response); // Use filereader on blob to get content
+          };
+          xhr.send();
+        } else {
+          return $.ajax(opts);
+        }
+        */
     },
 
     'upload': function() {

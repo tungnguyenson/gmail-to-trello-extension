@@ -65,21 +65,19 @@ GmailToTrello.App.prototype.bindEvents = function() {
     this.model.event.addListener('onCardSubmitComplete', function(target, params) {
         self.popupView.displaySubmitCompleteForm();
         // If card lists or labels have been updated, reload:
-        const listId_k = self.deep_link(params, ['data', 'data', 'list', 'id']);
-        const boardId_k = self.deep_link(params, ['data', 'data', 'board', 'id']);
-        const idList_k = self.deep_link(params, ['data', 'idList']);
-        const idBoard_k = self.deep_link(params, ['data', 'idBoard']);
-        if (boardId_k || idBoard_k) {
-            self.model.loadTrelloLabels(boardId);
-            self.popupView.updateLabels();
+        const data_k = self.deep_link(params, ['data']);
+        const listId_k = self.deep_link(data_k, ['data', 'list', 'id']);
+        const boardId_k = self.deep_link(data_k, ['data', 'board', 'id']);
+        const idList_k = self.deep_link(data_k, ['idList']);
+        const idBoard_k = self.deep_link(data_k, ['idBoard']);
+        const board_k = boardId_k || idBoard_k || 0;
+        const list_k = listId_k || idList_k || 0;
+        if (board_k) {
+            self.model.loadTrelloLabels(board_k);
+            self.model.loadTrelloMembers(board_k);
         }
-        if (listId_k || idList_k) {            
-            self.model.loadTrelloCards(listId_k || idList_k);
-            self.popupView.updateMembers();
-        }
-        if (boardId_k || idBoard_k || listId_k || idList_k) {
-            self.popupView.updateCards();
-            self.popupView.validateData();
+        if (list_k) {
+            self.model.loadTrelloCards(list_k);
         }
     });
 
