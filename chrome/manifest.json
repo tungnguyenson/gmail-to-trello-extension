@@ -76,6 +76,7 @@
   "oauth2": {
     "client_id": "931090930005-ma9ieb9t6i4i1lndtgsc57opm6r3u728.apps.googleusercontent.com",
     "scopes": [
+      "https://www.googleapis.com/auth/plus.login",
       "https://www.googleapis.com/auth/chromewebstore.readonly"
     ]
   }
