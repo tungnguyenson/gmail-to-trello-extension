@@ -29,6 +29,8 @@ GmailToTrello.PopupView = function(parent) {
     // html pieces
     this.html = {};
 
+    this.chrome_access_token = '';
+
     this.MAX_BODY_SIZE = 16384;
 };
 
@@ -501,8 +503,31 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
     $('#gttSignOutButton', this.$popup).click(function() {
         $.get(chrome.extension.getURL('views/signOut.html'), function(data) {
             self.showMessage(self, data);
+            // chrome.identity.removeCacheAuthToken({'token': self.chrome_access_token});
             self.event.fire('onRequestDeauthorizeTrello');
-        })
+        });
+    });
+
+    // GET https://www.googleapis.com/chromewebstore/v1.1/items/oceoildfbiaeclndnjknjpfaoofeekgl/skus/gmail_to_trello_yearly_subscription_29_99
+    $('#gttSubscribe', this.$popup).click(function() {
+        $.get(chrome.extension.getURL('views/subscribe.html'), function(data) {
+            self.showMessage(self, data);
+            google.payments.inapp.getSkuDetails({ // getSkuDetails({
+                  'parameters': {'env': 'prod'},
+                  'sku': 'gmail_to_trello_yearly_subscription_29_99',
+                  'success': function(response) {
+                        // onLicenseUpdate
+                    },
+                  'failure': function(response) {
+                        // onLicenseUpdateFail
+                    }
+                });
+            /*
+            chrome.identity.getAuthToken({'interactive': true}, function(token) {
+                self.chrome_access_token = token;
+            });
+            */
+        });
     });
         
     if (data.settings.hasOwnProperty('useBackLink')) {
