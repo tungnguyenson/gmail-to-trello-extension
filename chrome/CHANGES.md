@@ -8,6 +8,8 @@ Version 2.7.0.3
 -----------------
 - Fix error with "bottom" should be "below"
 - Refactor upload code to pull it all into model work, add model.Uploader class
+- Move attach code back into our code since Trello doesn't want it
+- Fix error where attachment URL was click link instead of updated card
 
 Version 2.7.0.1
 -----------------
