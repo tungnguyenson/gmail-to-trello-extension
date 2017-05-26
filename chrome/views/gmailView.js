@@ -225,13 +225,17 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     
     // timestamp
     var $time = $(this.selectors.timestamp, $visibleMail);
-    var timeValue = ($time) ? ($time.attr('title') || "") : '';
+    var timeValue = ($time) ? ($time.attr('title') || $time.text() || '') : '';
     timeValue = timeValue ? timeValue.replace(' at ', ' ') : ''; // BUG (Ace, 29-Jan-2017): Replacing 'at' without spaces will mess up "Sat" which will then cause Date.parse to fail.
     if (timeValue !== '') {
         timeValue = Date.parse(timeValue);
     }
 
     data.time = timeValue ? timeValue.toString(this.dateFormat || 'MMM d, yyyy') : 'recently';
+
+    if (data.time === 'recently') {
+        log('timeValue:' + timeValue + '\ntime:' + JSON.stringify($time));
+    }
 
     var from_raw = emailName + ' <' + emailAddress + '> on ' + data.time;
     var from_md = '[' + emailName + '](' /* mailto: */ + emailAddress /* Don't need 'mailto:' */
