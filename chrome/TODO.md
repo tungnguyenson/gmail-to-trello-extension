@@ -9,4 +9,5 @@
 - [done] Add attachments as files instead of links: https://github.com/KartikTalwar/gmail.js/issues/134
 - [done] Add to an existing card
 - [done] Remove console.log() to use our log()
-- Move attachment upload logic to model.js
+- [done] Move attachment upload logic to model.js
+- http://cssglobe.com/lab/tooltip/02/
