@@ -64,6 +64,21 @@ GmailToTrello.App.prototype.bindEvents = function() {
 
     this.model.event.addListener('onCardSubmitComplete', function(target, params) {
         self.popupView.displaySubmitCompleteForm();
+        // If card lists or labels have been updated, reload:
+        const data_k = self.deep_link(params, ['data']);
+        const listId_k = self.deep_link(data_k, ['data', 'list', 'id']);
+        const boardId_k = self.deep_link(data_k, ['data', 'board', 'id']);
+        const idList_k = self.deep_link(data_k, ['idList']);
+        const idBoard_k = self.deep_link(data_k, ['idBoard']);
+        const board_k = boardId_k || idBoard_k || 0;
+        const list_k = listId_k || idList_k || 0;
+        if (board_k) {
+            self.model.loadTrelloLabels(board_k);
+            self.model.loadTrelloMembers(board_k);
+        }
+        if (list_k) {
+            self.model.loadTrelloCards(list_k);
+        }
     });
 
     this.model.event.addListener('onAPIFailure', function(target, params) {
@@ -187,7 +202,7 @@ GmailToTrello.App.prototype.uriForDisplay = function(uri) {
         var re = RegExp("^\\w+:\/\/([\\w.\/_-]+).*?([\\w._-]*)$");
         var matched = uri_display.match(re);
         if (matched && matched.length > 0) {
-            var filename = matched[2] || '';
+            const filename_k = matched[2].length < uri_length_max_k ? matched[2] : matched[2].slice(-uri_length_max_k);
             var prelude = matched[1].substr(0, uri_length_max_k);
             if (matched[1].length > uri_length_max_k) {
                 prelude += '...';
@@ -195,7 +210,7 @@ GmailToTrello.App.prototype.uriForDisplay = function(uri) {
                 prelude += ':';
             }
 
-            uri_display = prelude + filename;
+            uri_display = prelude + filename_k;
         }
     }
     return uri_display;
@@ -518,6 +533,20 @@ GmailToTrello.App.prototype.truncate = function(text, max, add) {
     return retn;
 };
 
+/***
+ * Middle-truncate a string
+ */
+GmailToTrello.App.prototype.midTruncate = function(text, max, add) {
+    var retn = text || '';
+    const add_k = this.decodeEntities(add || '');
+    const max_k = (max || 0.01) - add_k.length;
+    const mid_k = max_k / 2;
+
+    if (text && text.length > max_k) {
+        retn = text.slice(0, mid_k+1) + add_k + text.slice(-mid_k);
+    }
+    return retn;
+}
 /**
  * Load settings
  */

@@ -197,16 +197,17 @@ GmailToTrello.GmailView.prototype.parseData = function() {
         if (item && item.length > 0) {
             var attachment = item.match(/^([^:]+)\s*:\s*([^:]+)\s*:\s*(.+)$/);
             if (attachment && attachment.length > 3) {
-                var name = decodeURIComponent(attachment[2]);
+                const name_k = decodeURIComponent(attachment[2]);
+                const url_k = attachment[3]; // Was: self.parent.midTruncate(attachment[3], 50, '...');
                 var add = '&';
-                if (attachment[3].indexOf('?') === -1) {
+                if (url_k.indexOf('?') === -1) {
                     add = '?';
                 }
                 return {
                    'mimeType': attachment[1],
-                   'name': name,
+                   'name': name_k,
                     // NOTE (Ace@2017-04-20): Adding this explicitly at the end of the URL so it'll pick up the "filename":
-                   'url': attachment[3] + add + self.parent.UNIQUE_URI_VAR + '=/' + name,
+                   'url': url_k + add + self.parent.UNIQUE_URI_VAR + '=/' + name,
                    'checked': 'false'
                 }; // [0] is the whole string
             }
@@ -225,13 +226,17 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     
     // timestamp
     var $time = $(this.selectors.timestamp, $visibleMail);
-    var timeValue = ($time) ? ($time.attr('title') || "") : '';
-    timeValue = timeValue ? timeValue.replace(' at ', ' ') : ''; // BUG (Ace, 29-Jan-2017): Replacing 'at' without spaces will mess up "Sat" which will then cause Date.parse to fail.
+    var timeValue = ($time) ? ($time.attr('title') || $time.text() || $time.attr('alt')) : '';
+    timeValue = timeValue ? timeValue.replace(/ \D\D /, ' ') : ''; // BUG (Ace, 29-Jan-2017): Replacing 'at' without spaces will mess up "Sat" which will then cause Date.parse to fail.
     if (timeValue !== '') {
         timeValue = Date.parse(timeValue);
     }
 
     data.time = timeValue ? timeValue.toString(this.dateFormat || 'MMM d, yyyy') : 'recently';
+
+    if (data.time === 'recently') {
+        log('timeValue:' + timeValue + '\ntime:' + JSON.stringify($time));
+    }
 
     var from_raw = emailName + ' <' + emailAddress + '> on ' + data.time;
     var from_md = '[' + emailName + '](' /* mailto: */ + emailAddress /* Don't need 'mailto:' */
@@ -303,8 +308,8 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     var emailImages = {};
 
     $('img', $emailBody1).each(function(index, value) {
-        var href = ($(this).prop("src") || "").trim(); // Was attr
-        var text = ($(this).prop("alt") || self.parent.uriForDisplay(href) || "").trim(); // Was attr
+        var href = ($(this).prop("src") || '').trim(); // Was attr
+        var text = (self.parent.midTruncate($(this).prop("alt"), 50, '...') || self.parent.uriForDisplay(href) || '').trim(); // Was attr
         var type = ($(this).prop("type") || "text/link").trim(); // Was attr
         if (href.length > 0 && text.length > 0) { // Will store as key/value pairs to automatically overide duplicates
             emailImages[href] = {'mimeType': type, 'name': decodeURIComponent(text), 'url': href, 'checked': 'false'};
@@ -313,8 +318,7 @@ GmailToTrello.GmailView.prototype.parseData = function() {
 
     data.images = Object.values(emailImages);
 
-    var t = new Date().getTime();
-    
+    //var t = new Date().getTime();
     //log('Elapsed: '+(t-startTime)/1000);
     this.parsingData = false;
 

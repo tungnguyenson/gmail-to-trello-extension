@@ -4,9 +4,13 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
-Version 2.7.0.2
+Version 2.7.0.3
 -----------------
+- Fix error with "bottom" should be "below"
 - Refactor upload code to pull it all into model work, add model.Uploader class
+- Move attach code back into our code since Trello doesn't want it
+- Fix error where attachment URL was click link instead of updated card
+- Fixed long untruncated image/attachment string
 
 Version 2.7.0.1
 -----------------

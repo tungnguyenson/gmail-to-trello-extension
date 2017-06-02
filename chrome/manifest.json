@@ -1,7 +1,7 @@
 {
   "name": "Gmail-to-Trello",
   "short_name": "GtT",
-  "version": "2.7.0.2",
+  "version": "2.7.0.3",
   "manifest_version": 2,
   "description": "Gmail to Trello integration. Create new Trello cards from Google mail threads with backlinks.",
   "icons": {
@@ -28,9 +28,10 @@
       "js": [
           "lib/jquery-3.1.1.min.js",
           "lib/jquery-ui-1.12.1.min.js",
-          "lib/trello.js", 
+          "lib/trello.min.js", 
           "lib/date.js", 
           "lib/google-analytics-bundle.js", 
+          "lib/google-chrome-buy.js",
           "lib/eventTarget.js", 
           "lib/menuControl.js", 
           "lib/waitCounter.js",
@@ -54,19 +55,29 @@
     "views/popupView.html",
     "views/signOut.html",
     "views/error.html",
+    "views/subscribe.html",
     "lib/jquery-3.1.1.min.map",
     "lib/jquery-ui-1.12.1.min.css",
     "inject.js"
   ],
-  "homepage_url": "https://trello.com/b/CGU9BYgd/gmail-to-trello-development",
+  "homepage_url": "https://trello.com/b/CGU9BYgd/gmail-to-trello-chrome-extension",
   "offline_enabled": false,
   "permissions": [
     "tabs", 
-    "https://*.google.com/*",
     "https://*.trello.com/*",
+    "https://*.google.com/*",
+    "https://www.googleapis.com/",
     "https://www.google-analytics.com/",
     "https://*.googleusercontent.com/*",
-    "storage"    
+    "storage",
+    "identity"   
   ],
-  "options_page": "options.html"
+  "options_page": "options.html",
+  "oauth2": {
+    "client_id": "931090930005-ma9ieb9t6i4i1lndtgsc57opm6r3u728.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/plus.login",
+      "https://www.googleapis.com/auth/chromewebstore.readonly"
+    ]
+  }
 }

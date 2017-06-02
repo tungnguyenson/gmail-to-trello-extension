@@ -243,6 +243,8 @@ GmailToTrello.Model.prototype.Uploader = function(parent_in, cardId_in) {
 };
 
 GmailToTrello.Model.prototype.Uploader.prototype = {
+    'attachments': 'attachments',
+
     'exclude': function(list, exclude) {
         let list_new = [];
         $.each(list.split(','), function(iter, item) {
@@ -255,7 +257,7 @@ GmailToTrello.Model.prototype.Uploader.prototype = {
     
     'add': function(args) {
         if (this.parent.parent.validHash(args)) {
-            if (!this.cardId && args.method !== 'upload') { // It's a new card so add to the existing hash:
+            if (!this.cardId && args.property !== this.attachments) { // It's a new card so add to the existing hash:
                 this.data[0][args.property] = args.value;
             } else {
                 args.property = 'cards/' + (this.cardId || '%cardId%') + '/' + args.property;
@@ -283,10 +285,10 @@ GmailToTrello.Model.prototype.Uploader.prototype = {
         const new_url_k = shortLink || url_k || '';
         const new_id_k = add_id_k || id_k || '';
 
-        if (new_url_k) {
+        if (new_url_k && this.parent.newCard && !this.parent.newCard.url) {
             this.parent.newCard.url = new_url_k;
         }
-        if (new_id_k) {
+        if (new_id_k && this.parent.newCard && !this.parent.newCard.id) {
             this.parent.newCard.id = new_id_k;
             this.cardId = new_id_k;
         }
@@ -295,24 +297,63 @@ GmailToTrello.Model.prototype.Uploader.prototype = {
         }
     },
 
+    'attach': function(method, property, upload1, success, error) {
+        if (!property || property.length < 6 || !upload1 || !upload1.value || upload1.value.length < 6) return;
+        
+        const trello_url_k = 'https://api.trello.com/1/';
+        const param_k = upload1.value;
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('get', param_k);
+        xhr.responseType = 'blob'; // Use blob to get the mimetype
+        xhr.onload = function() {
+            var fileReader = new FileReader();
+            fileReader.onload = function() {
+                const filename_k = (param_k.split('/').pop().split('#')[0].split('?')[0]) || uri || 'unknown_filename'; // Removes # or ? after filename
+                const file_k = new File([this.result], filename_k);
+                var form = new FormData();
+                form.append('file', file_k);
+                form.append('key', Trello.key())
+                form.append('token', Trello.token());
+
+                const opts_k = {
+                    'url': trello_url_k + property,
+                    'method': 'POST',
+                    'data': form,
+                    'dataType': 'json',
+                    'success': success,
+                    'error': error,
+                    'cache': false,
+                    'contentType': false,
+                    'processData': false
+                };
+                return $.ajax(opts_k);
+            };
+            fileReader.readAsArrayBuffer(xhr.response); // Use filereader on blob to get content
+        };
+        xhr.send();
+    },
+
     'upload': function() {
         let upload1 = this.data.shift();
         if (!upload1) this.event.fire('onCardSubmitComplete');
 
-        const dict_k = {'cardId': this.cardId};
+        const dict_k = {'cardId': this.cardId || ''};
 
         let method = upload1.method || 'post';
         let property = this.parent.parent.replacer(upload1.property, dict_k);
         delete upload1.method;
         delete upload1.property;
 
+        const fn_k = property.endsWith(this.attachments) ? this.attach : Trello.rest;
+
         let self = this;
-        Trello.rest(method, property, upload1, function success(data) {
+        fn_k(method, property, upload1, function success(data) {
             self.process_response(data);
             if (self.data && self.data.length > 0) {
-                this.upload();
+                self.upload();
             } else {
-                self.parent.event.fire('onCardSubmitComplete');
+                self.parent.event.fire('onCardSubmitComplete', {data: data});
             }
         }, function failure(data) {
             self.parent.event.fire('onAPIFailure', {data: data});
@@ -404,7 +445,7 @@ GmailToTrello.Model.prototype.submit = function() {
 
     $.each(imagesAndAttachments, function(iter, item) {
         if (item.hasOwnProperty('checked') && item.checked && item.url && item.url.length > 5) {
-            uploader.add({'property': 'attachments', 'value': item.url, 'method': 'upload'});
+            uploader.add({'property': uploader.attachments, 'value': item.url});
         }
     });
 
