@@ -10,6 +10,7 @@ Version 2.7.0.3
 - Refactor upload code to pull it all into model work, add model.Uploader class
 - Move attach code back into our code since Trello doesn't want it
 - Fix error where attachment URL was click link instead of updated card
+- Fixed long untruncated image/attachment string
 
 Version 2.7.0.1
 -----------------
