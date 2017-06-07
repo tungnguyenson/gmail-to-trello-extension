@@ -201,12 +201,12 @@ GmailToTrello.App.prototype.uriForDisplay = function(uri) {
     if (uri_display.length > uri_display_trigger_length_k) {
         var re = RegExp("^\\w+:\/\/([\\w.\/_-]+).*?([\\w._-]*)$");
         var matched = uri_display.match(re);
-        if (matched && matched.length > 0) {
+        if (matched && matched.length > 1) {
             const filename_k = matched[2].length < uri_length_max_k ? matched[2] : matched[2].slice(-uri_length_max_k);
             var prelude = matched[1].substr(0, uri_length_max_k);
             if (matched[1].length > uri_length_max_k) {
                 prelude += '...';
-            } else if (filename.length > 0) {
+            } else if (filename_k.length > 0) {
                 prelude += ':';
             }
 
@@ -539,8 +539,8 @@ GmailToTrello.App.prototype.truncate = function(text, max, add) {
 GmailToTrello.App.prototype.midTruncate = function(text, max, add) {
     var retn = text || '';
     const add_k = this.decodeEntities(add || '');
-    const max_k = (max || 0.01) - add_k.length;
-    const mid_k = max_k / 2;
+    const max_k = Math.abs((max || 0) - add_k.length);
+    const mid_k = (max_k + 0.01) / 2;
 
     if (text && text.length > max_k) {
         retn = text.slice(0, mid_k+1) + add_k + text.slice(-mid_k);

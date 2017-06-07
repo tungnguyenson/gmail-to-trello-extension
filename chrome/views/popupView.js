@@ -344,22 +344,26 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         self.validateData();
     });
 
+    $('#gttTitle', this.$popup).change(function() { self.validateData() });
+    $('#gttDesc', this.$popup).change(function() { self.validateData() });
+
+
     var update_body = function() {
-        var useBackLink = $('#chkBackLink', self.$popup).is(':checked');
-        var markdown = $('#chkMarkdown', self.$popup).is(':checked');
+        const useBackLink_k = $('#chkBackLink', self.$popup).is(':checked');
+        const markdown_k = $('#chkMarkdown', self.$popup).is(':checked');
         var $gttDesc = $('#gttDesc', self.$popup);
 
-        var body_raw = $gttDesc.attr('gmail-body-raw');
-        var body_md = $gttDesc.attr('gmail-body-md');
-        var link_raw = $gttDesc.attr('gmail-link-raw');
-        var link_md = $gttDesc.attr('gmail-link-md');
+        const body_raw_k = $gttDesc.attr('gmail-body-raw') || '';
+        const body_md_k = $gttDesc.attr('gmail-body-md') || '';
+        const link_raw_k = $gttDesc.attr('gmail-link-raw') || '';
+        const link_md_k = $gttDesc.attr('gmail-link-md') || '';
         
-        var body = markdown ? body_md : body_raw;
-        var link = useBackLink ? (markdown ? link_md : link_raw) : '';
+        const body_k = markdown_k ? body_md_k : body_raw_k;
+        const link_k = useBackLink_k ? (markdown_k ? link_md_k : link_raw_k) : '';
 
-        var desc = self.parent.truncate(body, self.MAX_BODY_SIZE - link.length, '...');
+        const desc_k = self.parent.truncate(body_k, self.MAX_BODY_SIZE - link_k.length, '...');
 
-        $gttDesc.val(desc + link);
+        $gttDesc.val(desc_k + link_k);
         $gttDesc.change();        
     };
 
@@ -385,7 +389,7 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         if (self.parent.modKey(event)) {
             self.clearMembers();
         }
-    })
+    });
 };
 
 GmailToTrello.PopupView.prototype.submit = function() {
@@ -408,6 +412,8 @@ GmailToTrello.PopupView.prototype.showPopup = function() {
 
     if (self.$gttButton && self.$popup) {
         self.$popup.show();
+        self.validateData();
+
         $(document).on('keydown', function(event) { // Have to use keydown otherwise cmd/ctrl let off late will hold processing
             var visible = self.popupVisible();
             var isEscape = event.which === $.ui.keyCode.ESCAPE;
@@ -610,22 +616,26 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
     
 GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
     var self = this;
-    //auto bind gmail data
-    var markdown = $('#chkMarkdown', this.$popup).is(':checked');
-    var useBackLink = $('#chkBackLink', this.$popup).is(':checked');
+
+    if (!data) {
+        return;
+    }
 
     $('#gttTitle', this.$popup).val(data.subject);
 
-    var body = markdown ? data.body_md : data.body_raw;
-    var link = useBackLink ? (markdown ? data.link_md : data.link_raw) : '';
-    var desc = self.parent.truncate(body, self.MAX_BODY_SIZE - link.length, '...');
+    const markdown_k = $('#chkMarkdown', this.$popup).is(':checked');
+    const useBackLink_k = $('#chkBackLink', this.$popup).is(':checked');
+
+    const body_k = markdown_k ? data.body_md : data.body_raw;
+    const link_k = useBackLink_k ? (markdown_k ? data.link_md : data.link_raw) : '';
+    const desc_k = self.parent.truncate(body_k, self.MAX_BODY_SIZE - link_k.length, '...');
 
     $('#gttDesc', this.$popup)
-        .val(desc + link)
-        .attr('gmail-body-raw', data.body_raw)
-        .attr('gmail-body-md', data.body_md)
-        .attr('gmail-link-raw', data.link_raw)
-        .attr('gmail-link-md', data.link_md);
+        .val(desc_k + link_k)
+        .attr('gmail-body-raw', data.body_raw || '')
+        .attr('gmail-body-md', data.body_md || '')
+        .attr('gmail-link-raw', data.link_raw || '')
+        .attr('gmail-link-md', data.link_md || '');
     
     var mime_html = function(tag, isImage) {
         var html = '';
@@ -663,7 +673,7 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
     mime_html('images', true /* isImage */);
 
     this.dataDirty = false;
-
+    self.validateData();
 };
 
 GmailToTrello.PopupView.prototype.showMessage = function(self, text) {
@@ -804,7 +814,7 @@ GmailToTrello.PopupView.prototype.updateCards = function() {
 
     $.each(cards, function(iter, item) {
         var id = item.id;
-        var display = item.name;
+        var display = self.parent.truncate(item.name, 80, '...');
         var selected = (id == settingId);
         $gtt.append($('<option>')
             .attr('value', id)
@@ -989,8 +999,8 @@ GmailToTrello.PopupView.prototype.validateData = function() {
     var attachments = mime_array('gttAttachments');
     var images = mime_array('gttImages');
     
-    var validateStatus = (boardId && listId && title); // Labels are not required
-    log('validateData: ' + boardId + ' - ' + listId + ' - ' + title);
+    var validateStatus = boardId && listId && title && description ? true : false; // Labels are not required
+    log('validateData: board:' + boardId + ' list:' + listId + ' title:' + title + ' desc:' + ((description || '') . length));
 
     if (validateStatus) {
         newCard = {
@@ -1018,7 +1028,7 @@ GmailToTrello.PopupView.prototype.validateData = function() {
         $.extend(this.data.settings, newCard);
         this.parent.saveSettings();
     }
-    $('#addToTrello', this.$popup).attr('disabled', !validateStatus);
+    $('#addToTrello', this.$popup).attr('disabled', validateStatus ? false : 'disabled');
 
     return validateStatus;
 };
