@@ -12,6 +12,7 @@ Version 2.7.0.3
 - Fix error where attachment URL was click link instead of updated card
 - Fixed long untruncated image/attachment string
 - First cut at having GtT button always show, even when there is no data to populate - this may reduce the "where's my button?" support issues
+- Have images bottom grow when you grab the window grow handle in the lower right corner
 
 Version 2.7.0.1
 -----------------

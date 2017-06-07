@@ -191,7 +191,8 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         minHeight: self.size_k.height.min,
         minWidth: self.size_k.width.min,
         maxHeight: self.size_k.height.max,
-        maxWidth: self.size_k.width.max
+        maxWidth: self.size_k.width.max,
+        alsoResize: '#gttImages'
 /*        stop: function(event, ui) {
             var constraintRight = $(window).width() - self.size_k.width.min;
             var distance = ui.position.left - ui.originalPosition.left;
