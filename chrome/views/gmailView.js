@@ -138,6 +138,23 @@ GmailToTrello.GmailView.prototype.detectEmailOpenningMode = function() {
 };
 
 GmailToTrello.GmailView.prototype.detect = function() {
+    var $activeGroup = $('.BltHke[role="main"]');
+    
+    if ($activeGroup.find('.apv').length > 0) {
+        log('Gtt::Detected SplitLayout');
+
+        this.layoutMode = this.LAYOUT_SPLIT;
+        this.$root = $activeGroup;
+    } else {
+        this.layoutMode = this.LAYOUT_DEFAULT;
+        this.$root = $('body');
+    }
+
+    this.detectToolbar();
+    this.event.fire('onDetected');
+};
+
+GmailToTrello.GmailView.prototype.detectOBSOLETE = function() {
     //this.detectRoot();
 
     if (!this.detectSplitLayoutMode()) {
@@ -150,23 +167,19 @@ GmailToTrello.GmailView.prototype.detect = function() {
 
 GmailToTrello.GmailView.prototype.parseData = function() {
     log('Gtt::parsing data...');
-    if (this.parsingData)
+    if (this.parsingData) {
         return;
+    }
 
     var self = this;
-
-    this.parsingData = true;
-    var startTime = new Date().getTime();
     var data = {};
 
-    // subject
-    data.subject = ($(this.selectors.emailSubject, this.$root).text() || "").trim();
-
     // find active email
-    if (this.layoutMode === this.LAYOUT_SPLIT)
+    if (this.layoutMode === this.LAYOUT_SPLIT) {
         $viewport = $(this.selectors.viewportSplit, this.$root);
-    else 
+    } else {
         $viewport = $(this.selectors.viewport, this.$root);
+    }
     log($viewport);
     var y0 = $viewport.offset().top;
     //log(y0);
@@ -178,6 +191,16 @@ GmailToTrello.GmailView.prototype.parseData = function() {
             $visibleMail = $this;
     });
 
+    // Check for email body first. If we don't have this, then bail.
+    var $emailBody = $(this.selectors.emailBody, $visibleMail);
+    var $emailBody1 = $emailBody[0];
+    if (!$emailBody1) {
+        return;
+    }
+
+    this.parsingData = true;
+    // var startTime = new Date().getTime();
+    
     // host name
     var $host = $(this.selectors.host);
     var title  = ($host.attr('title') || "").trim();
@@ -197,7 +220,7 @@ GmailToTrello.GmailView.prototype.parseData = function() {
         if (item && item.length > 0) {
             var attachment = item.match(/^([^:]+)\s*:\s*([^:]+)\s*:\s*(.+)$/);
             if (attachment && attachment.length > 3) {
-                const name_k = decodeURIComponent(attachment[2]);
+                const name_k = self.parent.decodeEntities(attachment[2]); // was: decodeURIComponent
                 const url_k = attachment[3]; // Was: self.parent.midTruncate(attachment[3], 50, '...');
                 var add = '&';
                 if (url_k.indexOf('?') === -1) {
@@ -243,6 +266,9 @@ GmailToTrello.GmailView.prototype.parseData = function() {
         /*  + ' "Email ' + emailAddress + '"' */ + ') on '
         + data.time;  // FYI (Ace, 10-Jan-2017): [name](url "comment") is markdown syntax
 
+    // subject
+    data.subject = ($(this.selectors.emailSubject, this.$root).text() || "").trim();
+
     var subject = encodeURIComponent(data.subject);
     var dateSearch = encodeURIComponent(data.time);
     
@@ -266,10 +292,6 @@ GmailToTrello.GmailView.prototype.parseData = function() {
         
     
     // email body
-    var $emailBody = $(this.selectors.emailBody, $visibleMail);
-    var $emailBody1 = $emailBody[0];
-    var selectedText = this.parent.getSelectedText();
-
     var make_preprocess_mailto = function (name, email) {
         var forms = [
             '%name% <%email%>',
@@ -300,6 +322,8 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     var preprocess = {'a':{}};
     $.extend(preprocess['a'], make_preprocess_mailto(emailName, emailAddress), make_preprocess_mailto(hostName, hostEmail));
     
+    var selectedText = this.parent.getSelectedText();
+
     data.body_raw =  from_raw + ":\n\n" + (selectedText || this.parent.markdownify($emailBody1, false, preprocess));
     data.body_md = from_md + ":\n\n" + (selectedText || this.parent.markdownify($emailBody1, true, preprocess));
 
@@ -309,10 +333,10 @@ GmailToTrello.GmailView.prototype.parseData = function() {
 
     $('img', $emailBody1).each(function(index, value) {
         var href = ($(this).prop("src") || '').trim(); // Was attr
-        var text = (self.parent.midTruncate($(this).prop("alt"), 50, '...') || self.parent.uriForDisplay(href) || '').trim(); // Was attr
+        var text = self.parent.midTruncate(($(this).prop("alt") || self.parent.uriForDisplay(href) || '').trim(), 50, '...');
         var type = ($(this).prop("type") || "text/link").trim(); // Was attr
         if (href.length > 0 && text.length > 0) { // Will store as key/value pairs to automatically overide duplicates
-            emailImages[href] = {'mimeType': type, 'name': decodeURIComponent(text), 'url': href, 'checked': 'false'};
+            emailImages[href] = {'mimeType': type, 'name': self.parent.decodeEntities(text), 'url': href, 'checked': 'false'};
         }
     });
 
