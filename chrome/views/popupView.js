@@ -32,6 +32,9 @@ GmailToTrello.PopupView = function(parent) {
     this.chrome_access_token = '';
 
     this.MAX_BODY_SIZE = 16384;
+
+    this.dataDirty = true;
+    this.posDirty = false;
 };
 
 GmailToTrello.PopupView.prototype.init = function() {
@@ -81,7 +84,7 @@ GmailToTrello.PopupView.prototype.init = function() {
  * Set the initial width by measuring from the left corner of the
  * "Add card" button to the edge of the window and then center that under the "Add card" button:
  */
-GmailToTrello.PopupView.prototype.centerPopup = function(useWidth) {
+GmailToTrello.PopupView.prototype.centerPopup = function(useWidth) {    
     var addCardLeft = this.$gttButton.position().left;
     var addCardCenter = addCardLeft + (this.$gttButton.outerWidth() / 2);
     
@@ -110,9 +113,11 @@ GmailToTrello.PopupView.prototype.centerPopup = function(useWidth) {
 
     var newPopupLeft = addCardCenter - (newPopupWidth / 2);
 
-    this.$popup.css('left', newPopupLeft + 'px')
+    this.$popup.css('left', newPopupLeft + 'px');
 
     this.onResize();
+
+    this.posDirty = !this.validateData() ? true : false;
 };
 
 GmailToTrello.PopupView.prototype.init_popup = function() {
@@ -391,6 +396,30 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
             self.clearMembers();
         }
     });
+    $(document).on('keydown', function(event) { // Have to use keydown otherwise cmd/ctrl let off late will hold processing
+        const periodASCII_k = 46;
+        const periodNumPad_k = 110;
+        const periodKeyCode_k = 190;
+
+        const visible_k = self.popupVisible();
+        const isEscape_k = event.which === $.ui.keyCode.ESCAPE;
+        const isEnter_k = event.which === $.ui.keyCode.ENTER;
+        const isPeriodASCII_k = event.which === periodASCII_k;
+        const isPeriodNumPad_k = event.which === periodNumPad_k;
+        const isPeriodKeyCode_k = event.which === periodKeyCode_k;
+        const isPeriod_k = isPeriodASCII_k || isPeriodNumPad_k || isPeriodKeyCode_k;
+        const isCtrlCmd_k = event.ctrlKey || event.metaKey;
+        const isCtrlCmdPeriod_k = isCtrlCmd_k && isPeriod_k;
+        const isCtrlCmdEnter_k = isCtrlCmd_k && isEnter_k;
+        if (visible_k) {
+            if (isEscape_k || isCtrlCmdPeriod_k) {
+                self.hidePopup();
+            } else if (isCtrlCmdEnter_k) {
+                self.submit();
+            }
+            // To stop propagation: event.stopPropagation();
+        }
+    });
 };
 
 GmailToTrello.PopupView.prototype.submit = function() {
@@ -407,34 +436,13 @@ GmailToTrello.PopupView.prototype.submit = function() {
 GmailToTrello.PopupView.prototype.showPopup = function() {
     var self = this;
 
-    const periodASCII_k = 46;
-    const periodNumPad_k = 110;
-    const periodKeyCode_k = 190;
-
     if (self.$gttButton && self.$popup) {
+        if (self.posDirty) {
+            self.centerPopup();
+        }
         self.$popup.show();
         self.validateData();
 
-        $(document).on('keydown', function(event) { // Have to use keydown otherwise cmd/ctrl let off late will hold processing
-            var visible = self.popupVisible();
-            var isEscape = event.which === $.ui.keyCode.ESCAPE;
-            var isEnter = event.which === $.ui.keyCode.ENTER;
-            var isPeriodASCII = event.which === periodASCII_k;
-            var isPeriodNumPad = event.which === periodNumPad_k;
-            var isPeriodKeyCode = event.which === periodKeyCode_k;
-            var isPeriod = isPeriodASCII || isPeriodNumPad || isPeriodKeyCode;
-            var isCtrlCmd = event.ctrlKey || event.metaKey;
-            var isCtrlCmdPeriod = isCtrlCmd && isPeriod;
-            var isCtrlCmdEnter = isCtrlCmd && isEnter;
-            if (visible) {
-                if (isEscape || isCtrlCmdPeriod) {
-                    self.hidePopup();
-                } else if (isCtrlCmdEnter) {
-                    self.submit();
-                }
-                // To stop propagation: event.stopPropagation();
-            }
-        });
         self.event.fire('onPopupVisible');
     }
 };
@@ -445,7 +453,7 @@ GmailToTrello.PopupView.prototype.hidePopup = function() {
     if (self.$gttButton && self.$popup) {
         self.$popup.hide();
     }
-    $(document).off('keydown');
+    // $(document).off('keydown'); // We detect visibility so we don't need to turn this on and off
     self.stopWaitingHiddenThread();
 }
 
