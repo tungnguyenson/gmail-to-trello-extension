@@ -4,6 +4,11 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.7.0.4
+-----------------
+- Remove Gmail load wait timer now that GtT button is more robust on no-data
+- Move keyboard trap to popup
+
 Version 2.7.0.3
 -----------------
 - Fix error with "bottom" should be "below"

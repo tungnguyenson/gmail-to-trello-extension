@@ -40,13 +40,19 @@ function log(data) {
         globalInit = true;
         // enough delay for gmail finishes rendering
         log('GTT::tabs.onUpdated - complete');
-        setTimeout(function() {
-            jQuery(document).ready(function() {                    
-                log('GTT::document.ready');
-                getGmailObject();
-                app.initialize();
-            });
-        }, 1000);
+        jQuery(document).ready(function() {                    
+            log('GTT::document.ready');
+            getGmailObject();
+            app.initialize();
+        });
+        // Was:
+        // setTimeout(function() {
+        //     jQuery(document).ready(function() {                    
+        //         log('GTT::document.ready');
+        //         getGmailObject();
+        //         app.initialize();
+        //     });
+        // }, 1000); // But now we're more resiliant with no data, so pop on immediately.
     }
 }
 
