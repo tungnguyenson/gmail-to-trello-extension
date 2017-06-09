@@ -7,7 +7,7 @@ CHANGE LOG:
 Version 2.7.0.4
 -----------------
 - Remove Gmail load wait timer now that GtT button is more robust on no-data
-- Move keyboard trap to popup
+- Move keyboard trap to bindEvents
 - Dirty centering when no data so popup will move as appropriate
 
 Version 2.7.0.3

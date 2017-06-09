@@ -296,7 +296,7 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         var d = new Date();
 
         var due_date = (due[0] || '');
-        var due_time = due[1] || '';
+        var due_time = (due[1] || '');
 
         var new_date = '';
         var new_time = '';
@@ -397,20 +397,20 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         }
     });
     $(document).on('keydown', function(event) { // Have to use keydown otherwise cmd/ctrl let off late will hold processing
-        const periodASCII_k = 46;
-        const periodNumPad_k = 110;
-        const periodKeyCode_k = 190;
+        const periodASCII_k = 46,
+              periodNumPad_k = 110,
+              periodKeyCode_k = 190,
+              visible_k = self.popupVisible(),
+              isEscape_k = event.which === $.ui.keyCode.ESCAPE,
+              isEnter_k = event.which === $.ui.keyCode.ENTER,
+              isPeriodASCII_k = event.which === periodASCII_k,
+              isPeriodNumPad_k = event.which === periodNumPad_k,
+              isPeriodKeyCode_k = event.which === periodKeyCode_k,
+              isPeriod_k = isPeriodASCII_k || isPeriodNumPad_k || isPeriodKeyCode_k,
+              isCtrlCmd_k = event.ctrlKey || event.metaKey,
+              isCtrlCmdPeriod_k = isCtrlCmd_k && isPeriod_k,
+              isCtrlCmdEnter_k = isCtrlCmd_k && isEnter_k;
 
-        const visible_k = self.popupVisible();
-        const isEscape_k = event.which === $.ui.keyCode.ESCAPE;
-        const isEnter_k = event.which === $.ui.keyCode.ENTER;
-        const isPeriodASCII_k = event.which === periodASCII_k;
-        const isPeriodNumPad_k = event.which === periodNumPad_k;
-        const isPeriodKeyCode_k = event.which === periodKeyCode_k;
-        const isPeriod_k = isPeriodASCII_k || isPeriodNumPad_k || isPeriodKeyCode_k;
-        const isCtrlCmd_k = event.ctrlKey || event.metaKey;
-        const isCtrlCmdPeriod_k = isCtrlCmd_k && isPeriod_k;
-        const isCtrlCmdEnter_k = isCtrlCmd_k && isEnter_k;
         if (visible_k) {
             if (isEscape_k || isCtrlCmdPeriod_k) {
                 self.hidePopup();
