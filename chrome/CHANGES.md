@@ -4,11 +4,14 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
-Version 2.7.1.0
+Version 2.7.1.2
 -----------------
 - Clean up consts for keyboard trap
 - First cut at image with larger tooltip on hover
 - Load jQuery UI CSS before our CSS so we can override it
+- Add named function gtt_keydown to prevent duplicate listeners
+- Bump version to work around Google problem
+
 
 Version 2.7.0.4
 -----------------

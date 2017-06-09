@@ -396,7 +396,7 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
             self.clearMembers();
         }
     });
-    $(document).on('keydown', function(event) { // Have to use keydown otherwise cmd/ctrl let off late will hold processing
+    $(document).on('keydown', function gtt_keydown(event) { // Have to use keydown otherwise cmd/ctrl let off late will hold processing, naming to help JS auto-remove duplicates
         const periodASCII_k = 46,
               periodNumPad_k = 110,
               periodKeyCode_k = 190,
