@@ -72,7 +72,7 @@ GmailToTrello.PopupView.prototype.init = function() {
         this.parent.loadSettings(this);
     } else {
         $.get(chrome.extension.getURL('views/popupView.html'), function(data) {
-            data = self.parent.replacer(data, {'jquery-ui-css': chrome.extension.getURL('lib/jquery-ui-1.12.1.min.css')});
+            // data = self.parent.replacer(data, {'jquery-ui-css': chrome.extension.getURL('lib/jquery-ui-1.12.1.min.css')}); // OBSOLETE (Ace@2017.06.09): Already loaded by manifest
             self.html['popup'] = data;
             self.$toolBar.append(data);
             self.parent.loadSettings(self);
@@ -649,22 +649,24 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
     var mime_html = function(tag, isImage) {
         var html = '';
         var img = '';
-        const domTag_k = '#gtt' + tag[0].toUpperCase() + tag.substring(1);
+        var img_big = '';
+        const domTag_k = '#gtt' + tag.charAt(0).toUpperCase() + tag.slice(1).toLowerCase();
         var $domTag = $(domTag_k, self.$popup);
         
         if (isImage && isImage === true) {
-            img = '<img src="%url%" alt="%name%" height="32" width="32" /> '; // See style.css for #gttImage img style
+            img = '<img src="%url%" alt="%name%" /> '; // See style.css for #gttImage img style REMOVED: height="32" width="32" 
         }
 
         $.each(data[tag], function(iter, item) {
             var dict = {
               'url': item.url,
               'name': item.name,
-              'mimeType': item.mimeType
+              'mimeType': item.mimeType,
+              'img': img
             };
 
             html += self.parent.replacer (
-              '<label><input type="checkbox" mimeType="%mimeType%" name="%name%" url="%url%" /> ' + img + '%name%</label><br />\n', /* checked="checked" */
+              '<label title="%name%"><input type="checkbox" mimeType="%mimeType%" name="%name%" url="%url%" /> %img%%name%</label><br />\n',
               dict
             );
         });
@@ -672,8 +674,20 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
         $domTag.html(html);
 
         if (isImage && isImage === true) {
-            $('img', $domTag).on('error', function() {
-                $(this).attr('src', chrome.extension.getURL('images/doc-question-mark-512.png'));
+            $('img', $domTag).each(function () {
+                var $img = $(this);
+                $img.on('error', function() {
+                    $img.attr('src', chrome.extension.getURL('images/doc-question-mark-512.png'));
+                }).tooltip({
+                    'track': true,
+                    'content': function() {
+                        var dict = {
+                            'src': $img.attr('src'),
+                            'alt': $img.attr('alt')                        
+                        };
+                        return self.parent.replacer ('<img src="%src%"><br />%alt%', dict);
+                    }
+                });
             });
         }
     };

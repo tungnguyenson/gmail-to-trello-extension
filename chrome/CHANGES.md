@@ -4,6 +4,12 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.7.1.0
+-----------------
+- Clean up consts for keyboard trap
+- First cut at image with larger tooltip on hover
+- Load jQuery UI CSS before our CSS so we can override it
+
 Version 2.7.0.4
 -----------------
 - Remove Gmail load wait timer now that GtT button is more robust on no-data

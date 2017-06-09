@@ -182,12 +182,19 @@ GmailToTrello.App.prototype.replacer = function(text, dict) {
   }
   
   var re, new_text;
-  $.each(dict, function (key, value) {
-    re = new RegExp('%' + self.escapeRegExp(key) + '%', "gi");
-    new_text = text.replace(re, value);
-    text = new_text;
-  });
-  
+  var replacify = function() {
+    $.each(dict, function (key, value) {
+        re = new RegExp('%' + self.escapeRegExp(key) + '%', "gi");
+        new_text = text.replace(re, value);
+        text = new_text;
+    });
+  };
+
+  var runaway_max = 3;
+  while (text.indexOf('%') !== -1 && runaway_max-- > 0) {
+    replacify();
+  }
+
   return text;
 };
 
