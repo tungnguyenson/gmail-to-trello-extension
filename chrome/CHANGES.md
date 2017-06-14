@@ -4,6 +4,10 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.7.1.3
+-----------------
+- Install keyboard trap to Show Popup, Remove keyboard trap on Hide Popup
+
 Version 2.7.1.2
 -----------------
 - Clean up consts for keyboard trap
