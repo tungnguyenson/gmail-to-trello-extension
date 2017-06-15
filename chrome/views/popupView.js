@@ -35,8 +35,6 @@ GmailToTrello.PopupView = function(parent) {
 
     this.dataDirty = true;
     this.posDirty = false;
-
-    this.keyboardTrapElement = false;
 };
 
 GmailToTrello.PopupView.prototype.init = function() {
@@ -415,49 +413,39 @@ GmailToTrello.PopupView.prototype.submit = function() {
     }
 };
 
-GmailToTrello.PopupView.prototype.keyboardTrap = function(event) {
-    var self = this;
-
-    const cmd_install = 'install',
-          cmd_remove = 'remove',
-          periodASCII_k = 46,
-          periodNumPad_k = 110,
-          periodKeyCode_k = 190,
-          visible_k = this.element ? this.element.popupVisible() : false; // Assuming if we can't get visibility it's not
-          isEscape_k = event.which === $.ui.keyCode.ESCAPE,
-          isEnter_k = event.which === $.ui.keyCode.ENTER,
-          isPeriodASCII_k = event.which === periodASCII_k,
-          isPeriodNumPad_k = event.which === periodNumPad_k,
-          isPeriodKeyCode_k = event.which === periodKeyCode_k,
-          isPeriod_k = isPeriodASCII_k || isPeriodNumPad_k || isPeriodKeyCode_k,
-          isCtrlCmd_k = event.ctrlKey || event.metaKey,
-          isCtrlCmdPeriod_k = isCtrlCmd_k && isPeriod_k,
-          isCtrlCmdEnter_k = isCtrlCmd_k && isEnter_k;
-
-    if (event.which === cmd_install) {
-        $(document).on('keydown', this);
-        this.element = event.element;
-    } else if (event.which === cmd_remove) {
-        $(document).off('keydown', this);
-        this.element = event.element;
-    } else if (visible_k) {
-        if (isEscape_k || isCtrlCmdPeriod_k) {
-            this.hidePopup();
-        } else if (isCtrlCmdEnter_k) {
-            this.submit();
-        }
-        // To stop propagation: event.stopPropagation();
-    }
-};
-
 GmailToTrello.PopupView.prototype.showPopup = function() {
     var self = this;
 
     if (self.$gttButton && self.$popup) {
+        $(document).on('keydown.GmailToTrello_Namespace', function keyboardTrap(event) {
+            const periodASCII_k = 46,
+                  periodNumPad_k = 110,
+                  periodKeyCode_k = 190,
+                  visible_k = self.popupVisible();
+                  isEscape_k = event.which === $.ui.keyCode.ESCAPE,
+                  isEnter_k = event.which === $.ui.keyCode.ENTER,
+                  isPeriodASCII_k = event.which === periodASCII_k,
+                  isPeriodNumPad_k = event.which === periodNumPad_k,
+                  isPeriodKeyCode_k = event.which === periodKeyCode_k,
+                  isPeriod_k = isPeriodASCII_k || isPeriodNumPad_k || isPeriodKeyCode_k,
+                  isCtrlCmd_k = event.ctrlKey || event.metaKey,
+                  isCtrlCmdPeriod_k = isCtrlCmd_k && isPeriod_k,
+                  isCtrlCmdEnter_k = isCtrlCmd_k && isEnter_k;
+
+            if (visible_k) {
+                if (isEscape_k || isCtrlCmdPeriod_k) {
+                    self.hidePopup();
+                } else if (isCtrlCmdEnter_k) {
+                    self.submit();
+                }
+                // To stop propagation: event.stopPropagation();
+            }
+        });
+
         if (self.posDirty) {
             self.centerPopup();
         }
-        self.keyboardTrap({'which': self.keyboardTrap.cmd_install, 'element': self});
+
         self.$popup.show();
         self.validateData();
 
@@ -469,9 +457,9 @@ GmailToTrello.PopupView.prototype.hidePopup = function() {
     var self = this;
 
     if (self.$gttButton && self.$popup) {
+        $(document).off('keydown.GmailToTrello_Namespace');
         self.$popup.hide();
     }
-    self.keyboardTrap({'which': self.keyboardTrap.cmd_remove, 'element': self});
     self.stopWaitingHiddenThread();
 }
 
