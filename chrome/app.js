@@ -610,6 +610,12 @@ GmailToTrello.App.prototype.decodeEntities = function(s) {
         new_s = s.replace(re, value);
         s = new_s;
     });
+    try { 
+        new_s = decodeURIComponent(s);
+        s = new_s;
+    } catch(e) { 
+        // Didn't work. Ignore.
+    }
     var ta = document.createElement('textarea');
     ta.innerHTML = s;
     return ta.value;

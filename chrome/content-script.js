@@ -36,19 +36,19 @@ function log(data) {
  */
  function requestHandler(request, sender, sendResponse) {
     if (request && request.hasOwnProperty('message') && request.message === 'gtt:initialize') {
-        log('GTT::GlobalInit: '+globalInit.toString());
+        log('GtT::GlobalInit: '+globalInit.toString());
         globalInit = true;
         // enough delay for gmail finishes rendering
-        log('GTT::tabs.onUpdated - complete');
+        log('GtT::tabs.onUpdated - complete');
         jQuery(document).ready(function() {                    
-            log('GTT::document.ready');
+            log('GtT::document.ready');
             getGmailObject();
             app.initialize();
         });
         // Was:
         // setTimeout(function() {
         //     jQuery(document).ready(function() {                    
-        //         log('GTT::document.ready');
+        //         log('GtT::document.ready');
         //         getGmailObject();
         //         app.initialize();
         //     });

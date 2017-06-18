@@ -181,6 +181,10 @@ GmailToTrello.GmailView.prototype.parseData = function() {
         $viewport = $(this.selectors.viewport, this.$root);
     }
     log($viewport);
+    if ($viewport.length == 0) {
+        return;
+    }
+
     var y0 = $viewport.offset().top;
     //log(y0);
     var $visibleMail = null;
@@ -230,7 +234,7 @@ GmailToTrello.GmailView.prototype.parseData = function() {
                    'mimeType': attachment[1],
                    'name': name_k,
                     // NOTE (Ace@2017-04-20): Adding this explicitly at the end of the URL so it'll pick up the "filename":
-                   'url': url_k + add + self.parent.UNIQUE_URI_VAR + '=/' + name,
+                   'url': url_k + add + self.parent.UNIQUE_URI_VAR + '=/' + name_k,
                    'checked': 'false'
                 }; // [0] is the whole string
             }
@@ -248,17 +252,20 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     }
     
     // timestamp
-    var $time = $(this.selectors.timestamp, $visibleMail);
-    var timeValue = ($time) ? ($time.attr('title') || $time.text() || $time.attr('alt')) : '';
-    timeValue = timeValue ? timeValue.replace(/ \D\D /, ' ') : ''; // BUG (Ace, 29-Jan-2017): Replacing 'at' without spaces will mess up "Sat" which will then cause Date.parse to fail.
-    if (timeValue !== '') {
-        timeValue = Date.parse(timeValue);
-    }
+    const $time_k = $(this.selectors.timestamp, $visibleMail);
+    const timeAttr_k = ($time_k) ? ($time_k.attr('title') || $time_k.text() || $time_k.attr('alt')) : '';
+    const timeCorrected_k = timeAttr_k ? timeAttr_k.replace(/ \D\D /, ' ') : ''; // BUG (Ace, 29-Jan-2017): Replacing 'at' without spaces will mess up "Sat" which will then cause Date.parse to fail.
+    const timeParsed_k = timeCorrected_k !== '' ? Date.parse(timeCorrected_k) : '';
 
-    data.time = timeValue ? timeValue.toString(this.dateFormat || 'MMM d, yyyy') : 'recently';
+    data.time = timeParsed_k ? timeParsed_k.toString(this.dateFormat || 'MMM d, yyyy') : 'recently';
 
     if (data.time === 'recently') {
-        log('timeValue:' + timeValue + '\ntime:' + JSON.stringify($time));
+        log('GtT::time-debug: ' + JSON.stringify({
+            'timeAttr_k': timeAttr_k,
+            'timeCorrected_k': timeCorrected_k,
+            'timeParsed_k': timeParsed_k,
+            'time_k': $time_k
+        }));
     }
 
     var from_raw = emailName + ' <' + emailAddress + '> on ' + data.time;

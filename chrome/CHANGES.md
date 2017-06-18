@@ -4,6 +4,12 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.7.1.4
+----------------
+- Click outside window closes window
+- Focus outside window closes window
+- Error in attachments processing fixed to produce correct filename
+
 Version 2.7.1.3
 -----------------
 - Install keyboard trap to Show Popup, Remove keyboard trap on Hide Popup
