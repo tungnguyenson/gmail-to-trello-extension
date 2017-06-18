@@ -31,10 +31,11 @@ GmailToTrello.PopupView = function(parent) {
 
     this.chrome_access_token = '';
 
-    this.MAX_BODY_SIZE = 16384;
-
     this.dataDirty = true;
     this.posDirty = false;
+
+    this.MAX_BODY_SIZE = 16384;
+    this.EVENT_LISTENER = '.gtt_event_listener';
 };
 
 GmailToTrello.PopupView.prototype.init = function() {
@@ -417,7 +418,7 @@ GmailToTrello.PopupView.prototype.showPopup = function() {
     var self = this;
 
     if (self.$gttButton && self.$popup) {
-        $(document).on('keydown.GmailToTrello_Namespace', function keyboardTrap(event) {
+        $(document).on('keydown' + self.EVENT_LISTENER, function keyboardTrap(event) {
             const periodASCII_k = 46,
                   periodNumPad_k = 110,
                   periodKeyCode_k = 190,
@@ -440,6 +441,16 @@ GmailToTrello.PopupView.prototype.showPopup = function() {
                 }
                 // To stop propagation: event.stopPropagation();
             }
+        }).on('mouseup' + self.EVENT_LISTENER, function click(event) { // Click isn't always propagated on Mailbox bar, so using mouseup instead
+            if ($(event.target).closest('#gttButton').length == 0
+               && $(event.target).closest('#gttPopup').length == 0) {
+                self.hidePopup();
+            }
+        }).on('focusin' + self.EVENT_LISTENER, function focus(event) {
+            if ($(event.target).closest('#gttButton').length == 0
+               && $(event.target).closest('#gttPopup').length == 0) {
+                self.hidePopup();
+            }            
         });
 
         if (self.posDirty) {
@@ -457,7 +468,7 @@ GmailToTrello.PopupView.prototype.hidePopup = function() {
     var self = this;
 
     if (self.$gttButton && self.$popup) {
-        $(document).off('keydown.GmailToTrello_Namespace');
+        $(document).off(self.EVENT_LISTENER); // Turns off everything in namespace
         self.$popup.hide();
     }
     self.stopWaitingHiddenThread();

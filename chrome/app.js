@@ -12,6 +12,7 @@ GmailToTrello.App = function() {
 
     this.CHROME_SETTINGS_ID = 'gtt_user_settings';
     this.UNIQUE_URI_VAR = 'gtt_filename';
+    this.EVENTLISTENER = '.gtt_event_listener';
 };
 
 GmailToTrello.App.prototype.bindEvents = function() {

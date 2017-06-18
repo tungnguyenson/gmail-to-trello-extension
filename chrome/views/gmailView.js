@@ -181,6 +181,10 @@ GmailToTrello.GmailView.prototype.parseData = function() {
         $viewport = $(this.selectors.viewport, this.$root);
     }
     log($viewport);
+    if ($viewport.length == 0) {
+        return;
+    }
+    
     var y0 = $viewport.offset().top;
     //log(y0);
     var $visibleMail = null;
