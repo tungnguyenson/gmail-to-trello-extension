@@ -7,6 +7,8 @@ CHANGE LOG:
 Verison 2.7.1.4
 ----------------
 - Click outside window closes window
+- Focus outside window closes window
+- Error in attachments processing fixed to produce correct filename
 
 Version 2.7.1.3
 -----------------

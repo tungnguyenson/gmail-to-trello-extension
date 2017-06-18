@@ -25,7 +25,7 @@ GmailToTrello.Model.prototype.init = function() {
 };
 
 GmailToTrello.Model.prototype.initTrello = function() {
-    log("GTT::initTrelloData()");
+    log("GTT::initTrello");
 
     var self = this;
 
@@ -309,7 +309,7 @@ GmailToTrello.Model.prototype.Uploader.prototype = {
         xhr.onload = function() {
             var fileReader = new FileReader();
             fileReader.onload = function() {
-                const filename_k = (param_k.split('/').pop().split('#')[0].split('?')[0]) || uri || 'unknown_filename'; // Removes # or ? after filename
+                const filename_k = (param_k.split('/').pop().split('#')[0].split('?')[0]) || param_k || 'unknown_filename'; // Removes # or ? after filename
                 const file_k = new File([this.result], filename_k);
                 var form = new FormData();
                 form.append('file', file_k);
@@ -364,7 +364,7 @@ GmailToTrello.Model.prototype.Uploader.prototype = {
 GmailToTrello.Model.prototype.submit = function() {
     let self = this;
     if (this.newCard === null) {
-        log('Submit data is empty');
+        log('GtT::submit: data is empty');
         return false;
     }
 
@@ -432,7 +432,7 @@ GmailToTrello.Model.prototype.submit = function() {
             }
             break;
         default:
-            log('ERROR: Got unknown case: ' + data.position || '<empty position>');
+            log('GtT::submit: ERROR: Got unknown case: ' + data.position || '<empty position>');
     }
 
     uploader
