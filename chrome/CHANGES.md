@@ -4,7 +4,7 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
-Verison 2.7.1.4
+Version 2.7.1.4
 ----------------
 - Click outside window closes window
 - Focus outside window closes window
