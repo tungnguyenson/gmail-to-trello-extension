@@ -4,6 +4,11 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.7.1.5
+----------------
+- Track mouseUp and mouseDown in same external-to-window container
+- Make positioning logic more robust for Upload to combat Trello POST pos 404 error
+
 Version 2.7.1.4
 ----------------
 - Click outside window closes window
