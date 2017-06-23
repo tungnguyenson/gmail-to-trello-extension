@@ -233,11 +233,19 @@ GmailToTrello.Model.prototype.loadTrelloMembers = function(boardId) {
     });
 };
 
-GmailToTrello.Model.prototype.Uploader = function(parent_in, cardId_in) {
-    this.parent = parent_in;
+GmailToTrello.Model.prototype.Uploader = function(args) {
+    if (!args || !args.hasOwnProperty('parent')) {
+        return;
+    }
+    this.parent = args.parent;
+
     this.data = [];
-    this.cardId = cardId_in && cardId_in !== '-1' ? cardId_in : '';
-    if (!this.cardId) {
+    
+    this.cardId = args.cardId || '';
+
+    this.pos = this.translatePosition({'position': args.position || '', 'cardPos': args.cardPos || ''});
+
+    if (this.pos !== 'at') {
         this.data.push({'property': 'cards'}); // Seed array for new card
     } 
 };
@@ -257,7 +265,7 @@ GmailToTrello.Model.prototype.Uploader.prototype = {
     
     'add': function(args) {
         if (this.parent.parent.validHash(args)) {
-            if (!this.cardId && args.property !== this.attachments) { // It's a new card so add to the existing hash:
+            if (this.pos !== 'at' && args.property !== this.attachments) { // It's a new card so add to the existing hash:
                 this.data[0][args.property] = args.value;
             } else {
                 args.property = 'cards/' + (this.cardId || '%cardId%') + '/' + args.property;
@@ -265,6 +273,34 @@ GmailToTrello.Model.prototype.Uploader.prototype = {
             }
         }
         return this;
+    },
+
+    'translatePosition': function(args) {
+        let pos = 'bottom';
+        
+        const position_k = args.position || 'below';
+        const cardPos_k = parseInt(args.cardPos || 0, 10);
+
+        switch (position_k) {
+            case 'below':
+                if (cardPos_k) {
+                    pos = cardPos_k + 1;
+                } else {
+                    // pos = 'bottom';
+                }
+                break;
+            case 'to':
+                if (!this.cardId || this.cardId.length < 1 || this.cardId === '-1') {
+                    pos = 'top';
+                } else {
+                    pos = 'at';
+                }
+                break;
+        default:
+            log('GtT::submit: ERROR: Got unknown case: ' + position_k || '<empty position>');
+        }
+
+        return pos;
     },
     
     'process_response': function(data_in) {
@@ -371,8 +407,6 @@ GmailToTrello.Model.prototype.submit = function() {
     this.parent.saveSettings();
 
     var data = this.newCard;
-
-    let uploader = new this.Uploader(self, data.cardId);
     
     var text = data.title || '';
     if (text.length > 0) {
@@ -406,40 +440,29 @@ GmailToTrello.Model.prototype.submit = function() {
         */
     }
 
-    switch (data.position || 'below') {
-        case 'below':
-            let pos = parseInt(data.cardPos || 0, 10);
-            if (pos) {
-                pos++;
-            } else {
-                pos ='bottom';
-            }
-            uploader
-                .add({'property': 'pos', 'value': pos})
-                .add({'property': 'name', 'value': data.title})
-                .add({'property': 'desc', 'value': desc})
-                .add({'property': 'idList', 'value': data.listId});
-            break;
-        case 'to':
-            if (!data.cardId || data.cardId.length < 1 || data.cardId === '-1') {
-                uploader
-                    .add({'property': 'pos', 'value': 'top'})
-                    .add({'property': 'name', 'value': data.title})
-                    .add({'property': 'desc', 'value': desc})
-                    .add({'property': 'idList', 'value': data.listId});
-            } else {
-                uploader.add({'property': 'actions/comments', 'text': text});
-            }
-            break;
-        default:
-            log('GtT::submit: ERROR: Got unknown case: ' + data.position || '<empty position>');
+    let uploader = new this.Uploader({
+        'parent': self, 
+        'cardId': data.cardId,
+        'position': data.position,
+        'cardPos': data.cardPos
+    });
+
+    const pos_k = uploader.pos;
+
+    if (pos_k === 'at') {
+        uploader.add({'property': 'actions/comments', 'text': text});
+    } else {
+        uploader
+            .add({'property': 'pos', 'value': pos_k})
+            .add({'property': 'name', 'value': data.title})
+            .add({'property': 'desc', 'value': desc})
+            .add({'property': 'idList', 'value': data.listId});
     }
 
     uploader
         .add({'property': 'idMembers', 'value': uploader.exclude(data.membersId, data.cardMembers)})
         .add({'property': 'idLabels', 'value': uploader.exclude(data.labelsId, data.cardLabels)})
         .add({'property': 'due', 'value': due_text, 'method': 'put'})
-
 
     let imagesAndAttachments = (data.images || []).concat(data.attachments || []);
 
