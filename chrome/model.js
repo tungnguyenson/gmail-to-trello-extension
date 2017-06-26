@@ -268,7 +268,8 @@ GmailToTrello.Model.prototype.Uploader.prototype = {
             if (this.pos !== 'at' && args.property !== this.attachments) { // It's a new card so add to the existing hash:
                 this.data[0][args.property] = args.value;
             } else {
-                args.property = 'cards/' + (this.cardId || '%cardId%') + '/' + args.property;
+                const cardId_k = (this.pos === 'at' ? this.cardId : '%cardId%'); // Won't know until we store the initial card
+                args.property = 'cards/' + cardId_k + '/' + args.property;
                 this.data.push(args);
             }
         }
