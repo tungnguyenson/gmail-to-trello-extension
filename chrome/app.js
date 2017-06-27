@@ -27,8 +27,8 @@ GmailToTrello.App.prototype.bindEvents = function() {
     });
     
     this.model.event.addListener('onAuthorized', function() {
-        log('GmailToTrello.onAuthorized');
-        log("Status: " + Trello.authorized().toString());
+        gtt_log('GmailToTrello.onAuthorized');
+        gtt_log("Status: " + Trello.authorized().toString());
     });
     
     this.model.event.addListener('onBeforeLoadTrello', function() {
@@ -126,7 +126,7 @@ GmailToTrello.App.prototype.bindEvents = function() {
     });
 
     this.popupView.event.addListener('onRequestDeauthorizeTrello', function() {
-        log('GmailToTrello.onRequestDeauthorizeTrello');
+        gtt_log('GmailToTrello.onRequestDeauthorizeTrello');
         self.model.deauthorizeTrello();
         self.popupView.clearBoard();
     });
@@ -174,10 +174,10 @@ GmailToTrello.App.prototype.replacer = function(text, dict) {
   var self = this;
   
   if (!text || text.length < 1) {
-    log('Require text!');
+    gtt_log('Require text!');
     return "";
   } else if (!dict || dict.length < 2) {
-    log('Require dictionary!');
+    gtt_log('Require dictionary!');
     return text;
   }
   
@@ -255,7 +255,7 @@ GmailToTrello.App.prototype.anchorMarkdownify = function(text, href, comment) {
  */
 GmailToTrello.App.prototype.markdownify = function($emailBody, features, preprocess) {
     if (!$emailBody || $emailBody.length < 1) {
-        log('markdownify requires emailBody');
+        gtt_log('markdownify requires emailBody');
         return;
     }
     var self = this;
@@ -682,7 +682,7 @@ GmailToTrello.App.prototype.deep_link = function(obj, fields) {
  */
 GmailToTrello.App.prototype.validHash = function(args) {
     if (!args) {
-        log('ERROR: Require args!');
+        gtt_log('ERROR: Require args!');
         return false;
     }
 

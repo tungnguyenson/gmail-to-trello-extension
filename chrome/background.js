@@ -2,7 +2,7 @@
  * Detect Gmail's URL everytimes a tab is reloaded or openned
  */
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-    log(changeInfo.status);
+    logbs(changeInfo.status);
     if (changeInfo.status === "complete") {
         checkForValidUrl(tab);
     }
@@ -16,7 +16,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.storage) {
         if (typeof request.value !== 'undefined') {
             localStorage[request.storage] = request.value;
-            log(localStorage);
+            logbs(localStorage);
         }
         sendResponse({'storage': localStorage[request.storage]});
     } else {
@@ -43,7 +43,7 @@ function checkForValidUrl(tab) {
     if (tab.url.indexOf('https://mail.google.com/') == 0) {
         chrome.pageAction.show(tab.id);
 
-        log(tab.url);
+        logbs(tab.url);
 
         // Call content-script initialize function
         chrome.tabs.sendMessage(
@@ -59,7 +59,7 @@ function checkForValidUrl(tab) {
 /**
  * Call console.log if in DEBUG mode only
  */
-function log(data) {
+function logbs(data) {
     chrome.storage.sync.get('debugMode', function(response) {
         if (response.debugMode) {
             console.log(data);

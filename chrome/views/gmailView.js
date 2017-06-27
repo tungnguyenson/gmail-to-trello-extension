@@ -49,12 +49,13 @@ GmailToTrello.GmailView.prototype.detectToolbar = function() {
     $(this.selectors.toolBarHolder, this.$root).each(function() {
         if (this.clientWidth > 0) {
             $toolBarHolder = $(this);
-            //log(this);
+            //gtt_log(this);
         }
     });
     
     if ($toolBarHolder) {
-        log('Gtt::Detected toolBarHolder at: ');log($toolBarHolder);
+        gtt_log('Gtt::Detected toolBarHolder at: ');
+        gtt_log($toolBarHolder);
         var $button = $toolBarHolder.find(this.selectors.toolbarButton);
         $toolBar = $button.parent();
     }
@@ -63,9 +64,9 @@ GmailToTrello.GmailView.prototype.detectToolbar = function() {
     this.$toolBarHolder = $toolBarHolder;
     
     
-    //log ($toolBarHolder);
-    //log($toolBarHolder.find(this.selectors.toolbarButton));
-    //log ($toolBar);  
+    //gtt_log ($toolBarHolder);
+    //gtt_log($toolBarHolder.find(this.selectors.toolbarButton));
+    //gtt_log ($toolBar);  
     //return {toolBarHolder:$toolBarHolder, toolBar:$toolBar};
 };
 
@@ -76,7 +77,7 @@ GmailToTrello.GmailView.prototype.detectSplitLayoutMode = function() {
     var $activeGroup = $('.BltHke[role="main"]');
     
     if ($activeGroup.find('.apv').length>0) {
-        log('Gtt::Detected SplitLayout');
+        gtt_log('Gtt::Detected SplitLayout');
 
         this.layoutMode = this.LAYOUT_SPLIT;
         this.$root = $activeGroup;
@@ -95,7 +96,7 @@ GmailToTrello.GmailView.prototype.detectSplitLayoutMode = function() {
                 });
             });
         });
-        log('Binded email list click events: '+counter+' items');
+        gtt_log('Binded email list click events: '+counter+' items');
         
         return true;
     }
@@ -112,8 +113,8 @@ GmailToTrello.GmailView.prototype.detectEmailOpenningMode = function() {
               && this.$expandedEmails && this.$expandedEmails.length > 0
               && this.$toolBarHolder && this.$toolBarHolder !== null;
     if (result) {
-        log('Gtt::Detected an email is openning');
-        log(this.$expandedEmails);
+        gtt_log('Gtt::Detected an email is openning');
+        gtt_log(this.$expandedEmails);
         
         //bind events
         var counter = 0;
@@ -128,7 +129,7 @@ GmailToTrello.GmailView.prototype.detectEmailOpenningMode = function() {
                 });
             });
         });
-        log('Binded email threads click events: '+counter+' items');
+        gtt_log('Binded email threads click events: '+counter+' items');
 
         this.event.fire('onDetected');
     }
@@ -141,7 +142,7 @@ GmailToTrello.GmailView.prototype.detect = function() {
     var $activeGroup = $('.BltHke[role="main"]');
     
     if ($activeGroup.find('.apv').length > 0) {
-        log('Gtt::Detected SplitLayout');
+        gtt_log('Gtt::Detected SplitLayout');
 
         this.layoutMode = this.LAYOUT_SPLIT;
         this.$root = $activeGroup;
@@ -166,7 +167,7 @@ GmailToTrello.GmailView.prototype.detectOBSOLETE = function() {
 };
 
 GmailToTrello.GmailView.prototype.parseData = function() {
-    log('Gtt::parsing data...');
+    gtt_log('Gtt::parsing data...');
     if (this.parsingData) {
         return;
     }
@@ -180,13 +181,13 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     } else {
         $viewport = $(this.selectors.viewport, this.$root);
     }
-    log($viewport);
+    gtt_log($viewport);
     if ($viewport.length == 0) {
         return;
     }
 
     var y0 = $viewport.offset().top;
-    //log(y0);
+    //gtt_log(y0);
     var $visibleMail = null;
     // parse expanded emails again
     $(this.selectors.expandedEmails, this.$root).each(function() {
@@ -260,7 +261,7 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     data.time = timeParsed_k ? timeParsed_k.toString(this.dateFormat || 'MMM d, yyyy') : 'recently';
 
     if (data.time === 'recently') {
-        log('GtT::time-debug: ' + JSON.stringify({
+        gtt_log('GtT::time-debug: ' + JSON.stringify({
             'timeAttr_k': timeAttr_k,
             'timeCorrected_k': timeCorrected_k,
             'timeParsed_k': timeParsed_k,
@@ -350,7 +351,7 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     data.images = Object.values(emailImages);
 
     //var t = new Date().getTime();
-    //log('Elapsed: '+(t-startTime)/1000);
+    //gtt_log('Elapsed: '+(t-startTime)/1000);
     this.parsingData = false;
 
     return data;
