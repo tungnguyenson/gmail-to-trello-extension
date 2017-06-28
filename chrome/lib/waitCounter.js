@@ -37,7 +37,7 @@ WaitCounter.start = function(name, interval, maxSteps, callBack) {
 
 		current.handler = setInterval(function() {
 			current.counter++;
-			log('WaitCounter['+current.name+']. Round #'+current.counter);
+			gtt_log('WaitCounter['+current.name+']. Round #'+current.counter);
 
 			if (current.counter>=current.maxSteps) {
 				clearInterval(current.handler);

@@ -4,10 +4,13 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.7.2.0
+----------------
+- Change Features/Bugs to 'Help'
+
 Version 2.7.1.6
 ----------------
 - 400 invalid id on attachment upload: Use pos === 'at' to indicate path to attach
-
 
 Version 2.7.1.5
 ----------------

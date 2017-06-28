@@ -42,7 +42,7 @@ GmailToTrello.PopupView = function(parent) {
 };
 
 GmailToTrello.PopupView.prototype.init = function() {
-    log('GtT::PopupView:init');
+    gtt_log('GtT::PopupView:init');
     var self = this;
 
     //check if already init
@@ -56,7 +56,7 @@ GmailToTrello.PopupView.prototype.init = function() {
     // inject a button & a popup
 
     if (this.html && this.html['add_to_trello'] && this.html['add_to_trello'].length > 1) {
-       log('GtT::PopupView:init: add_to_trello_html already exists');
+       gtt_log('GtT::PopupView:init: add_to_trello_html already exists');
     } else {
         var img = 'GtT';
         
@@ -147,9 +147,10 @@ GmailToTrello.PopupView.prototype.detectPopup = function() {
     var $button = $('#gttButton');
     var $popup = $('#gttPopup');
     if ($button.length > 0) {
-        log('GtT::detectPopup: Found Button at:');log($button);
+        gtt_log('GtT::detectPopup: Found Button at:');
+        gtt_log($button);
         if ($button[0].clientWidth <= 0) {
-            log('GtT::detectPopup: Button is in an inactive region. Moving...');
+            gtt_log('GtT::detectPopup: Button is in an inactive region. Moving...');
             //relocate
             $button.appendTo(this.$toolBar);
             $popup.appendTo(this.$toolBar);
@@ -157,8 +158,8 @@ GmailToTrello.PopupView.prototype.detectPopup = function() {
         }
             // update when visible
         if ($popup[0].clientWidth > 0) {
-            //log($popup[0]);
-            //log($popup[0].clientWidth);
+            //gtt_log($popup[0]);
+            //gtt_log($popup[0].clientWidth);
             this.event.fire('onRequestUpdateGmailData');
         }
         return true;
@@ -325,7 +326,7 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
                 new_date = d.toString(dom_date_format_k);                
             }
         } else {
-            log('GtT::due_Shortcuts:change: Unknown due date shortcut: "' + due_date + '"');
+            gtt_log('GtT::due_Shortcuts:change: Unknown due date shortcut: "' + due_date + '"');
         }
 
         if (due_time.substr(2,1) === '+') {
@@ -349,7 +350,7 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
                     + ':' + ('0' + (hhmm_k[1] || 0).toString()).substr(-2);
             }
         } else {
-            log('GtT::due_Shortcuts:change: Unknown due time shortcut: "' + due_time + '"');
+            gtt_log('GtT::due_Shortcuts:change: Unknown due time shortcut: "' + due_time + '"');
         }
 
         $('#gttDue_Date', this.$popup).val(new_date || '');
@@ -389,8 +390,12 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         update_body();
     });
 
-    $('#addToTrello', this.$popup).click(function() {
-       self.submit();
+    $('#addToTrello', this.$popup).click(function(event) {
+        if (self.parent.modKey(event)) {
+            self.displayAPIFailedForm();
+        } else {
+            self.submit();            
+        }
     });
 
     $('#gttLabelsHeader', this.$popup).click(function(event) {
@@ -501,7 +506,7 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
     var self = this;
 
     if (!data) {
-        log('GtT::bindData missing data!');
+        gtt_log('GtT::bindData missing data!');
         return;
     }
 
@@ -729,11 +734,28 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
     self.validateData();
 };
 
-GmailToTrello.PopupView.prototype.showMessage = function(self, text) {
+GmailToTrello.PopupView.prototype.showMessage = function(parent, text) {
+    let self = this;
     this.$popupMessage.html(text);
+    const txt_k = this.$popupMessage.text();
+
     // Attach hideMessage function to hideMsg class if in text:
     $('.hideMsg', this.$popupMessage).click(function() {
-        self.hideMessage();
+        parent.hideMessage();
+    });
+    // Attach reportError function to report id if in text:
+    $('#report', this.$popupMessage).click(function() {
+        const dl_k = self.parent.deep_link; // Pointer to function for expedience
+        const data_k = dl_k(self, ['data']);
+        const newCard_k = dl_k(data_k, ['newCard']);
+        let newCard = $.extend({}, newCard_k);
+        // delete newCard.title;
+        delete newCard.description;
+        const user_k = dl_k(data_k, ['trello', 'user']);
+        const username_k = dl_k(user_k, ['username']);
+        const fullname_k = dl_k(user_k, ['fullName']);
+        const date_k = new Date().toISOString().substr(0,10);
+        window.alert(txt_k + [fullname_k, username_k].join(' @') + ' ' + date_k + '\n' + JSON.stringify(newCard) + '\n' + gtt_log());
     });
     this.$popupMessage.show();
 };
@@ -1053,7 +1075,7 @@ GmailToTrello.PopupView.prototype.validateData = function() {
     var images = mime_array('gttImages');
     
     var validateStatus = boardId && listId && title && description ? true : false; // Labels are not required
-    log('GtT::validateData: board:' + boardId + ' list:' + listId + ' title:' + title + ' desc:' + ((description || '') . length));
+    gtt_log('GtT::validateData: board:' + boardId + ' list:' + listId + ' title:' + title + ' desc:' + ((description || '') . length));
 
     if (validateStatus) {
         newCard = {
@@ -1094,7 +1116,7 @@ GmailToTrello.PopupView.prototype.reset = function() {
 GmailToTrello.PopupView.prototype.displaySubmitCompleteForm = function() {
     var self = this;
     var data = this.data.newCard;
-    log('GtT::displaySubmitCompleteForm: ' + this.data);
+    gtt_log('GtT::displaySubmitCompleteForm: ' + this.data);
 
     // NB: this is a terrible hack. The existing showMessage displays HTML by directly substituting text strings.
     // This is very dangerous (very succeptible to XSS attacks) and generally bad practice.  It should be either 

@@ -5,7 +5,7 @@
 
 MenuControl = function(args) {
     if (!args || !args.selectors) {
-        log('MenuControl missing required selectors');
+        gtt_log('MenuControl missing required selectors');
         return;
     }
 
@@ -30,7 +30,7 @@ MenuControl = function(args) {
             var $current = self.items.parent().find('> .active:first');
             if ($current[0]) {
                 if ($current[0].menuIndex === newIndex) {
-                    //console.log('clicked on an active menu');
+                    //gtt_log('clicked on an active menu');
                     return;
                 }
                 $current[0].classList.remove('active');

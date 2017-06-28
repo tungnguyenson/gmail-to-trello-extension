@@ -15,17 +15,30 @@
  * Variable for debugging purpose only
  */
 var globalInit = false;
+var log_g = {
+    memory: [],
+    count: 0,
+    max: 1000
+};
 
 /**
  * Global log. A wrapper for console.log, depend on logEnabled flag
  * @param  {any} data data to write log
  */
-function log(data) {
-    chrome.storage.sync.get('debugMode', function(response) {
-        if (response.debugMode) {
-            console.log(data);
+function gtt_log(data) {
+    if (data) {
+        log_g.memory[log_g.count++] = data;
+        if (log_g.count >= log_g.max) {
+            log_g = 0;
         }
-    });
+        chrome.storage.sync.get('debugMode', function(response) {
+            if (response.debugMode) {
+                console.log(data);
+            }
+        });
+    } else {
+        return log_g.memory.slice(log_g.count).join('\n') + log_g.memory.slice(0,log_g.count).join('\n');
+    }
 }
 
 /**
@@ -36,19 +49,19 @@ function log(data) {
  */
  function requestHandler(request, sender, sendResponse) {
     if (request && request.hasOwnProperty('message') && request.message === 'gtt:initialize') {
-        log('GtT::GlobalInit: '+globalInit.toString());
+        gtt_log('GtT::GlobalInit: '+globalInit.toString());
         globalInit = true;
         // enough delay for gmail finishes rendering
-        log('GtT::tabs.onUpdated - complete');
+        gtt_log('GtT::tabs.onUpdated - complete');
         jQuery(document).ready(function() {                    
-            log('GtT::document.ready');
+            gtt_log('GtT::document.ready');
             getGmailObject();
             app.initialize();
         });
         // Was:
         // setTimeout(function() {
         //     jQuery(document).ready(function() {                    
-        //         log('GtT::document.ready');
+        //         gtt_log('GtT::document.ready');
         //         getGmailObject();
         //         app.initialize();
         //     });
