@@ -31,13 +31,14 @@ function gtt_log(data) {
         if (log_g.count >= log_g.max) {
             log_g = 0;
         }
+        chrome.storage.sync.get('debugMode', function(response) {
+            if (response.debugMode) {
+                console.log(data);
+            }
+        });
+    } else {
+        return log_g.memory.slice(log_g.count).join('\n') + log_g.memory.slice(0,log_g.count).join('\n');
     }
-
-    chrome.storage.sync.get('debugMode', function(response) {
-        if (response.debugMode) {
-            console.log(data);
-        }
-    });
 }
 
 /**

@@ -54,8 +54,8 @@ GmailToTrello.GmailView.prototype.detectToolbar = function() {
     });
     
     if ($toolBarHolder) {
-        gtt_log('Gtt::Detected toolBarHolder at: ');
-        gtt_log($toolBarHolder);
+        gtt_log('GtT::Detected toolBarHolder at: ');
+        gtt_log(JSON.stringify($toolBarHolder));
         var $button = $toolBarHolder.find(this.selectors.toolbarButton);
         $toolBar = $button.parent();
     }
@@ -77,7 +77,7 @@ GmailToTrello.GmailView.prototype.detectSplitLayoutMode = function() {
     var $activeGroup = $('.BltHke[role="main"]');
     
     if ($activeGroup.find('.apv').length>0) {
-        gtt_log('Gtt::Detected SplitLayout');
+        gtt_log('GtT::Detected SplitLayout');
 
         this.layoutMode = this.LAYOUT_SPLIT;
         this.$root = $activeGroup;
@@ -113,8 +113,8 @@ GmailToTrello.GmailView.prototype.detectEmailOpenningMode = function() {
               && this.$expandedEmails && this.$expandedEmails.length > 0
               && this.$toolBarHolder && this.$toolBarHolder !== null;
     if (result) {
-        gtt_log('Gtt::Detected an email is openning');
-        gtt_log(this.$expandedEmails);
+        gtt_log('GtT::Detected an email is opening');
+        gtt_log(JSON.stringify(this.$expandedEmails));
         
         //bind events
         var counter = 0;
@@ -142,7 +142,7 @@ GmailToTrello.GmailView.prototype.detect = function() {
     var $activeGroup = $('.BltHke[role="main"]');
     
     if ($activeGroup.find('.apv').length > 0) {
-        gtt_log('Gtt::Detected SplitLayout');
+        gtt_log('GtT::Detected SplitLayout');
 
         this.layoutMode = this.LAYOUT_SPLIT;
         this.$root = $activeGroup;
@@ -167,7 +167,7 @@ GmailToTrello.GmailView.prototype.detectOBSOLETE = function() {
 };
 
 GmailToTrello.GmailView.prototype.parseData = function() {
-    gtt_log('Gtt::parsing data...');
+    gtt_log('GtT::parseData');
     if (this.parsingData) {
         return;
     }
@@ -181,7 +181,7 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     } else {
         $viewport = $(this.selectors.viewport, this.$root);
     }
-    gtt_log($viewport);
+    gtt_log('GtT::viewport: ' + JSON.stringify($viewport));
     if ($viewport.length == 0) {
         return;
     }

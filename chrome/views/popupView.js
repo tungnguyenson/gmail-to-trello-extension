@@ -390,8 +390,12 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         update_body();
     });
 
-    $('#addToTrello', this.$popup).click(function() {
-       self.submit();
+    $('#addToTrello', this.$popup).click(function(event) {
+        if (self.parent.modKey(event)) {
+            self.displayAPIFailedForm();
+        } else {
+            self.submit();            
+        }
     });
 
     $('#gttLabelsHeader', this.$popup).click(function(event) {
@@ -730,11 +734,28 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
     self.validateData();
 };
 
-GmailToTrello.PopupView.prototype.showMessage = function(self, text) {
+GmailToTrello.PopupView.prototype.showMessage = function(parent, text) {
+    let self = this;
     this.$popupMessage.html(text);
+    const txt_k = this.$popupMessage.text();
+
     // Attach hideMessage function to hideMsg class if in text:
     $('.hideMsg', this.$popupMessage).click(function() {
-        self.hideMessage();
+        parent.hideMessage();
+    });
+    // Attach reportError function to report id if in text:
+    $('#report', this.$popupMessage).click(function() {
+        const dl_k = self.parent.deep_link; // Pointer to function for expedience
+        const data_k = dl_k(self, ['data']);
+        const newCard_k = dl_k(data_k, ['newCard']);
+        let newCard = $.extend({}, newCard_k);
+        // delete newCard.title;
+        delete newCard.description;
+        const user_k = dl_k(data_k, ['trello', 'user']);
+        const username_k = dl_k(user_k, ['username']);
+        const fullname_k = dl_k(user_k, ['fullName']);
+        const date_k = new Date().toISOString().substr(0,10);
+        window.alert(txt_k + [fullname_k, username_k].join(' @') + ' ' + date_k + '\n' + JSON.stringify(newCard) + '\n' + gtt_log());
     });
     this.$popupMessage.show();
 };
