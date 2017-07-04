@@ -27,7 +27,7 @@ GmailToTrello.App.prototype.bindEvents = function() {
     });
     
     this.model.event.addListener('onAuthorized', function() {
-        gtt_log('GmailToTrello.onAuthorized');
+        gtt_log('GtT::onAuthorized');
         gtt_log("Status: " + Trello.authorized().toString());
     });
     
@@ -103,7 +103,7 @@ GmailToTrello.App.prototype.bindEvents = function() {
 
     this.popupView.event.addListener('onBoardChanged', function(target, params) {
         var boardId = params.boardId;
-        if (boardId !== "_" && boardId !== "" && boardId !== null) {
+        if (boardId !== '_' && boardId !== '' && boardId !== null) {
             self.model.loadTrelloLists(boardId);
             self.model.loadTrelloLabels(boardId);
             self.model.loadTrelloMembers(boardId);
@@ -126,7 +126,7 @@ GmailToTrello.App.prototype.bindEvents = function() {
     });
 
     this.popupView.event.addListener('onRequestDeauthorizeTrello', function() {
-        gtt_log('GmailToTrello.onRequestDeauthorizeTrello');
+        gtt_log('GtT::onRequestDeauthorizeTrello');
         self.model.deauthorizeTrello();
         self.popupView.clearBoard();
     });
@@ -174,10 +174,10 @@ GmailToTrello.App.prototype.replacer = function(text, dict) {
   var self = this;
   
   if (!text || text.length < 1) {
-    gtt_log('Require text!');
-    return "";
+    // gtt_log('Require text!');
+    return '';
   } else if (!dict || dict.length < 2) {
-    gtt_log('Require dictionary!');
+    gtt_log('GtT::replacer: Require dictionary!');
     return text;
   }
   
@@ -227,11 +227,11 @@ GmailToTrello.App.prototype.uriForDisplay = function(uri) {
  * Make anchored backlink
  */
 GmailToTrello.App.prototype.anchorMarkdownify = function(text, href, comment) {
-    var text1 = (text || "").trim();
+    var text1 = (text || '').trim();
     var text1lc = text1.toLowerCase();
-    var href1 = (href || "").trim();
+    var href1 = (href || '').trim();
     var href1lc = href1.toLowerCase();
-    var comment1 = (comment || "").trim();
+    var comment1 = (comment || '').trim();
 
     var retn = '';
 
@@ -244,7 +244,7 @@ GmailToTrello.App.prototype.anchorMarkdownify = function(text, href, comment) {
     } else if (('mailto:' + text1lc) === href1lc) {
         retn = ' <' + text1 + '> '; // This renders correctly in Trello as a mailto: url
     } else {
-        retn = " [" + text1 + "](" + href1 + (comment1 ? ' "' + comment1 + '"' : '') + ") ";
+        retn = ' [' + text1 + '](' + href1 + (comment1 ? ' "' + comment1 + '"' : '') + ') ';
     }
     
     return retn;
@@ -255,7 +255,7 @@ GmailToTrello.App.prototype.anchorMarkdownify = function(text, href, comment) {
  */
 GmailToTrello.App.prototype.markdownify = function($emailBody, features, preprocess) {
     if (!$emailBody || $emailBody.length < 1) {
-        gtt_log('markdownify requires emailBody');
+        gtt_log('GtT::markdownify: Require emailBody!');
         return;
     }
     var self = this;
@@ -507,7 +507,7 @@ GmailToTrello.App.prototype.bookend = function(bookend, text, style) {
  * http://stackoverflow.com/questions/5379120/get-the-highlighted-selected-text
  */
 GmailToTrello.App.prototype.getSelectedText = function() {
-    var text = "";
+    var text = '';
     var activeEl = document.activeElement;
     var activeElTagName = activeEl ? activeEl.tagName.toLowerCase() : null;
     if (
@@ -603,7 +603,7 @@ GmailToTrello.App.prototype.encodeEntities = function(s) {
  */
 GmailToTrello.App.prototype.decodeEntities = function(s) {
     var self = this;
-    const dict_k = { '...': '&hellip;' };
+    const dict_k = { '...': '&hellip;', '*': '&bullet;', '-': '&mdash;' };
     var re, new_s;
     $.each(dict_k, function (key, value) {
         re = new RegExp(self.escapeRegExp(key), "gi");
@@ -682,7 +682,7 @@ GmailToTrello.App.prototype.deep_link = function(obj, fields) {
  */
 GmailToTrello.App.prototype.validHash = function(args) {
     if (!args) {
-        gtt_log('ERROR: Require args!');
+        gtt_log('GtT::validHash: Require args!');
         return false;
     }
 
