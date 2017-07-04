@@ -38,6 +38,8 @@ GmailToTrello.PopupView = function(parent) {
 
     this.mouseDownTracker = {};
 
+    this.lastError = '';
+
     this.EVENT_LISTENER = '.gtt_event_listener';
 };
 
@@ -596,6 +598,29 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
         $('#gttDue_Time', this.$popup).val(data.settings.due_Time);
     }
 
+    // Attach reportError function to report id if in text:
+    $('#report', this.$popup).click(function() {
+        self.reset();
+
+        const lastError_k = (self.lastError || '') + (self.lastError ? '\n' : '');
+
+        const dl_k = self.parent.deep_link; // Pointer to function for expedience
+        const data_k = dl_k(self, ['data']);
+        const newCard_k = dl_k(data_k, ['newCard']);
+        let newCard = $.extend({}, newCard_k);
+        // delete newCard.title;
+        delete newCard.description;
+        const user_k = dl_k(data_k, ['trello', 'user']);
+        const username_k = dl_k(user_k, ['username']);
+        const fullname_k = dl_k(user_k, ['fullName']);
+        const date_k = new Date().toISOString().substr(0,10);
+        self.updateBoards('52e1397addf85d4751f99319'); // GtT board
+        $('#gttDesc', self.$popup).val(lastError_k + JSON.stringify(newCard) + '\n' + gtt_log());
+        $('#gttTitle', self.$popup).val('Error report card: ' + [fullname_k, username_k].join(' @') + ' ' + date_k);
+        self.validateData();
+    });
+
+
     chrome.storage.sync.get('dueShortcuts', function(response) {
         // Borrowed from options file until this gets persisted everywhere:
         const dueShortcuts_k = JSON.stringify({
@@ -737,26 +762,12 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
 GmailToTrello.PopupView.prototype.showMessage = function(parent, text) {
     let self = this;
     this.$popupMessage.html(text);
-    const txt_k = this.$popupMessage.text();
 
     // Attach hideMessage function to hideMsg class if in text:
     $('.hideMsg', this.$popupMessage).click(function() {
         parent.hideMessage();
     });
-    // Attach reportError function to report id if in text:
-    $('#report', this.$popupMessage).click(function() {
-        const dl_k = self.parent.deep_link; // Pointer to function for expedience
-        const data_k = dl_k(self, ['data']);
-        const newCard_k = dl_k(data_k, ['newCard']);
-        let newCard = $.extend({}, newCard_k);
-        // delete newCard.title;
-        delete newCard.description;
-        const user_k = dl_k(data_k, ['trello', 'user']);
-        const username_k = dl_k(user_k, ['username']);
-        const fullname_k = dl_k(user_k, ['fullName']);
-        const date_k = new Date().toISOString().substr(0,10);
-        window.alert(txt_k + [fullname_k, username_k].join(' @') + ' ' + date_k + '\n' + JSON.stringify(newCard) + '\n' + gtt_log());
-    });
+
     this.$popupMessage.show();
 };
 
@@ -807,28 +818,29 @@ GmailToTrello.PopupView.prototype.clearBoard = function() {
     $gtt.change();
 };
 
-GmailToTrello.PopupView.prototype.updateBoards = function() {
+GmailToTrello.PopupView.prototype.updateBoards = function(tempBoardId) {
     var self = this;
-    var orgs = this.data.trello.orgs;
 
     var boards = this.data.trello.boards;
     var newBoards = {};
 
-    for (var iter = 0; iter < orgs.length; iter++) {
-        var orgItem = orgs[iter];
-        for (var iter2 = 0; iter2 < boards.length; iter2++) {
-            if (boards[iter2].idOrganization == orgItem.id) {
-                var item = boards[iter2];
-                var display = orgItem.displayName + ' &raquo; ' + item.name;
-                newBoards[display.toLowerCase()] = {'id': item.id, 'display': display}; // For sorting later
-            }
-        }
-    }
+    $.each(boards, function(iter, item) {
+        const org_k =  item.hasOwnProperty('organization')
+                    && item.organization.hasOwnProperty('displayName')
+                    ?  item.organization.displayName + ' &raquo; '
+                    :  '~ ';
+        const display_k = org_k + item.name;
+        newBoards[display_k.toLowerCase()] = {'id': item.id, 'display': display_k};
+    });
 
     var settings = this.data.settings;
     var settingId = 0;
     if (settings.boardId) {
         settingId = settings.boardId;
+    }
+
+    if (tempBoardId) {
+        settingId = tempBoardId;
     }
 
     var $gtt = $('#gttBoard', this.$popup);
@@ -867,7 +879,7 @@ GmailToTrello.PopupView.prototype.updateLists = function() {
         $gtt.append($('<option>').attr('value', id).prop('selected', selected).append(display));
     });
 
-    $gtt.change();
+    $gtt.change();        
 };
 
 GmailToTrello.PopupView.prototype.updateCards = function() {
@@ -1147,17 +1159,21 @@ GmailToTrello.PopupView.prototype.displayAPIFailedForm = function(response) {
         resp.title = this.data.newCard.title; // Put a temp copy of this over where we'll get the other data
     }
 
-    var dict = {
+    const dict_k = {
         'title': resp.title || '?',
         'status': resp.status || '?',
         'statusText': resp.statusText || '?',
-        'responseText': resp.responseText || JSON.stringify(response)
+        'responseText': resp.responseText || JSON.stringify(response),
+        'method': resp.method || '?',
+        'keys': resp.keys || '?'
     };
 
     $.get(chrome.extension.getURL('views/error.html'), function(data) {
-        self.showMessage(self, self.parent.replacer(data, dict));
+        const lastErrorHtml_k = self.parent.replacer(data, dict_k);
+        self.showMessage(self, lastErrorHtml_k);
+        self.lastError = JSON.stringify(dict_k);
         self.$popupContent.hide();
-        if (resp.status && resp.status === '401') { // Invalid token, so deauthorize Trello
+        if (resp.status && resp.status == 401) { // Invalid token, so deauthorize Trello
             self.event.fire('onRequestDeauthorizeTrello');
         }
     });

@@ -4,7 +4,6 @@ GmailToTrello.Model = function(parent) {
     this.trello = {
         apiKey: 'c50413b23ee49ca49a5c75ccf32d0459',
         user: null,
-        orgs: null,
         boards: null
     };
     this.parent = parent;
@@ -25,12 +24,11 @@ GmailToTrello.Model.prototype.init = function() {
 };
 
 GmailToTrello.Model.prototype.initTrello = function() {
-    gtt_log("GTT::initTrello");
+    gtt_log("GtT::initTrello");
 
     var self = this;
 
     this.trello.user = null;
-    this.trello.orgs = null;
     this.trello.boards = null;
 
     Trello.setKey(this.trello.apiKey);
@@ -47,13 +45,13 @@ GmailToTrello.Model.prototype.initTrello = function() {
 
         Trello.authorize({
             type: 'popup',
-            name: "Gmail to Trello",
+            name: "Gmail-to-Trello",
             persit: true,
             scope: {read: true, write: true},
             expiration: 'never',
             success: function(data) {
-                gtt_log('Trello authorization successful');
-                gtt_log(data);
+                gtt_log('GtT::initTrello: Trello authorization successful');
+                // gtt_log(data);
                 self.event.fire('onAuthorized');
                 self.loadTrelloData();
             },
@@ -70,7 +68,7 @@ GmailToTrello.Model.prototype.initTrello = function() {
 };
 
 GmailToTrello.Model.prototype.deauthorizeTrello = function() {
-    gtt_log("GTT:deauthorizeTrello");
+    gtt_log("GtT::deauthorizeTrello");
 
     Trello.deauthorize();
     this.isInitialized = false;
@@ -85,7 +83,7 @@ GmailToTrello.Model.prototype.makeAvatarUrl = function(avatarHash) {
 }
 
 GmailToTrello.Model.prototype.loadTrelloData = function() {
-    gtt_log('loading trello data');
+    gtt_log('GtT::loadTrelloData');
 
     this.event.fire('onBeforeLoadTrello');
     this.trello.user = null;
@@ -94,7 +92,7 @@ GmailToTrello.Model.prototype.loadTrelloData = function() {
     var self = this;
 
     // get user's info
-    gtt_log('Getting user info');
+    gtt_log('GtT::loadTrelloData: User info');
     Trello.get('members/me', {}, function(data) {
         if (!data || !data.hasOwnProperty('id')) {
             return false;
@@ -102,49 +100,36 @@ GmailToTrello.Model.prototype.loadTrelloData = function() {
 
         self.trello.user = data;
 
-        // get user orgs
-        self.trello.orgs = [{id: -1, displayName: 'My Boards'}];
-        if (data && data.hasOwnProperty('idOrganizations') && data.idOrganizations && data.idOrganizations.length > 0) {
-            gtt_log('Getting user orgs');
-            Trello.get('members/me/organizations', {fields: "displayName"}, function(data) {
-                gtt_log(data);
-                for (var i = 0; i < data.length; i++) {
-                    self.trello.orgs.push(data[i]);
-                }
-                self.checkTrelloDataReady();
-            }, function failure(data) {
-                self.event.fire('onAPIFailure', {data:data});
-            });
-
-        }
-
-        // get boards list, including orgs
-        if (data && data.hasOwnProperty('idBoards') && data.idBoards && data.idBoards.length > 0) {
-            gtt_log('Getting user boards');
-            self.trello.boards = null;
-            Trello.get('members/me/boards', {fields: "closed,name,idOrganization"}, function(data) {
+        gtt_log('GtT::loadTrelloData: User boards');
+        self.trello.boards = null;
+        Trello.get('members/me/boards', {
+                'organization': 'true',
+                'organization_fields': 'displayName',
+                'filter': 'open',
+                'fields': 'name' /* "name,closed" */
+            }, function(data) {
                 var validData = Array();
                 for (var i = 0; i < data.length; i++) {
-                    if (data[i].idOrganization === null)
-                        data[i].idOrganization = -1;
+                    // if (data[i].idOrganization === null)
+                    //   data[i].idOrganization = '-1';
 
                     // Only accept opening boards
                     if (i==0) {
-                        gtt_log(data[i]);
+                        // gtt_log(JSON.stringify(data[i]));
                     }
                     if (data[i].closed != true) {
                         validData.push(data[i]);
                     }
                 }
-                gtt_log('Boards data:');
-                gtt_log(data);
-                gtt_log(validData);
+                // gtt_log('GtT::loadTrelloData: Boards data');
+                // gtt_log(JSON.stringify(data));
+                // gtt_log(JSON.stringify(validData));
                 self.trello.boards = validData;
                 self.checkTrelloDataReady();
             }, function failure(data) {
-                self.event.fire('onAPIFailure', {data:data});
-            });
-        }
+            self.event.fire('onAPIFailure', {data:data});
+            }
+        );
         self.checkTrelloDataReady();
     }, function failure(data) {
         self.event.fire('onAPIFailure', {data:data});
@@ -153,8 +138,7 @@ GmailToTrello.Model.prototype.loadTrelloData = function() {
 
 GmailToTrello.Model.prototype.checkTrelloDataReady = function() {
     if (this.trello.user !== null &&
-            this.trello.orgs !== null &&
-            this.trello.boards !== null) {
+        this.trello.boards !== null) {
         // yeah! the data is ready
         //gtt_log('checkTrelloDataReady: YES');
         //gtt_log(this);
@@ -166,7 +150,7 @@ GmailToTrello.Model.prototype.checkTrelloDataReady = function() {
 
 
 GmailToTrello.Model.prototype.loadTrelloLists = function(boardId) {
-    gtt_log('loadTrelloLists');
+    gtt_log('GtT::loadTrelloLists');
 
     var self = this;
     this.trello.lists = null;
@@ -180,7 +164,7 @@ GmailToTrello.Model.prototype.loadTrelloLists = function(boardId) {
 };
 
 GmailToTrello.Model.prototype.loadTrelloCards = function(listId) {
-    gtt_log('loadTrelloCards');
+    gtt_log('GtT::loadTrelloCards');
 
     var self = this;
     this.trello.cards = null;
@@ -194,7 +178,7 @@ GmailToTrello.Model.prototype.loadTrelloCards = function(listId) {
 };
 
 GmailToTrello.Model.prototype.loadTrelloLabels = function(boardId) {
-    gtt_log('loadTrelloLabels');
+    gtt_log('GtT::loadTrelloLabels');
 
     var self = this;
     this.trello.labels = null;
@@ -208,7 +192,7 @@ GmailToTrello.Model.prototype.loadTrelloLabels = function(boardId) {
 };
 
 GmailToTrello.Model.prototype.loadTrelloMembers = function(boardId) {
-    gtt_log('loadTrelloMembers');
+    gtt_log('GtT::loadTrelloMembers');
 
     var self = this;
     this.trello.members = null;
@@ -373,29 +357,42 @@ GmailToTrello.Model.prototype.Uploader.prototype = {
 
     'upload': function() {
         let upload1 = this.data.shift();
-        if (!upload1) this.event.fire('onCardSubmitComplete');
+        if (!upload1) {
+            this.event.fire('onCardSubmitComplete');
+        } else {
+            let generateKeysAndValues = function(object) {
+                let keysAndValues = [];
+                $.each(object, function(key, value) {
+                    keysAndValues.push(key + ' (' + (value || '').toString().length + ')');
+                });
+                return keysAndValues.sort().join(' ');
+            };
 
-        const dict_k = {'cardId': this.cardId || ''};
+            const dict_k = {'cardId': this.cardId || ''};
 
-        let method = upload1.method || 'post';
-        let property = this.parent.parent.replacer(upload1.property, dict_k);
-        delete upload1.method;
-        delete upload1.property;
+            let method = upload1.method || 'post';
+            let property = this.parent.parent.replacer(upload1.property, dict_k);
+            delete upload1.method;
+            delete upload1.property;
 
-        const fn_k = property.endsWith(this.attachments) ? this.attach : Trello.rest;
+            const fn_k = property.endsWith(this.attachments) ? this.attach : Trello.rest;
 
-        let self = this;
-        fn_k(method, property, upload1, function success(data) {
-            self.process_response(data);
-            if (self.data && self.data.length > 0) {
-                self.upload();
-            } else {
-                self.parent.event.fire('onCardSubmitComplete', {data: data});
-            }
-        }, function failure(data) {
-            self.parent.event.fire('onAPIFailure', {data: data});
-        });
+            let self = this;
+            fn_k(method, property, upload1, function success(data) {
+                $.extend(data, {'method': method + ' ' + property, 'keys': generateKeysAndValues(upload1)});
+                self.process_response(data);
+                if (self.data && self.data.length > 0) {
+                    self.upload();
+                } else {
+                    self.parent.event.fire('onCardSubmitComplete', {data: data});
+                }
+            }, function failure(data) {
+                $.extend(data, {'method': method + ' ' + property, 'keys': generateKeysAndValues(upload1)});
+                self.parent.event.fire('onAPIFailure', {data: data});
+            });
+        }
     }
+
 };
 
 GmailToTrello.Model.prototype.submit = function() {

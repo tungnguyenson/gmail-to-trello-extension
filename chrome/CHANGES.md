@@ -4,9 +4,12 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
-Version 2.7.2.0
+Version 2.7.2.1
 ----------------
+- Check for 401 more leniently, add target to error
+- Lists without organizations were being filtered out! Fixed.
 - Change Features/Bugs to 'Help'
+- Created 'Report' feature, which will put latest error and last 1000 log items into card to post to GtT Trello board
 
 Version 2.7.1.6
 ----------------
