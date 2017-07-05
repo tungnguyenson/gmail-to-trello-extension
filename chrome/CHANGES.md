@@ -4,6 +4,12 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.7.2.2
+----------------
+- Parse "29. Mai 2017 um 15:18" correctly
+- (Until I have a better idea, have to decode the dateTime by hand and do some month comparisons)
+
+
 Version 2.7.2.1
 ----------------
 - Check for 401 more leniently, add target to error

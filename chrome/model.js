@@ -432,9 +432,9 @@ GmailToTrello.Model.prototype.submit = function() {
         } else {
             due += ' 00:00'; // Must provide time
         }
-        due_text = new Date(due).toISOString();
+        due_text = (new Date(due)).toISOString();
         /* (NOTE (Ace, 27-Feb-2017): When we used datetime-local object, this was:
-        trelloPostableData.due = new Date(data.dueDate.replace('T', ' ').replace('-','/')).toISOString();
+        trelloPostableData.due = (new Date(data.dueDate.replace('T', ' ').replace('-','/'))).toISOString();
         */
     }
 
