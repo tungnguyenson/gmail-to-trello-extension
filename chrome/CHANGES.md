@@ -8,6 +8,7 @@ Version 2.7.2.2
 ----------------
 - Parse "29. Mai 2017 um 15:18" correctly
 - (Until I have a better idea, have to decode the dateTime by hand and do some month comparisons)
+- And then after doing that ton of work and realizing this will be horrific to maintain, I ripped it all out
 
 
 Version 2.7.2.1
