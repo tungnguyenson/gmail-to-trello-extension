@@ -34,13 +34,6 @@ GmailToTrello.GmailView = function(parent) {
         timestamp: '.gH .gK .g3:first',
         host: 'a.gb_b.gb_eb.gb_R'
     };
-
-    this.dateFormat = 'MMM d, yyyy';
-
-    chrome.storage.sync.get('dateFormat', function(response) {
-        // Have to use variable self pointing to parent's "this" otherwise "this" means local context:
-        self.dateFormat = response.dateFormat || 'MMM d, yyyy';
-    });
 };
 
 GmailToTrello.GmailView.prototype.detectToolbar = function() {
@@ -254,26 +247,33 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     
     // timestamp
     const $time_k = $(this.selectors.timestamp, $visibleMail);
-    const timeAttr_k = (($time_k) ? ($time_k.attr('title') || $time_k.text() || $time_k.attr('alt')) : '');
+    const timeAttr_k = (($time_k) ? ($time_k.attr('title') || $time_k.text() || $time_k.attr('alt')) : '').trim();
+    
+    /* Used to do this to convert to a true dateTime object, but there is too much hassle in doing so:
     const timeCorrected_k = self.parent.parseInternationalDateTime(timeAttr_k);
     const timeAsDate_k = (timeCorrected_k !== '' ? new Date (timeCorrected_k) : '');
     const timeAsDateInvalid_k = timeAsDate_k ? isNaN (timeAsDate_k.getTime()) : true;
 
     data.time = (timeAsDateInvalid_k ? 'recently' : timeAsDate_k.toString(this.dateFormat || 'MMM d, yyyy'));
+    */
+
+    data.time = timeAttr_k || 'recently';
 
     if (data.time === 'recently') {
         gtt_log('GtT::time-debug: ' + JSON.stringify({
             'timeAttr_k': timeAttr_k,
+            /*
             'timeCorrected_k': timeCorrected_k,
             'timeAsDate_k': timeAsDate_k,
             'timeAsDateInvalid_k': timeAsDateInvalid_k,
+            */
             'time_k': $time_k
         }));
     }
 
-    var from_raw = emailName + ' <' + emailAddress + '> on ' + data.time;
+    var from_raw = emailName + ' <' + emailAddress + '> ' + data.time;
     var from_md = '[' + emailName + '](' /* mailto: */ + emailAddress /* Don't need 'mailto:' */
-        /*  + ' "Email ' + emailAddress + '"' */ + ') on '
+        /*  + ' "Email ' + emailAddress + '"' */ + ') '
         + data.time;  // FYI (Ace, 10-Jan-2017): [name](url "comment") is markdown syntax
 
     // subject
