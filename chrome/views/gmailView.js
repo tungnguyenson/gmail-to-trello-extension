@@ -254,17 +254,19 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     
     // timestamp
     const $time_k = $(this.selectors.timestamp, $visibleMail);
-    const timeAttr_k = ($time_k) ? ($time_k.attr('title') || $time_k.text() || $time_k.attr('alt')) : '';
-    const timeCorrected_k = timeAttr_k ? timeAttr_k.replace(/ \D\D /, ' ') : ''; // BUG (Ace, 29-Jan-2017): Replacing 'at' without spaces will mess up "Sat" which will then cause Date.parse to fail.
-    const timeParsed_k = timeCorrected_k !== '' ? Date.parse(timeCorrected_k) : '';
+    const timeAttr_k = (($time_k) ? ($time_k.attr('title') || $time_k.text() || $time_k.attr('alt')) : '');
+    const timeCorrected_k = self.parent.parseInternationalDateTime(timeAttr_k);
+    const timeAsDate_k = (timeCorrected_k !== '' ? new Date (timeCorrected_k) : '');
+    const timeAsDateInvalid_k = timeAsDate_k ? isNaN (timeAsDate_k.getTime()) : true;
 
-    data.time = timeParsed_k ? timeParsed_k.toString(this.dateFormat || 'MMM d, yyyy') : 'recently';
+    data.time = (timeAsDateInvalid_k ? 'recently' : timeAsDate_k.toString(this.dateFormat || 'MMM d, yyyy'));
 
     if (data.time === 'recently') {
         gtt_log('GtT::time-debug: ' + JSON.stringify({
             'timeAttr_k': timeAttr_k,
             'timeCorrected_k': timeCorrected_k,
-            'timeParsed_k': timeParsed_k,
+            'timeAsDate_k': timeAsDate_k,
+            'timeAsDateInvalid_k': timeAsDateInvalid_k,
             'time_k': $time_k
         }));
     }
@@ -350,7 +352,7 @@ GmailToTrello.GmailView.prototype.parseData = function() {
 
     data.images = Object.values(emailImages);
 
-    //var t = new Date().getTime();
+    //var t = (new Date()).getTime();
     //gtt_log('Elapsed: '+(t-startTime)/1000);
     this.parsingData = false;
 

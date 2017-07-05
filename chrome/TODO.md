@@ -12,6 +12,13 @@
 - [done] Move attachment upload logic to model.js
 - 
 
+content-script.js:26 GtT::validateData: board:592d43422c9d39fe0cb22aea list:592d434b4eb392d5eb45535a title:[EXTERNAL] Re: Technischer Kundendienst / Tools für Entwickler - Integration [Incident: 170508-031288] [Incident: 170527-002190] desc:5041
+content-script.js:26 Gtt::parsing data...
+content-script.js:26 [div.nH.aNW.apk.nn, prevObject: r.fn.init(1)]
+content-script.js:26 GtT::time-debug: {"timeAttr_k":"29. Mai 2017 um 15:18","timeCorrected_k":"29. Mai 2017 15:18","timeParsed_k":null,"time_k":{"0":{},"length":1,"prevObject":{"0":{},"length":1}}}
+content-script.js:26 GtT::validateData: board:592d43422c9d39fe0cb22aea list:592d434b4eb392d5eb45535a title:[EXTERNAL] Re: Technischer Kundendienst / Tools für Entwickler - Integration [Incident: 170508-031288] [Incident: 170527-002190] desc:5041
+ci3.googleusercontent.com/proxy/HF4QiRBEq0qy_KSCeeLq2g9EKOCzik2IVXH_gexI3J6CndiQ9eNdUNMghMigNOilAN9LJlSQbxrCa58Td5Tm2ynGWFls7N1pc2ofr-8qYSIEs5CDbUs7sIlpZXFcsSIcOBq0=s0-d-e1-ft#https://ups1.custhelp.com/rd/CvPrVAo2Dv8M~fP7GsoJ~yAaqpkqaS75Mv8P~zj~PP~G.gif:1 GET https://ci3.googleusercontent.com/proxy/HF4QiRBEq0qy_KSCeeLq2g9EKOCzik2IVXH_gexI3J6CndiQ9eNdUNMghMigNOilAN9LJlSQbxrCa58Td5Tm2ynGWFls7N1pc2ofr-8qYSIEs5CDbUs7sIlpZXFcsSIcOBq0=s0-d-e1-ft 404 ()
+
 http://cssglobe.com/lab/tooltip/02/:
 
 this.imagePreview = function(){	
