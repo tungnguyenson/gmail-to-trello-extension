@@ -272,33 +272,32 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     }
 
     var from_raw = emailName + ' <' + emailAddress + '> ' + data.time;
-    var from_md = '[' + emailName + '](' /* mailto: */ + emailAddress /* Don't need 'mailto:' */
-        /*  + ' "Email ' + emailAddress + '"' */ + ') '
-        + data.time;  // FYI (Ace, 10-Jan-2017): [name](url "comment") is markdown syntax
+    var from_md = '[' + emailName + '](' + emailAddress + ') ' + data.time;  // FYI (Ace, 10-Jan-2017): [name](url "comment") is markdown syntax
 
     // subject
-    data.subject = ($(this.selectors.emailSubject, this.$root).text() || "").trim();
+    data.subject = ($(this.selectors.emailSubject, this.$root).text() || '').trim();
 
     var subject = encodeURIComponent(data.subject);
     var dateSearch = encodeURIComponent(data.time);
     
     var txtAnchor = 'Search';
-    var txtDirect = "https://mail.google.com/mail/#search/" + subject;
-    var txtDirectComment = "Search email subject";
+    var txtDirect = 'https://mail.google.com/mail/#search/' + subject;
+    var txtDirectComment = 'Search by subject';
 
     if (emailId && emailId.length > 1) {
         txtAnchor = 'Id';
-        txtDirect = "https://mail.google.com" + window.location.pathname /* /mail/u/0/ */ + "#all/" + emailId;
-        txtDirectComment = "Open via id";
+        txtDirect = 'https://mail.google.com' + window.location.pathname /* /mail/u/0/ */ + '#all/' + emailId;
+        txtDirectComment = 'Open by id';
     }
    
-    var txtSearch = "https://mail.google.com/mail/#advanced-search/subset=all&has=" + subject + "&within=1d&date=" + dateSearch;
+    var txtSearch = 'https://mail.google.com/mail/#advanced-search/subset=all&has=' + subject + '&within=1d&date=' + dateSearch;
     
-    data.link_raw = "\n\n---\nGmail: <" + txtDirect + "> | <" + txtSearch + '>';
-    data.link_md = "\n\n---\nGmail: "
-        + self.parent.anchorMarkdownify(txtAnchor, txtDirect, txtDirectComment)
-        + " | "
-        + self.parent.anchorMarkdownify("Time", txtSearch, "Advanced search email subject + time")
+    data.link_raw = '(<' + txtDirect + '> | <' + txtSearch + '>)';
+    data.link_md = '('
+        + self.parent.anchorMarkdownify(txtAnchor, txtDirect, txtDirectComment).trim() // don't need leading and trailing spaces
+        + ' | '
+        + self.parent.anchorMarkdownify("Time", txtSearch, "Search by subject + time").trim() // don't need leading and trailing spaces
+        + ')';
         
     
     // email body
@@ -334,8 +333,8 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     
     var selectedText = this.parent.getSelectedText();
 
-    data.body_raw =  from_raw + ":\n\n" + (selectedText || this.parent.markdownify($emailBody1, false, preprocess));
-    data.body_md = from_md + ":\n\n" + (selectedText || this.parent.markdownify($emailBody1, true, preprocess));
+    data.body_raw =  from_raw + ':\n\n' + (selectedText || this.parent.markdownify($emailBody1, false, preprocess));
+    data.body_md = from_md + ':\n\n' + (selectedText || this.parent.markdownify($emailBody1, true, preprocess));
 
     data.attachments = emailAttachments;
 
