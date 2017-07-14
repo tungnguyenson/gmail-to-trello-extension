@@ -4,6 +4,10 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.7.2.3
+----------------
+- Move email search hyperlinks to top of content
+
 Version 2.7.2.2
 ----------------
 - Parse "29. Mai 2017 um 15:18" correctly

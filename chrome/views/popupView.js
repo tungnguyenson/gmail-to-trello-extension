@@ -376,11 +376,11 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         const link_md_k = $gttDesc.attr('gmail-link-md') || '';
         
         const body_k = markdown_k ? body_md_k : body_raw_k;
-        const link_k = useBackLink_k ? (markdown_k ? link_md_k : link_raw_k) : '';
+        const link_k = useBackLink_k ? ((markdown_k ? link_md_k : link_raw_k) + ' ') : '';
 
         const desc_k = self.parent.truncate(body_k, self.MAX_BODY_SIZE - link_k.length, '...');
 
-        $gttDesc.val(desc_k + link_k);
+        $gttDesc.val(link_k + desc_k);
         $gttDesc.change();        
     };
 
@@ -696,11 +696,11 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
     const useBackLink_k = $('#chkBackLink', this.$popup).is(':checked');
 
     const body_k = markdown_k ? data.body_md : data.body_raw;
-    const link_k = useBackLink_k ? (markdown_k ? data.link_md : data.link_raw) : '';
+    const link_k = useBackLink_k ? ((markdown_k ? data.link_md : data.link_raw) + ' ') : '';
     const desc_k = self.parent.truncate(body_k, self.MAX_BODY_SIZE - link_k.length, '...');
 
     $('#gttDesc', this.$popup)
-        .val(desc_k + link_k)
+        .val(link_k + desc_k)
         .attr('gmail-body-raw', data.body_raw || '')
         .attr('gmail-body-md', data.body_md || '')
         .attr('gmail-link-raw', data.link_raw || '')
