@@ -4,6 +4,11 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.7.2.4
+----------------
+- Icon not showing up in toolbar due to other extension icons in toolbar
+- Update gtt_log to have timestamp
+
 Version 2.7.2.3
 ----------------
 - Move email search hyperlinks to top of content

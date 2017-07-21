@@ -27,8 +27,18 @@ var log_g = {
  */
 function gtt_log(data) {
     if (data) {
-        log_g.memory[log_g.count++] = data;
-        if (log_g.count >= log_g.max) {
+        const count_size_k = (log_g.max).toString().length;
+        const counter_k = ('0'.repeat(count_size_k) + (log_g.count).toString()).slice(-count_size_k);
+        const now_k = new Date().toISOString();
+
+        if (typeof data !== 'string') {
+            data = JSON.stringify(data);
+        }
+
+        data = now_k + '.' + counter_k + ' GtT::' + data;
+
+        log_g.memory[log_g.count] = data;
+        if (++log_g.count >= log_g.max) {
             log_g = 0;
         }
         chrome.storage.sync.get('debugMode', function(response) {
@@ -49,19 +59,19 @@ function gtt_log(data) {
  */
  function requestHandler(request, sender, sendResponse) {
     if (request && request.hasOwnProperty('message') && request.message === 'gtt:initialize') {
-        gtt_log('GtT::GlobalInit: '+globalInit.toString());
+        gtt_log('GlobalInit: '+globalInit.toString());
         globalInit = true;
         // enough delay for gmail finishes rendering
-        gtt_log('GtT::tabs.onUpdated - complete');
+        gtt_log('tabs.onUpdated - complete');
         jQuery(document).ready(function() {                    
-            gtt_log('GtT::document.ready');
+            gtt_log('document.ready');
             getGmailObject();
             app.initialize();
         });
         // Was:
         // setTimeout(function() {
         //     jQuery(document).ready(function() {                    
-        //         gtt_log('GtT::document.ready');
+        //         gtt_log('document.ready');
         //         getGmailObject();
         //         app.initialize();
         //     });

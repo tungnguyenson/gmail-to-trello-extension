@@ -24,7 +24,7 @@ GmailToTrello.Model.prototype.init = function() {
 };
 
 GmailToTrello.Model.prototype.initTrello = function() {
-    gtt_log("GtT::initTrello");
+    gtt_log("initTrello");
 
     var self = this;
 
@@ -50,7 +50,7 @@ GmailToTrello.Model.prototype.initTrello = function() {
             scope: {read: true, write: true},
             expiration: 'never',
             success: function(data) {
-                gtt_log('GtT::initTrello: Trello authorization successful');
+                gtt_log('initTrello: Trello authorization successful');
                 // gtt_log(data);
                 self.event.fire('onAuthorized');
                 self.loadTrelloData();
@@ -68,7 +68,7 @@ GmailToTrello.Model.prototype.initTrello = function() {
 };
 
 GmailToTrello.Model.prototype.deauthorizeTrello = function() {
-    gtt_log("GtT::deauthorizeTrello");
+    gtt_log("deauthorizeTrello");
 
     Trello.deauthorize();
     this.isInitialized = false;
@@ -83,7 +83,7 @@ GmailToTrello.Model.prototype.makeAvatarUrl = function(avatarHash) {
 }
 
 GmailToTrello.Model.prototype.loadTrelloData = function() {
-    gtt_log('GtT::loadTrelloData');
+    gtt_log('loadTrelloData');
 
     this.event.fire('onBeforeLoadTrello');
     this.trello.user = null;
@@ -92,7 +92,7 @@ GmailToTrello.Model.prototype.loadTrelloData = function() {
     var self = this;
 
     // get user's info
-    gtt_log('GtT::loadTrelloData: User info');
+    gtt_log('loadTrelloData: User info');
     Trello.get('members/me', {}, function(data) {
         if (!data || !data.hasOwnProperty('id')) {
             return false;
@@ -100,7 +100,7 @@ GmailToTrello.Model.prototype.loadTrelloData = function() {
 
         self.trello.user = data;
 
-        gtt_log('GtT::loadTrelloData: User boards');
+        gtt_log('loadTrelloData: User boards');
         self.trello.boards = null;
         Trello.get('members/me/boards', {
                 'organization': 'true',
@@ -121,7 +121,7 @@ GmailToTrello.Model.prototype.loadTrelloData = function() {
                         validData.push(data[i]);
                     }
                 }
-                // gtt_log('GtT::loadTrelloData: Boards data');
+                // gtt_log('loadTrelloData: Boards data');
                 // gtt_log(JSON.stringify(data));
                 // gtt_log(JSON.stringify(validData));
                 self.trello.boards = validData;
@@ -150,7 +150,7 @@ GmailToTrello.Model.prototype.checkTrelloDataReady = function() {
 
 
 GmailToTrello.Model.prototype.loadTrelloLists = function(boardId) {
-    gtt_log('GtT::loadTrelloLists');
+    gtt_log('loadTrelloLists');
 
     var self = this;
     this.trello.lists = null;
@@ -164,7 +164,7 @@ GmailToTrello.Model.prototype.loadTrelloLists = function(boardId) {
 };
 
 GmailToTrello.Model.prototype.loadTrelloCards = function(listId) {
-    gtt_log('GtT::loadTrelloCards');
+    gtt_log('loadTrelloCards');
 
     var self = this;
     this.trello.cards = null;
@@ -178,7 +178,7 @@ GmailToTrello.Model.prototype.loadTrelloCards = function(listId) {
 };
 
 GmailToTrello.Model.prototype.loadTrelloLabels = function(boardId) {
-    gtt_log('GtT::loadTrelloLabels');
+    gtt_log('loadTrelloLabels');
 
     var self = this;
     this.trello.labels = null;
@@ -192,7 +192,7 @@ GmailToTrello.Model.prototype.loadTrelloLabels = function(boardId) {
 };
 
 GmailToTrello.Model.prototype.loadTrelloMembers = function(boardId) {
-    gtt_log('GtT::loadTrelloMembers');
+    gtt_log('loadTrelloMembers');
 
     var self = this;
     this.trello.members = null;
@@ -282,7 +282,7 @@ GmailToTrello.Model.prototype.Uploader.prototype = {
                 }
                 break;
         default:
-            gtt_log('GtT::submit: ERROR: Got unknown case: ' + position_k || '<empty position>');
+            gtt_log('submit: ERROR: Got unknown case: ' + position_k || '<empty position>');
         }
 
         return pos;
@@ -398,7 +398,7 @@ GmailToTrello.Model.prototype.Uploader.prototype = {
 GmailToTrello.Model.prototype.submit = function() {
     let self = this;
     if (this.newCard === null) {
-        gtt_log('GtT::submit: data is empty');
+        gtt_log('submit: data is empty');
         return false;
     }
 
