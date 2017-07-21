@@ -7,6 +7,7 @@ CHANGE LOG:
 Version 2.7.2.4
 ----------------
 - Icon not showing up in toolbar due to other extension icons in toolbar
+- Update gtt_log to have timestamp
 
 Version 2.7.2.3
 ----------------
