@@ -47,8 +47,7 @@ GmailToTrello.GmailView.prototype.detectToolbar = function() {
     });
     
     if ($toolBarHolder) {
-        gtt_log('GtT::Detected toolBarHolder at: ');
-        gtt_log(JSON.stringify($toolBarHolder));
+        gtt_log('detectToolbar: Detected toolBarHolder at: ' + JSON.stringify($toolBarHolder));
         var $button = $toolBarHolder.find(this.selectors.toolbarButton);
         $toolBar = $button.parent();
     }
@@ -70,7 +69,7 @@ GmailToTrello.GmailView.prototype.detectSplitLayoutMode = function() {
     var $activeGroup = $('.BltHke[role="main"]');
     
     if ($activeGroup.find('.apv').length>0) {
-        gtt_log('GtT::Detected SplitLayout');
+        gtt_log('detectSplitLayoutMode: Detected SplitLayout');
 
         this.layoutMode = this.LAYOUT_SPLIT;
         this.$root = $activeGroup;
@@ -89,7 +88,7 @@ GmailToTrello.GmailView.prototype.detectSplitLayoutMode = function() {
                 });
             });
         });
-        gtt_log('Binded email list click events: '+counter+' items');
+        gtt_log('detectSplitLayoutMode: Binded email list click events: ' + counter + ' items');
         
         return true;
     }
@@ -106,8 +105,7 @@ GmailToTrello.GmailView.prototype.detectEmailOpenningMode = function() {
               && this.$expandedEmails && this.$expandedEmails.length > 0
               && this.$toolBarHolder && this.$toolBarHolder !== null;
     if (result) {
-        gtt_log('GtT::Detected an email is opening');
-        gtt_log(JSON.stringify(this.$expandedEmails));
+        gtt_log('detectEmailOpenningMode: Detected an email is opening: ' + JSON.stringify(this.$expandedEmails));
         
         //bind events
         var counter = 0;
@@ -122,7 +120,7 @@ GmailToTrello.GmailView.prototype.detectEmailOpenningMode = function() {
                 });
             });
         });
-        gtt_log('Binded email threads click events: '+counter+' items');
+        gtt_log('detectEmailOpenningMode: Binded email threads click events: ' + counter + ' items');
 
         this.event.fire('onDetected');
     }
@@ -135,7 +133,7 @@ GmailToTrello.GmailView.prototype.detect = function() {
     var $activeGroup = $('.BltHke[role="main"]');
     
     if ($activeGroup.find('.apv').length > 0) {
-        gtt_log('GtT::Detected SplitLayout');
+        gtt_log('detect: Detected SplitLayout');
 
         this.layoutMode = this.LAYOUT_SPLIT;
         this.$root = $activeGroup;
@@ -160,7 +158,7 @@ GmailToTrello.GmailView.prototype.detectOBSOLETE = function() {
 };
 
 GmailToTrello.GmailView.prototype.parseData = function() {
-    gtt_log('GtT::parseData');
+    gtt_log('parseData');
     if (this.parsingData) {
         return;
     }
@@ -174,7 +172,7 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     } else {
         $viewport = $(this.selectors.viewport, this.$root);
     }
-    gtt_log('GtT::viewport: ' + JSON.stringify($viewport));
+    gtt_log('viewport: ' + JSON.stringify($viewport));
     if ($viewport.length == 0) {
         return;
     }
@@ -260,7 +258,7 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     data.time = timeAttr_k || 'recently';
 
     if (data.time === 'recently') {
-        gtt_log('GtT::time-debug: ' + JSON.stringify({
+        gtt_log('time-debug: ' + JSON.stringify({
             'timeAttr_k': timeAttr_k,
             /*
             'timeCorrected_k': timeCorrected_k,
