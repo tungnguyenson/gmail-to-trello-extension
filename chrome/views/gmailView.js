@@ -19,7 +19,7 @@ GmailToTrello.GmailView = function(parent) {
     this.selectors = {
         /* selectors mapping, modify here when gmail's markup changes */
         toolbarButton: '.G-Ni:first',
-        toolBarHolder: '.G-atb:first',
+        toolBarHolder: '.G-atb',
         emailName: '.gD',
         emailAddress: '.gD', // Was: '.go', now using same name property
         emailSubject: '.hP',
