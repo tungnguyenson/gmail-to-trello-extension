@@ -6,7 +6,9 @@
   "description": "Gmail to Trello integration. Create new Trello cards from Google mail threads with backlinks.",
   "icons": {
     "16": "images/icon-16.png",
-    "48": "images/icon-48.png"
+    "48": "images/icon-48.png",
+    "64": "images/icon-64.png",
+    "128": "images/icon-128.png"
   },
   "page_action": {
     "default_icon": "images/icon-16.png",

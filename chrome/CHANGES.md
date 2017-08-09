@@ -9,7 +9,8 @@ Version 2.7.2.5
 - Additional debugging code in toolbar and labels code
 - Report of GtT button not appearing when Streak and RightInbox, some tweaks to button positioning code to hopefully circumvent problem.
 - Add info message to options screen
-- Initial cut at button for chrome.browsingData.remove.
+- Initial cut at button for chrome.browsingData.remove
+- Update manifest with 64 and 128 icons
 
 Version 2.7.2.4
 ----------------
