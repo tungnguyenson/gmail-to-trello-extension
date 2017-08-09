@@ -4,6 +4,13 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.7.2.5
+----------------
+- Additional debugging code in toolbar and labels code
+- Report of GtT button not appearing when Streak and RightInbox, some tweaks to button positioning code to hopefully circumvent problem.
+- Add info message to options screen
+- Initial cut at button for chrome.browsingData.remove.
+
 Version 2.7.2.4
 ----------------
 - Icon not showing up in toolbar due to other extension icons in toolbar
