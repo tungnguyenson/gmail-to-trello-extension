@@ -1,7 +1,7 @@
 {
   "name": "Gmail-to-Trello",
   "short_name": "GtT",
-  "version": "2.7.2.4",
+  "version": "2.7.2.5",
   "manifest_version": 2,
   "description": "Gmail to Trello integration. Create new Trello cards from Google mail threads with backlinks.",
   "icons": {
@@ -10,7 +10,7 @@
   },
   "page_action": {
     "default_icon": "images/icon-16.png",
-    "default_title": "Gmail-to-Trello",
+    "default_title": "Gmail-to-Trello options",
     "default_popup": "options.html"
   },
   "commands": {
@@ -64,13 +64,15 @@
   "offline_enabled": false,
   "permissions": [
     "tabs", 
+    "storage",
+    "identity",
+    "browsingData",
+    "contextMenus",
     "https://*.trello.com/*",
     "https://*.google.com/*",
     "https://www.googleapis.com/",
     "https://www.google-analytics.com/",
-    "https://*.googleusercontent.com/*",
-    "storage",
-    "identity"   
+    "https://*.googleusercontent.com/*"
   ],
   "options_page": "options.html",
   "oauth2": {

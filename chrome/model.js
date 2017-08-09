@@ -157,6 +157,7 @@ GmailToTrello.Model.prototype.loadTrelloLists = function(boardId) {
 
     Trello.get('boards/' + boardId, {lists: "open", list_fields: "name"}, function(data) {
         self.trello.lists = data.lists;
+        gtt_log('loadTrelloLists: lists:' + JSON.stringify(self.trello.lists));
         self.event.fire('onLoadTrelloListSuccess');
     }, function failure(data) {
             self.event.fire('onAPIFailure', {data:data});
@@ -171,6 +172,7 @@ GmailToTrello.Model.prototype.loadTrelloCards = function(listId) {
 
     Trello.get('lists/' + listId + '/cards', {fields: "name,pos,idMembers,idLabels"}, function(data) {
         self.trello.cards = data;
+        gtt_log('loadTrelloCards: cards:' + JSON.stringify(self.trello.cards));
         self.event.fire('onLoadTrelloCardsSuccess');
     }, function failure(data) {
             self.event.fire('onAPIFailure', {data:data});
@@ -185,6 +187,7 @@ GmailToTrello.Model.prototype.loadTrelloLabels = function(boardId) {
 
     Trello.get('boards/' + boardId + '/labels', {fields: "color,name"}, function(data) {
         self.trello.labels = data;
+        gtt_log('loadTrelloLabels: labels:' + JSON.stringify(self.trello.labels));
         self.event.fire('onLoadTrelloLabelsSuccess');
     }, function failure(data) {
         self.event.fire('onAPIFailure', {data:data});
@@ -211,6 +214,9 @@ GmailToTrello.Model.prototype.loadTrelloMembers = function(boardId) {
             'avatarHash': me.avatarHash,
             'fullName': me.fullName
         });
+
+        gtt_log('loadTrelloMembers: members:' + JSON.stringify(self.trello.members));
+
         self.event.fire('onLoadTrelloMembersSuccess');
     }, function failure(data) {
         self.event.fire('onAPIFailure', {data:data});

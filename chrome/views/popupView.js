@@ -766,6 +766,32 @@ GmailToTrello.PopupView.prototype.showMessage = function(parent, text) {
         parent.hideMessage();
     });
 
+    $('#clearCacheNow', this.$popupMessage).click(function() {
+        chrome.browsingData.remove({
+            "since": 0,
+            "originTypes": {
+                "extension": true
+                }
+            }, {
+            "appcache": true,
+            "cache": true,
+            "cookies": true,
+            "downloads": false,
+            "fileSystems": false,
+            "formData": false,
+            "history": false,
+            "indexedDB": false,
+            "localStorage": false,
+            "serverBoundCertificates": false,
+            "pluginData": true,
+            "passwords": false,
+            "webSQL": false
+            }, function() {
+                alert('Cache cleared.');
+                }
+            );
+    });
+
     this.$popupMessage.show();
 };
 

@@ -19,7 +19,7 @@ GmailToTrello.GmailView = function(parent) {
     this.selectors = {
         /* selectors mapping, modify here when gmail's markup changes */
         toolbarButton: '.G-Ni:first',
-        toolBarHolder: '.G-atb',
+        toolBarHolder: '.G-atb:first',
         emailName: '.gD',
         emailAddress: '.gD', // Was: '.go', now using same name property
         emailSubject: '.hP',
@@ -47,19 +47,17 @@ GmailToTrello.GmailView.prototype.detectToolbar = function() {
     });
     
     if ($toolBarHolder) {
-        gtt_log('detectToolbar: Detected toolBarHolder at: ' + JSON.stringify($toolBarHolder));
         var $button = $toolBarHolder.find(this.selectors.toolbarButton);
         $toolBar = $button.parent();
+        gtt_log('detectToolbar: toolBarHolder.button: ' + JSON.stringify($button));
     }
 
     this.$toolBar = $toolBar;
     this.$toolBarHolder = $toolBarHolder;
     
     
-    //gtt_log ($toolBarHolder);
-    //gtt_log($toolBarHolder.find(this.selectors.toolbarButton));
-    //gtt_log ($toolBar);  
-    //return {toolBarHolder:$toolBarHolder, toolBar:$toolBar};
+    gtt_log ('detectToolbar: toolBarHolder:' + JSON.stringify($toolBarHolder));
+    gtt_log ('detectToolbar: toolBar:' + JSON.stringify($toolBar));
 };
 
 GmailToTrello.GmailView.prototype.detectSplitLayoutMode = function() {
@@ -81,7 +79,7 @@ GmailToTrello.GmailView.prototype.detectSplitLayoutMode = function() {
             counter++;
             $(this).attr('gtt_event', 1).click(function(){
                 WaitCounter.start('emailclick', 500, 5, function() {
-                    if (self.detectEmailOpenningMode()) {
+                    if (self.detectEmailOpeningMode()) {
                         //this.event.fire('onEmailChanged');
                         WaitCounter.stop('emailclick');
                     }
@@ -96,7 +94,7 @@ GmailToTrello.GmailView.prototype.detectSplitLayoutMode = function() {
     return false;
 };
 
-GmailToTrello.GmailView.prototype.detectEmailOpenningMode = function() {
+GmailToTrello.GmailView.prototype.detectEmailOpeningMode = function() {
     
     var self = this;
     this.$expandedEmails = this.$root.find(this.selectors.expandedEmails);
@@ -105,7 +103,7 @@ GmailToTrello.GmailView.prototype.detectEmailOpenningMode = function() {
               && this.$expandedEmails && this.$expandedEmails.length > 0
               && this.$toolBarHolder && this.$toolBarHolder !== null;
     if (result) {
-        gtt_log('detectEmailOpenningMode: Detected an email is opening: ' + JSON.stringify(this.$expandedEmails));
+        gtt_log('detectEmailOpeningMode: Detected an email is opening: ' + JSON.stringify(this.$expandedEmails));
         
         //bind events
         var counter = 0;
@@ -113,14 +111,14 @@ GmailToTrello.GmailView.prototype.detectEmailOpenningMode = function() {
             counter++;
             $(this).attr('gtt_event', 1).click(function(){
                 WaitCounter.start('emailclick', 500, 5, function() {
-                    if (self.detectEmailOpenningMode()) {
+                    if (self.detectEmailOpeningMode()) {
                         //this.event.fire('onEmailChanged');
                         WaitCounter.stop('emailclick');
                     }
                 });
             });
         });
-        gtt_log('detectEmailOpenningMode: Binded email threads click events: ' + counter + ' items');
+        gtt_log('detectEmailOpeningMode: Binded email threads click events: ' + counter + ' items');
 
         this.event.fire('onDetected');
     }
@@ -152,7 +150,7 @@ GmailToTrello.GmailView.prototype.detectOBSOLETE = function() {
     if (!this.detectSplitLayoutMode()) {
         this.$root = $('body');
         this.detectToolbar();
-        this.detectEmailOpenningMode();
+        this.detectEmailOpeningMode();
     }        
 
 };

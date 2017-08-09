@@ -11,7 +11,10 @@
 - [done] Remove console.log() to use our log()
 - [done] Move attachment upload logic to model.js
 - https://stackoverflow.com/questions/14149209/read-the-version-from-manifest-json: chrome.runtime.getManifest().version and ask to reload on new version
-- 
+- https://developer.chrome.com/extensions/contextMenus
+- https://github.com/brainbreaker/clearData-WebExtension-Demo
+- https://github.com/bytepicker/Thrasher
+- https://developer.chrome.com/extensions/management#method-getself
 
 content-script.js:26 validateData: board:592d43422c9d39fe0cb22aea list:592d434b4eb392d5eb45535a title:[EXTERNAL] Re: Technischer Kundendienst / Tools für Entwickler - Integration [Incident: 170508-031288] [Incident: 170527-002190] desc:5041
 content-script.js:26 parsing data...
