@@ -22,10 +22,6 @@ GmailToTrello.PopupView = function(parent) {
         }
     };
 
-    // process
-    this.waitingHiddenThread = false;
-    this.waitingHiddenThreadProcId = null;
-    
     // html pieces
     this.html = {};
 
@@ -69,9 +65,9 @@ GmailToTrello.PopupView.prototype.init = function() {
         }
 
         this.html['add_to_trello'] =
-            '<div id="gttButton" class="G-Ni T-I J-J5-Ji ar7 nf T-I-ax7 L3"'
+            '<div id="gttButton" class="T-I J-J5-Ji ar7 nf T-I-ax7 L3"'
               + 'data-tooltip="Add this Gmail to Trello">'
-              + '<div aria-haspopup="true" role="button" class="G-Ni J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3" tabindex="0">'
+              + '<div aria-haspopup="true" role="button" class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3" tabindex="0">'
               + img
               + '<div class="G-asx T-I-J3 J-J5-Ji">&nbsp;</div></div></div>';
     }
@@ -489,7 +485,6 @@ GmailToTrello.PopupView.prototype.hidePopup = function() {
         $(document).off(self.EVENT_LISTENER); // Turns off everything in namespace
         self.$popup.hide();
     }
-    self.stopWaitingHiddenThread();
 }
 
 GmailToTrello.PopupView.prototype.popupVisible = function() {
@@ -1040,14 +1035,6 @@ GmailToTrello.PopupView.prototype.updateMembers = function() {
     }
 
     $gtt.show();
-};
-
-GmailToTrello.PopupView.prototype.stopWaitingHiddenThread = function() {
-    if (this.waitingHiddenThreadProcId !== null) {
-        this.waitingHiddenThread = false;
-        this.waitingHiddenThreadRetries = 0;
-        clearInterval(this.waitingHiddenThreadProcId);
-    }
 };
 
 GmailToTrello.PopupView.prototype.validateData = function() {

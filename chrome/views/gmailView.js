@@ -40,21 +40,20 @@ GmailToTrello.GmailView.prototype.detectToolbar = function() {
     var $toolBar = null;
     var $toolBarHolder = null;
     $(this.selectors.toolBarHolder, this.$root).each(function() {
-        if (this.clientWidth > 0) {
+        if (this.clientWidth > 0 && !$toolBarHolder) {
             $toolBarHolder = $(this);
-            //gtt_log(this);
+            gtt_log('detectToolbar: toolBarHolder.this:' + JSON.stringify(this));
         }
     });
     
     if ($toolBarHolder) {
         var $button = $toolBarHolder.find(this.selectors.toolbarButton);
         $toolBar = $button.parent();
-        gtt_log('detectToolbar: toolBarHolder.button: ' + JSON.stringify($button));
+        gtt_log('detectToolbar: toolBarHolder.button:' + JSON.stringify($button));
     }
 
     this.$toolBar = $toolBar;
     this.$toolBarHolder = $toolBarHolder;
-    
     
     gtt_log ('detectToolbar: toolBarHolder:' + JSON.stringify($toolBarHolder));
     gtt_log ('detectToolbar: toolBar:' + JSON.stringify($toolBar));
