@@ -36,7 +36,81 @@ GmailToTrello.GmailView = function(parent) {
     };
 };
 
+GmailToTrello.GmailView.prototype.detect = function() {
+    var self = this;
+
+/*
+    if (!this.$toolbarButtons) {
+        this.$toolbarButtons = $('.G-Ni.J-J5-Ji,.G-asx', this.$root).not('[id="gttButton"], [id="gttDownArrow"]');
+        if (this.$toolbarButtons) {
+            $(this.$toolbarButtons).mouseup(function() { // (this.$layoutButton, 'mouseup', function() {
+                self.detect();
+            }).click(function () {
+                self.detect();
+            });
+        }
+    }
+
+    (function() {
+    var ev = new $.Event('display'), // 'style'?
+        orig = $.fn.css;
+    $.fn.css = function() {
+        var ret = orig.apply(this, arguments);
+        $(this).trigger(ev);
+        self.detect();
+        return ret; // must include this
+    }
+    })();
+*/
+
+    var $activeGroup = $('.BltHke[role="main"]');
+    
+    if ($activeGroup.find('.apv').length > 0) {
+        gtt_log('detect: Detected SplitLayout');
+
+        this.layoutMode = this.LAYOUT_SPLIT;
+        this.$root = $activeGroup;
+    } else {
+        this.layoutMode = this.LAYOUT_DEFAULT;
+        this.$root = $('body');
+    }
+
+    if (this.detectToolbar()) {
+        this.event.fire('onDetected');
+    } else {
+        this.detectEmailOpeningMode();
+    }
+};
+
+GmailToTrello.GmailView.prototype.detectOBSOLETE = function() {
+    //this.detectRoot();
+
+    if (!this.detectSplitLayoutModeOBSOLETE()) {
+        this.$root = $('body');
+        this.detectToolbar();
+        this.detectEmailOpeningMode();
+    }        
+
+};
+
 GmailToTrello.GmailView.prototype.detectToolbar = function() {
+    var $toolBarHolder = $("[gh='mtb']", this.$root);
+    var $toolBar = $toolBarHolder || null;
+    
+    while($($toolBar).children().length === 1){
+        $toolBar = $($toolBar).children().first();
+    }
+
+    this.$toolBar = $toolBar;
+    this.$toolBarHolder = $toolBarHolder;
+    
+    gtt_log ('detectToolbar: toolBarHolder:' + JSON.stringify($toolBarHolder));
+    gtt_log ('detectToolbar: toolBar:' + JSON.stringify($toolBar));
+
+    return ($toolBarHolder && $toolBar);
+};
+
+GmailToTrello.GmailView.prototype.detectToolbarOBSOLETE = function() {
     var $toolBar = null;
     var $toolBarHolder = null;
     $(this.selectors.toolBarHolder, this.$root).each(function() {
@@ -59,9 +133,13 @@ GmailToTrello.GmailView.prototype.detectToolbar = function() {
     gtt_log ('detectToolbar: toolBar:' + JSON.stringify($toolBar));
 };
 
-GmailToTrello.GmailView.prototype.detectSplitLayoutMode = function() {
-
+GmailToTrello.GmailView.prototype.detectSplitLayoutModeOBSOLETE = function() {
     var self = this;
+
+    var $layoutButton = $('#1k8', this.$root);
+    $($layoutButton).click(function() {
+        self.detect();
+    });
 
     var $activeGroup = $('.BltHke[role="main"]');
     
@@ -94,7 +172,6 @@ GmailToTrello.GmailView.prototype.detectSplitLayoutMode = function() {
 };
 
 GmailToTrello.GmailView.prototype.detectEmailOpeningMode = function() {
-    
     var self = this;
     this.$expandedEmails = this.$root.find(this.selectors.expandedEmails);
     
@@ -124,34 +201,6 @@ GmailToTrello.GmailView.prototype.detectEmailOpeningMode = function() {
     
     return result;
     
-};
-
-GmailToTrello.GmailView.prototype.detect = function() {
-    var $activeGroup = $('.BltHke[role="main"]');
-    
-    if ($activeGroup.find('.apv').length > 0) {
-        gtt_log('detect: Detected SplitLayout');
-
-        this.layoutMode = this.LAYOUT_SPLIT;
-        this.$root = $activeGroup;
-    } else {
-        this.layoutMode = this.LAYOUT_DEFAULT;
-        this.$root = $('body');
-    }
-
-    this.detectToolbar();
-    this.event.fire('onDetected');
-};
-
-GmailToTrello.GmailView.prototype.detectOBSOLETE = function() {
-    //this.detectRoot();
-
-    if (!this.detectSplitLayoutMode()) {
-        this.$root = $('body');
-        this.detectToolbar();
-        this.detectEmailOpeningMode();
-    }        
-
 };
 
 GmailToTrello.GmailView.prototype.parseData = function() {
