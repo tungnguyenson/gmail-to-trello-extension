@@ -15,17 +15,22 @@
  * Variable for debugging purpose only
  */
 var globalInit = false;
-var log_g = {
-    memory: [],
-    count: 0,
-    max: 1000
-};
 
 /**
  * Global log. A wrapper for console.log, depend on logEnabled flag
  * @param  {any} data data to write log
  */
 function gtt_log(data) {
+    if (!window.hasOwnProperty('gtt_log_g')) {
+        window.gtt_log_g = {
+            memory: [],
+            count: 0,
+            max: 1000
+        };
+    }
+
+    var log_g = window.gtt_log_g;
+
     if (data) {
         const count_size_k = (log_g.max).toString().length;
         const counter_k = ('0'.repeat(count_size_k) + (log_g.count).toString()).slice(-count_size_k);
