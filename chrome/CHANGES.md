@@ -4,7 +4,7 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
-Verison 2.7.2.7
+Version 2.7.2.7
 ----------------
 - Remove G-Ni from GtT icon
 - Add timer to check every 2 seconds for GtT button showing
