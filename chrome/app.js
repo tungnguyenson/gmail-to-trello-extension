@@ -130,8 +130,15 @@ GmailToTrello.App.prototype.bindEvents = function() {
         self.model.deauthorizeTrello();
         self.popupView.clearBoard();
     });
-  
-    this.gmailView.event.addListener('onDetected', function(){
+
+    this.popupView.event.addListener('detectButton', function () {
+        self.gmailView.preDetect();
+        self.popupView.$toolBar = self.gmailView.$toolBar;
+        self.popupView.$toolBarHolder = self.gmailView.$toolBarHolder;
+        self.popupView.confirmPopup();      
+    });
+
+    this.gmailView.event.addListener('onDetected', function() {
         self.popupView.$toolBar = self.gmailView.$toolBar;
         self.popupView.$toolBarHolder = self.gmailView.$toolBarHolder;
         self.popupView.init();

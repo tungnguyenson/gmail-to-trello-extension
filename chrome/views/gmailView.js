@@ -36,7 +36,7 @@ GmailToTrello.GmailView = function(parent) {
     };
 };
 
-GmailToTrello.GmailView.prototype.detect = function() {
+GmailToTrello.GmailView.prototype.preDetect = function() {
     var self = this;
 
 /*
@@ -75,7 +75,16 @@ GmailToTrello.GmailView.prototype.detect = function() {
         this.$root = $('body');
     }
 
-    if (this.detectToolbar()) {
+    return this.detectToolbar();
+};
+
+GmailToTrello.GmailView.prototype.detect = function() {
+    var self = this;
+
+    const pre_k = this.preDetect();
+    const pre_valid_k = pre_k.length > 0;
+
+    if (pre_valid_k) {
         this.event.fire('onDetected');
     } else {
         this.detectEmailOpeningMode();
@@ -177,7 +186,7 @@ GmailToTrello.GmailView.prototype.detectEmailOpeningMode = function() {
     
     var result = this.$toolBar && this.$toolBar.length > 0
               && this.$expandedEmails && this.$expandedEmails.length > 0
-              && this.$toolBarHolder && this.$toolBarHolder !== null;
+              && this.$toolBarHolder && this.$toolBarHolder.length > 0;
     if (result) {
         gtt_log('detectEmailOpeningMode: Detected an email is opening: ' + JSON.stringify(this.$expandedEmails));
         

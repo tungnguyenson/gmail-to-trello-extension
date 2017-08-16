@@ -52,37 +52,52 @@ GmailToTrello.PopupView.prototype.init = function() {
     }
 
     // inject a button & a popup
+    this.confirmPopup();
+    this.parent.loadSettings(this);
 
-    if (this.html && this.html['add_to_trello'] && this.html['add_to_trello'].length > 1) {
-       gtt_log('PopupView:init: add_to_trello_html already exists');
-    } else {
-        var img = 'GtT';
-        
-        if ($('div.asl.T-I-J3.J-J5-Ji', this.$toolBar).length > 0) {
-            img = '<img class="f tk3N6e-I-J3" height="13" width="13" src="'
-              + chrome.extension.getURL('images/icon-13.jpg')
-              + '" />';
+    setInterval(function() {
+        self.event.fire('detectButton');
+    }, 1000);
+};
+
+GmailToTrello.PopupView.prototype.confirmPopup = function() {
+    gtt_log('PopupView:confirmPopup');
+    var self = this;
+
+    if ($('#gttButton').length < 1) {
+        if (this.html && this.html['add_to_trello'] && this.html['add_to_trello'].length > 1) {
+           gtt_log('PopupView:confirmPopup: add_to_trello_html already exists');
+        } else {
+            var img = 'GtT';
+            
+            if ($('div.asl.T-I-J3.J-J5-Ji', this.$toolBar).length > 0) {
+                img = '<img class="f tk3N6e-I-J3" height="13" width="13" src="'
+                  + chrome.extension.getURL('images/icon-13.jpg')
+                  + '" />';
+            }
+
+            this.html['add_to_trello'] =
+                '<div id="gttButton" class="T-I J-J5-Ji ar7 nf T-I-ax7 L3" ' // "lS T-I-ax7 ar7"
+                  + 'data-tooltip="Add this Gmail to Trello">'
+                  + '<div aria-haspopup="true" role="button" class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3" tabindex="0">' // class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3">' // 
+                  + img
+                  + '<div id="gttDownArrow" class="G-asx T-I-J3 J-J5-Ji">&nbsp;</div></div></div>';
         }
-
-        this.html['add_to_trello'] =
-            '<div id="gttButton" class="T-I J-J5-Ji ar7 nf T-I-ax7 L3" ' // "lS T-I-ax7 ar7"
-              + 'data-tooltip="Add this Gmail to Trello">'
-              + '<div aria-haspopup="true" role="button" class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3" tabindex="0">' // class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3">' // 
-              + img
-              + '<div id="gttDownArrow" class="G-asx T-I-J3 J-J5-Ji">&nbsp;</div></div></div>';
+        $(this.$toolBar).append(this.html['add_to_trello']);
     }
-    this.$toolBar.append(this.html['add_to_trello']);
 
-    if (this.html && this.html['popup'] && this.html['popup'].length > 1) {
-        this.$toolBar.append(this.html['popup']);
-        this.parent.loadSettings(this);
-    } else {
-        $.get(chrome.extension.getURL('views/popupView.html'), function(data) {
-            // data = self.parent.replacer(data, {'jquery-ui-css': chrome.extension.getURL('lib/jquery-ui-1.12.1.min.css')}); // OBSOLETE (Ace@2017.06.09): Already loaded by manifest
-            self.html['popup'] = data;
-            self.$toolBar.append(data);
-            self.parent.loadSettings(self);
-        });
+    if ($('#gttPopup').length < 1) {
+        if (this.html && this.html['popup'] && this.html['popup'].length > 1) {
+            $(this.$toolBar).append(this.html['popup']);
+            // this.parent.loadSettings(this);
+        } else {
+            $.get(chrome.extension.getURL('views/popupView.html'), function(data) {
+                // data = self.parent.replacer(data, {'jquery-ui-css': chrome.extension.getURL('lib/jquery-ui-1.12.1.min.css')}); // OBSOLETE (Ace@2017.06.09): Already loaded by manifest
+                self.html['popup'] = data;
+                $(self.$toolBar).append(data);
+                // self.parent.loadSettings(self);
+            });
+        }
     }
 };
 
@@ -160,8 +175,10 @@ GmailToTrello.PopupView.prototype.detectPopup = function() {
         }
         return true;
     }
-    else
+    else {
+        this.event.fire('detectButton');
         return false;
+    }
 
     //return $('#gttPopup').length>0;
 };
