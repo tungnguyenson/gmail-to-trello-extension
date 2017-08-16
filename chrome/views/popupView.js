@@ -43,17 +43,12 @@ GmailToTrello.PopupView.prototype.init = function() {
     gtt_log('PopupView:init');
     var self = this;
 
-    //check if already init
-    if (this.detectPopup()) 
-        return true;
-
     if (!this.$toolBar) {
         return; // button not available yet
     }
 
     // inject a button & a popup
     this.confirmPopup();
-    this.parent.loadSettings(this);
 
     setInterval(function() {
         self.event.fire('detectButton');
@@ -63,8 +58,13 @@ GmailToTrello.PopupView.prototype.init = function() {
 GmailToTrello.PopupView.prototype.confirmPopup = function() {
     var self = this;
 
-    if ($('#gttButton').length < 1) {
-        if (this.html && this.html['add_to_trello'] && this.html['add_to_trello'].length > 1) {
+    var needInit = false;
+
+    var $button = $('#gttButton', this.$toolBar),
+        $popup = $('#gttPopup', this.$toolBar);
+
+    if ($button.length < 1) {
+        if (this.html && this.html['add_to_trello'] && this.html['add_to_trello'].length > 0) {
            gtt_log('PopupView:confirmPopup: add_to_trello_html already exists');
         } else {
             var img = 'GtT';
@@ -82,21 +82,37 @@ GmailToTrello.PopupView.prototype.confirmPopup = function() {
                   + img
                   + '<div id="gttDownArrow" class="G-asx T-I-J3 J-J5-Ji">&nbsp;</div></div></div>';
         }
-        $(this.$toolBar).append(this.html['add_to_trello']);
+        this.$toolBar.append(this.html['add_to_trello']);
+        needInit = true;
+    } else {
+        gtt_log('detectPopup: Found Button at: ' + JSON.stringify($button));
+        if ($button[0].clientWidth <= 0) {
+            gtt_log('detectPopup: Button is in an inactive region. Moving...');
+            //relocate
+            $button.appendTo(this.$toolBar);
+            $popup.appendTo(this.$toolBar);
+        }
     }
 
-    if ($('#gttPopup').length < 1) {
-        if (this.html && this.html['popup'] && this.html['popup'].length > 1) {
-            $(this.$toolBar).append(this.html['popup']);
-            // this.parent.loadSettings(this);
+    if (needInit || $popup.length < 1) {
+        if (this.html && this.html['popup'] && this.html['popup'].length > 0) {
+            this.$toolBar.append(this.html['popup']);
+            needInit = true;
         } else {
+            needInit = false;
             $.get(chrome.extension.getURL('views/popupView.html'), function(data) {
                 // data = self.parent.replacer(data, {'jquery-ui-css': chrome.extension.getURL('lib/jquery-ui-1.12.1.min.css')}); // OBSOLETE (Ace@2017.06.09): Already loaded by manifest
                 self.html['popup'] = data;
-                $(self.$toolBar).append(data);
-                // self.parent.loadSettings(self);
+                self.$toolBar.append(data);
+                self.parent.loadSettings(self); // Calls init_popup
             });
         }
+    } else if ($popup[0].clientWidth > 0) {
+        gtt_log('detectPopup: popup.width:' + $popup[0].clientWidth);
+    }
+
+    if (needInit) {
+        this.parent.loadSettings(this); // Calls init_popup
     }
 };
 
@@ -154,10 +170,10 @@ GmailToTrello.PopupView.prototype.init_popup = function() {
     this.isInitialized = true;
 };
 
-GmailToTrello.PopupView.prototype.detectPopup = function() {
+GmailToTrello.PopupView.prototype.detectPopupOBSOLETE = function() {
     //detect duplicate toolBar
-    var $button = $('#gttButton');
-    var $popup = $('#gttPopup');
+    var $button = $('#gttButton', this.$toolBar);
+    var $popup = $('#gttPopup', this.$toolBar);
     if ($button.length > 0) {
         gtt_log('detectPopup: Found Button at: ' + JSON.stringify($button));
         if ($button[0].clientWidth <= 0) {
@@ -169,13 +185,13 @@ GmailToTrello.PopupView.prototype.detectPopup = function() {
         }
             // update when visible
         if ($popup[0].clientWidth > 0) {
-            gtt_log('detectPopup: popup width:' + $popup[0].clientWidth + ' visible:' + JSON.stringify($popup[0]));
-            this.event.fire('onRequestUpdateGmailData');
+            gtt_log('detectPopup: popup.width:' + $popup[0].clientWidth);
+            // this.event.fire('onRequestUpdateGmailData');
         }
         return true;
     }
     else {
-        this.event.fire('detectButton');
+        // this.event.fire('detectButton');
         return false;
     }
 
@@ -373,7 +389,6 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
 
     $('#gttTitle', this.$popup).change(function() { self.validateData() });
     $('#gttDesc', this.$popup).change(function() { self.validateData() });
-
 
     var update_body = function() {
         const useBackLink_k = $('#chkBackLink', self.$popup).is(':checked');

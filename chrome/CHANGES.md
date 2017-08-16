@@ -4,6 +4,10 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.7.2.8
+----------------
+- Call init after button disappear
+
 Version 2.7.2.7
 ----------------
 - Remove G-Ni from GtT icon
