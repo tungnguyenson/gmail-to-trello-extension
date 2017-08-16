@@ -7,6 +7,8 @@ CHANGE LOG:
 Verison 2.7.2.7
 ----------------
 - Remove G-Ni from GtT icon
+- Add timer to check every 2 seconds for GtT button showing
+- Use gh='mtb' to find toolbar
 
 Version 2.7.2.6
 ----------------

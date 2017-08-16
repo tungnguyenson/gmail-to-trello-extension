@@ -57,11 +57,10 @@ GmailToTrello.PopupView.prototype.init = function() {
 
     setInterval(function() {
         self.event.fire('detectButton');
-    }, 1000);
+    }, 2000);
 };
 
 GmailToTrello.PopupView.prototype.confirmPopup = function() {
-    gtt_log('PopupView:confirmPopup');
     var self = this;
 
     if ($('#gttButton').length < 1) {

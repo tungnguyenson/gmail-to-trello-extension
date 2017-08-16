@@ -113,9 +113,6 @@ GmailToTrello.GmailView.prototype.detectToolbar = function() {
     this.$toolBar = $toolBar;
     this.$toolBarHolder = $toolBarHolder;
     
-    gtt_log ('detectToolbar: toolBarHolder:' + JSON.stringify($toolBarHolder));
-    gtt_log ('detectToolbar: toolBar:' + JSON.stringify($toolBar));
-
     return ($toolBarHolder && $toolBar);
 };
 
