@@ -6,7 +6,9 @@ CHANGE LOG:
 
 Version 2.7.2.8
 ----------------
-- Call init after button disappear
+- Call pre-init after button disappear
+- Semi-final jQuery UI resizing (not quite right for normal state, works okay for list state)
+- Show version number in options panel (prep for noticing version change and prompting to reload)
 
 Version 2.7.2.7
 ----------------

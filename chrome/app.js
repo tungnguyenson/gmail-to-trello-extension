@@ -149,12 +149,12 @@ GmailToTrello.App.prototype.bindEvents = function() {
 GmailToTrello.App.prototype.updateData = function() {
     var self = this;
 
- if (self.model.trello.user !== null && self.model.trello.boards !== null) {
-        self.popupView.bindData(self.model);  
-        self.gmailView.parsingData = false;
-        self.model.gmail = self.gmailView.parseData();
-        self.popupView.bindGmailData(self.model.gmail);
+    if (self.model.trello.user !== null && self.model.trello.boards !== null) {
+        self.popupView.bindData(self.model);
     }
+    self.gmailView.parsingData = false;
+    self.model.gmail = self.gmailView.parseData();
+    self.popupView.bindGmailData(self.model.gmail);
 };
 
 GmailToTrello.App.prototype.initialize = function() {

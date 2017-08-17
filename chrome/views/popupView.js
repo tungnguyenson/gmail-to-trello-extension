@@ -56,12 +56,10 @@ GmailToTrello.PopupView.prototype.init = function() {
 };
 
 GmailToTrello.PopupView.prototype.confirmPopup = function() {
-    var self = this;
-
-    var needInit = false;
-
-    var $button = $('#gttButton', this.$toolBar),
-        $popup = $('#gttPopup', this.$toolBar);
+    var self = this,
+        needInit = false,
+        $button = $('#gttButton'),
+        $popup = $('#gttPopup');
 
     if ($button.length < 1) {
         if (this.html && this.html['add_to_trello'] && this.html['add_to_trello'].length > 0) {
@@ -85,9 +83,9 @@ GmailToTrello.PopupView.prototype.confirmPopup = function() {
         this.$toolBar.append(this.html['add_to_trello']);
         needInit = true;
     } else {
-        gtt_log('detectPopup: Found Button at: ' + JSON.stringify($button));
+        gtt_log('confirmPopup: Found Button at: ' + JSON.stringify($button));
         if ($button[0].clientWidth <= 0) {
-            gtt_log('detectPopup: Button is in an inactive region. Moving...');
+            gtt_log('confirmPopup: Button is in an inactive region. Moving...');
             //relocate
             $button.appendTo(this.$toolBar);
             $popup.appendTo(this.$toolBar);
@@ -108,7 +106,7 @@ GmailToTrello.PopupView.prototype.confirmPopup = function() {
             });
         }
     } else if ($popup[0].clientWidth > 0) {
-        gtt_log('detectPopup: popup.width:' + $popup[0].clientWidth);
+        gtt_log('confirmPopup: popup.width:' + $popup[0].clientWidth);
     }
 
     if (needInit) {
@@ -157,8 +155,8 @@ GmailToTrello.PopupView.prototype.centerPopup = function(useWidth) {
 };
 
 GmailToTrello.PopupView.prototype.init_popup = function() {
-    this.$gttButton = $('#gttButton', this.$toolBar);
-    this.$popup = $('#gttPopup', this.$toolBar);
+    this.$gttButton = $('#gttButton');
+    this.$popup = $('#gttPopup');
 
     this.$popupMessage = $('.popupMsg', this.$popup);
     this.$popupContent = $('.content', this.$popup);
@@ -170,40 +168,26 @@ GmailToTrello.PopupView.prototype.init_popup = function() {
     this.isInitialized = true;
 };
 
-GmailToTrello.PopupView.prototype.detectPopupOBSOLETE = function() {
-    //detect duplicate toolBar
-    var $button = $('#gttButton', this.$toolBar);
-    var $popup = $('#gttPopup', this.$toolBar);
-    if ($button.length > 0) {
-        gtt_log('detectPopup: Found Button at: ' + JSON.stringify($button));
-        if ($button[0].clientWidth <= 0) {
-            gtt_log('detectPopup: Button is in an inactive region. Moving...');
-            //relocate
-            $button.appendTo(this.$toolBar);
-            $popup.appendTo(this.$toolBar);
-
-        }
-            // update when visible
-        if ($popup[0].clientWidth > 0) {
-            gtt_log('detectPopup: popup.width:' + $popup[0].clientWidth);
-            // this.event.fire('onRequestUpdateGmailData');
-        }
-        return true;
-    }
-    else {
-        // this.event.fire('detectButton');
-        return false;
-    }
-
-    //return $('#gttPopup').length>0;
-};
-
 // NOTE (Ace, 15-Jan-2017): This resizes all the text areas to match the width of the popup:
 GmailToTrello.PopupView.prototype.onResize = function() {
     var origWidth = this.$popup.width();
     var textWidth = origWidth - this.size_k.text.min;
-    $('input[type=text],textarea,#gttAttachments,#gttImages,#gttLabels,#gttMembers', this.$popup).css('width', textWidth + 'px');
+    $('#gttAttachments,#gttImages,#gttLabels,#gttMembers,#gttDesc,#gttTitle', this.$popup).css('width', textWidth + 'px');
     this.validateData(); // Assures size is saved
+};
+
+GmailToTrello.PopupView.prototype.resetDragResize = function() {
+    this.$popup
+        .draggable({ disabled: false })
+        .resizable({
+            disabled: false,
+            minHeight: this.size_k.height.min,
+            minWidth: this.size_k.width.min,
+            maxHeight: this.size_k.height.max,
+            maxWidth: this.size_k.width.max,
+            alsoResize: '#gttAttachments,#gttImages,#gttLabels,#gttMembers,#gttDesc,#gttTitle',
+            handles: 'w,sw,s,se,e'
+        });
 };
 
 GmailToTrello.PopupView.prototype.bindEvents = function() {
@@ -211,40 +195,8 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
     var self = this;
 
     /** Popup's behavior **/
+    this.resetDragResize();
 
-    this.$popup.draggable();
-
-    //slider (blue bar on left side of dialog to resize)
-    var $slider = $("#gttPopupSlider", this.$popup);
-    var constraintRight = $(window).width() - this.size_k.width.min;
-
-    $slider.draggable({axis: "x", containment: [0, 0, constraintRight, 0],
-        stop: function(event, ui) {
-            var distance = ui.position.left - ui.originalPosition.left;
-            var newWidth = self.$popup.width()-distance;
-            // self.$popup.css('width', newWidth + 'px');
-            $slider.css('left', '0');
-            self.centerPopup(newWidth);
-        }
-    });
-
-    // TODO (Ace, 16-Jan-2017): jQueryUI has a more elegant right-lower-corner resize experience, this is the start:
-    this.$popupContent.resizable({
-        minHeight: self.size_k.height.min,
-        minWidth: self.size_k.width.min,
-        maxHeight: self.size_k.height.max,
-        maxWidth: self.size_k.width.max,
-        alsoResize: '#gttImages'
-/*        stop: function(event, ui) {
-            var constraintRight = $(window).width() - self.size_k.width.min;
-            var distance = ui.position.left - ui.originalPosition.left;
-            var newWidth = self.$popup.width()-distance;
-            // self.$popup.css('width', newWidth + 'px');
-            $slider.css('left', '0');
-            self.centerPopup(newWidth);
-        }
-*/
-    });
 
     $('#close-button', this.$popup).click(function() {
         self.hidePopup();
@@ -515,6 +467,8 @@ GmailToTrello.PopupView.prototype.hidePopup = function() {
     if (self.$gttButton && self.$popup) {
         $(document).off(self.EVENT_LISTENER); // Turns off everything in namespace
         self.$popup.hide();
+            // .draggable('disable') // was 'destroy'
+            // .resizable('disable') // was 'destroy'
     }
 }
 
