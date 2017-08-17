@@ -119,12 +119,6 @@ GmailToTrello.App.prototype.bindEvents = function() {
         self.model.submit();
     });
 
-    this.popupView.event.addListener('onRequestUpdateGmailData', function() {
-        self.gmailView.parsingData = false;
-        self.model.gmail = self.gmailView.parseData();
-        self.popupView.bindGmailData(self.model.gmail);
-    });
-
     this.popupView.event.addListener('onRequestDeauthorizeTrello', function() {
         gtt_log('onRequestDeauthorizeTrello');
         self.model.deauthorizeTrello();
@@ -135,7 +129,7 @@ GmailToTrello.App.prototype.bindEvents = function() {
         self.gmailView.preDetect();
         self.popupView.$toolBar = self.gmailView.$toolBar;
         self.popupView.$toolBarHolder = self.gmailView.$toolBarHolder;
-        self.popupView.confirmPopup();      
+        self.popupView.confirmPopup();
     });
 
     this.gmailView.event.addListener('onDetected', function() {
@@ -150,6 +144,17 @@ GmailToTrello.App.prototype.bindEvents = function() {
             self.popupView.showPopup();
         }
     }); 
+};
+
+GmailToTrello.App.prototype.updateData = function() {
+    var self = this;
+
+    if (self.model.trello.user !== null && self.model.trello.boards !== null) {
+        self.popupView.bindData(self.model);
+    }
+    self.gmailView.parsingData = false;
+    self.model.gmail = self.gmailView.parseData();
+    self.popupView.bindGmailData(self.model.gmail);
 };
 
 GmailToTrello.App.prototype.initialize = function() {
@@ -572,7 +577,8 @@ GmailToTrello.App.prototype.loadSettings = function(popup) {
             self.popupView.data.settings = JSON.parse(response[setID]); // NOTE (Ace, 7-Feb-2017): Might need to store these off the app object
         }
         if (popup) { 
-            popup.init_popup(); 
+            popup.init_popup();
+            self.updateData();
         }
     });
 };
@@ -590,9 +596,15 @@ GmailToTrello.App.prototype.saveSettings = function() {
     settings.attachments = [];
     settings.images = [];
 
+    const settings_string_k = JSON.stringify(settings);
+
     let hash = {};
-    hash[setID] = JSON.stringify(settings);
-    chrome.storage.sync.set(hash);  // NOTE (Ace, 7-Feb-2017): Might need to store these off the app object
+    hash[setID] = settings_string_k;
+
+    if (!this.lastSettingsSave || this.lastSettingsSave !== settings_string_k) {
+        chrome.storage.sync.set(hash);  // NOTE (Ace, 7-Feb-2017): Might need to store these off the app object
+        this.lastSettingsSave = settings_string_k;
+    }
 };
 
 /**

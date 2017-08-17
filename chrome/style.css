@@ -24,29 +24,32 @@
 
 #gttPopup {
     position: absolute; 
-    max-height: none; 
-    /* right:0; */
-    left: 0px;
-    right: 0px;
-    width: 0px;
+    max-height: none;
+    min-height: 530px;
     min-width: 450px; 
     max-width: 1400px; 
-    -webkit-user-select: none; overflow: hidden; 
-    border-top:2px solid #ccc; /*#0088C3; */
-    border-bottom:2px solid #ccc; 
+    -webkit-user-select: none;
+    border-top: 2px solid #ccc; /*#0088C3; */
+    border-bottom: 2px solid #ccc; 
     background: #FEFEFE; 
-    padding:0; 
+    padding: 0; 
     opacity: 0.95; 
-    z-index: 99998; /*still behind the slider*/
-    overflow: visible; 
+    z-index: 1;
+    overflow: hidden; /* was hidden; */
     white-space: normal; 
+}
+
+#gttTitle {
+    min-height: 1em;
+    max-height: 1em;
+    width: 100%;
 }
 
 }
 #gttDesc {
-    height: 100px;
-    width: 339px;
-    z-index: 1;
+    min-height: 4em; /* was: 100px; style="height: 180px; width: 300px;" */
+    width: 100%; /* was: 339px; */
+    z-index: 2;
     position: relative;
     line-height: normal;
     font-size: 13px; 
@@ -57,18 +60,7 @@
     !important; 
 }
 
-#gttPopupSlider {
-    position: absolute; 
-    left:0; top:-2px; bottom:-2px; 
-    width:3px; 
-    border-top:32px solid #0088C3;
-    background: #0088C3; 
-    z-index: 99999; 
-    cursor: col-resize; 
-
-}
-
-#gttPopup .inner {overflow: auto /* was hidden */; margin-left: 3px;}
+#gttPopup .inner {overflow: auto;} /* was hidden; margin-left: 3px; */
 
 #gttButton {
     padding-left: 10px; 
@@ -78,6 +70,7 @@
     margin-top:-2px; 
     outline: none; 
 }
+
 #gttButton * {outline:none}
 #gttButton img {vertical-align: -4px; height: 16px; padding-right:2px;}
 
@@ -89,13 +82,17 @@
 #gttPopup .popupMsg {border:1px solid #EDC967; background: #F9EDB8; padding:5px 10px 15px; margin: 10px;}
 #gttPopup #resize-icon {position: relative; bottom: 24px; right: 24px;}
 
-#gttPopup .listrow {min-height: 31px}
+#gttPopup .listrow {min-height: 31px;}
 
 #gttLabelsMsg, #gttMembersMsg {background: #F9EDB8; height: 16px; width: 29%; padding-left: 1%; margin-right: 70%; margin-bottom: 50px;}
 
-ul#gttLabels {float: left; margin: 0; padding: 0; height: 65px; width: 100%; overflow: auto;}
+#gttLabels {margin: 0; padding: 0; min-height: 65px; max-height: 65px; width: 100%; overflow: auto;}
 
-ul#gttMembers {float: left; margin: 0; padding: 0; height: 53px; width: 100%; overflow: auto;}
+ul#gttLabels {float: left}
+
+#gttMembers {margin: 0; padding: 0; min-height: 53px; max-height: 53px; width: 100%; overflow: auto;}
+
+ul#gttMembers {float: left;}
 
 ul#gttPosition {display: inline-block; float: left; padding: 0; margin: 0 0 2px 0;}
 
@@ -158,7 +155,7 @@ dl#gttPopup {vertical-align: baseline;}
 #gttPopup #close-button:hover, #gttPopup .popupMsg .hideMsg:hover {color:red; background:darkgray;}
 #gttPopup .popupMsg .hideMsg {background: #EDC967; font-size: 150%; padding: 0 5px; margin-top:-5px; margin-right:-10px;} /* hideMsg close box is smaller */
 
-#gttPopup #gttAttachments, #gttPopup #gttImages {height: 50px; width: 100%; display: inline-block; overflow: auto; padding: 0; margin: 0;}
+#gttPopup #gttAttachments, #gttPopup #gttImages {min-height: 60px; max-height: 60px; width: 100%; display: inline-block; overflow: auto; padding: 0; margin: 0;}
 #gttPopup #gttAttachments input[type=checkbox], #gttPopup #gttImages input[type=checkbox] {width: 15px;}
 #gttPopup #gttAttachments label, #gttPopup #gttImages label {display: inline-block; padding-left: 24px; text-indent: -18px;}
 

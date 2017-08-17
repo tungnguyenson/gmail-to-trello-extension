@@ -39,30 +39,6 @@ GmailToTrello.GmailView = function(parent) {
 GmailToTrello.GmailView.prototype.preDetect = function() {
     var self = this;
 
-/*
-    if (!this.$toolbarButtons) {
-        this.$toolbarButtons = $('.G-Ni.J-J5-Ji,.G-asx', this.$root).not('[id="gttButton"], [id="gttDownArrow"]');
-        if (this.$toolbarButtons) {
-            $(this.$toolbarButtons).mouseup(function() { // (this.$layoutButton, 'mouseup', function() {
-                self.detect();
-            }).click(function () {
-                self.detect();
-            });
-        }
-    }
-
-    (function() {
-    var ev = new $.Event('display'), // 'style'?
-        orig = $.fn.css;
-    $.fn.css = function() {
-        var ret = orig.apply(this, arguments);
-        $(this).trigger(ev);
-        self.detect();
-        return ret; // must include this
-    }
-    })();
-*/
-
     var $activeGroup = $('.BltHke[role="main"]');
     
     if ($activeGroup.find('.apv').length > 0) {
@@ -91,17 +67,6 @@ GmailToTrello.GmailView.prototype.detect = function() {
     }
 };
 
-GmailToTrello.GmailView.prototype.detectOBSOLETE = function() {
-    //this.detectRoot();
-
-    if (!this.detectSplitLayoutModeOBSOLETE()) {
-        this.$root = $('body');
-        this.detectToolbar();
-        this.detectEmailOpeningMode();
-    }        
-
-};
-
 GmailToTrello.GmailView.prototype.detectToolbar = function() {
     var $toolBarHolder = $("[gh='mtb']", this.$root);
     var $toolBar = $toolBarHolder || null;
@@ -114,67 +79,6 @@ GmailToTrello.GmailView.prototype.detectToolbar = function() {
     this.$toolBarHolder = $toolBarHolder;
     
     return ($toolBarHolder && $toolBar);
-};
-
-GmailToTrello.GmailView.prototype.detectToolbarOBSOLETE = function() {
-    var $toolBar = null;
-    var $toolBarHolder = null;
-    $(this.selectors.toolBarHolder, this.$root).each(function() {
-        if (this.clientWidth > 0 && !$toolBarHolder) {
-            $toolBarHolder = $(this);
-            gtt_log('detectToolbar: toolBarHolder.this:' + JSON.stringify(this));
-        }
-    });
-    
-    if ($toolBarHolder) {
-        var $button = $toolBarHolder.find(this.selectors.toolbarButton);
-        $toolBar = $button.parent();
-        gtt_log('detectToolbar: toolBarHolder.button:' + JSON.stringify($button));
-    }
-
-    this.$toolBar = $toolBar;
-    this.$toolBarHolder = $toolBarHolder;
-    
-    gtt_log ('detectToolbar: toolBarHolder:' + JSON.stringify($toolBarHolder));
-    gtt_log ('detectToolbar: toolBar:' + JSON.stringify($toolBar));
-};
-
-GmailToTrello.GmailView.prototype.detectSplitLayoutModeOBSOLETE = function() {
-    var self = this;
-
-    var $layoutButton = $('#1k8', this.$root);
-    $($layoutButton).click(function() {
-        self.detect();
-    });
-
-    var $activeGroup = $('.BltHke[role="main"]');
-    
-    if ($activeGroup.find('.apv').length>0) {
-        gtt_log('detectSplitLayoutMode: Detected SplitLayout');
-
-        this.layoutMode = this.LAYOUT_SPLIT;
-        this.$root = $activeGroup;
-        this.detectToolbar();
-
-        //bind events
-        var counter = 0;
-        $('.BltHke .apv:not([gtt_event])').each(function() {
-            counter++;
-            $(this).attr('gtt_event', 1).click(function(){
-                WaitCounter.start('emailclick', 500, 5, function() {
-                    if (self.detectEmailOpeningMode()) {
-                        //this.event.fire('onEmailChanged');
-                        WaitCounter.stop('emailclick');
-                    }
-                });
-            });
-        });
-        gtt_log('detectSplitLayoutMode: Binded email list click events: ' + counter + ' items');
-        
-        return true;
-    }
-
-    return false;
 };
 
 GmailToTrello.GmailView.prototype.detectEmailOpeningMode = function() {
@@ -204,9 +108,7 @@ GmailToTrello.GmailView.prototype.detectEmailOpeningMode = function() {
 
         this.event.fire('onDetected');
     }
-    
     return result;
-    
 };
 
 GmailToTrello.GmailView.prototype.parseData = function() {

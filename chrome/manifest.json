@@ -1,7 +1,7 @@
 {
   "name": "Gmail-to-Trello",
   "short_name": "GtT",
-  "version": "2.7.2.7",
+  "version": "2.7.2.8",
   "manifest_version": 2,
   "description": "Gmail to Trello integration. Create new Trello cards from Google mail threads with backlinks.",
   "icons": {
@@ -60,7 +60,8 @@
     "views/error.html",
     "views/subscribe.html",
     "lib/jquery-3.1.1.min.map",
-    "inject.js"
+    "inject.js",
+    "manifest.json"
   ],
   "homepage_url": "https://trello.com/b/CGU9BYgd/gmail-to-trello-chrome-extension",
   "offline_enabled": false,

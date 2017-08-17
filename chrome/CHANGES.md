@@ -4,6 +4,12 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.7.2.8
+----------------
+- Call pre-init after button disappear
+- Semi-final jQuery UI resizing (not quite right for normal state, works okay for list state)
+- Show version number in options panel (prep for noticing version change and prompting to reload)
+
 Version 2.7.2.7
 ----------------
 - Remove G-Ni from GtT icon
