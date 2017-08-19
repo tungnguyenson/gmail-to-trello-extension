@@ -6,7 +6,7 @@ CHANGE LOG:
 
 Version 2.7.2.9
 ----------------
-- Fix resize via jQuery UI
+- Fix resize via jQuery UI, needed clearfix at popup level for jQuery UI added elements
 
 Version 2.7.2.8
 ----------------
