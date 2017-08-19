@@ -57,38 +57,9 @@ function restore_options() {
   });  
 }
 
-// Gets version from manifest file
-function display_version(element) {
-  let self = this;
-
-  if (this.hasOwnProperty('version')) {
-      element.textContent = this.version;
-  } else {
-    var xmlhttp = new XMLHttpRequest();
-
-    xmlhttp.onreadystatechange = function() {
-        if (xmlhttp.readyState == XMLHttpRequest.DONE) {
-           if (xmlhttp.status == 200) {
-              const parsed_k = JSON.parse(xmlhttp.responseText);
-              element.textContent = self.version = parsed_k.hasOwnProperty('version') ? parsed_k.version || 'version_missing' : 'version_not_found';
-           }
-           else if (xmlhttp.status == 400) {
-              alert('There was an error 400');
-           }
-           else {
-               alert('something else other than 200 was returned');
-           }
-        }
-    };
-
-    xmlhttp.open("GET", chrome.extension.getURL('manifest.json'), true);
-    xmlhttp.send();
-  }
-}
-
 document.addEventListener('DOMContentLoaded', restore_options);
 document.querySelector('#save').addEventListener('click', save_options);
 document.querySelector('#default-dueshortcuts').addEventListener('click', default_dueshortcuts);
-display_version(document.getElementById("gttVersion"));
+document.getElementById("gttVersion").textContent = chrome.runtime.getManifest().version || 'unknown';
 
 // End, options.js

@@ -60,8 +60,7 @@
     "views/error.html",
     "views/subscribe.html",
     "lib/jquery-3.1.1.min.map",
-    "inject.js",
-    "manifest.json"
+    "inject.js"
   ],
   "homepage_url": "https://trello.com/b/CGU9BYgd/gmail-to-trello-chrome-extension",
   "offline_enabled": false,
