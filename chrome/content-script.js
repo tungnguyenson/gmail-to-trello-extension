@@ -25,8 +25,14 @@ function gtt_log(data) {
         window.gtt_log_g = {
             memory: [],
             count: 0,
-            max: 1000
+            max: 1000,
+            debugMode: false
         };
+        chrome.storage.sync.get('debugMode', function(response) {
+            if (response.debugMode) {
+                window.gtt_log_g.debugMode = true;
+            };
+        });
     }
 
     var log_g = window.gtt_log_g;
@@ -46,11 +52,9 @@ function gtt_log(data) {
         if (++log_g.count >= log_g.max) {
             log_g = 0;
         }
-        chrome.storage.sync.get('debugMode', function(response) {
-            if (response.debugMode) {
-                console.log(data);
-            }
-        });
+        if (log_g.debugMode) {
+            console.log(data);
+        }
     } else {
         return log_g.memory.slice(log_g.count).join('\n') + log_g.memory.slice(0,log_g.count).join('\n');
     }
