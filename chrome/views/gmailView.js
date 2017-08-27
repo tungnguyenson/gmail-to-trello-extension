@@ -38,6 +38,7 @@ GmailToTrello.GmailView = function(parent) {
 
 GmailToTrello.GmailView.prototype.preDetect = function() {
     var self = this;
+    gtt_log('GmailView:preDetect');
 
     var $activeGroup = $('.BltHke[role="main"]');
     
@@ -56,11 +57,11 @@ GmailToTrello.GmailView.prototype.preDetect = function() {
 
 GmailToTrello.GmailView.prototype.detect = function() {
     var self = this;
+    gtt_log('GmailView:detect');
 
     const pre_k = this.preDetect();
-    const pre_valid_k = pre_k.length > 0;
 
-    if (pre_valid_k) {
+    if (pre_k) {
         this.event.fire('onDetected');
     } else {
         this.detectEmailOpeningMode();
@@ -68,6 +69,8 @@ GmailToTrello.GmailView.prototype.detect = function() {
 };
 
 GmailToTrello.GmailView.prototype.detectToolbar = function() {
+    gtt_log('GmailView:detectToolbar');
+
     var $toolBarHolder = $("[gh='mtb']", this.$root);
     var $toolBar = $toolBarHolder || null;
     
@@ -78,7 +81,10 @@ GmailToTrello.GmailView.prototype.detectToolbar = function() {
     this.$toolBar = $toolBar;
     this.$toolBarHolder = $toolBarHolder;
     
-    return ($toolBarHolder && $toolBar);
+    const haveToolBar_k = $toolBarHolder && $toolBarHolder.length > 0 && $toolBar && $toolBar.length > 0
+                        ? true : false;
+
+    return haveToolBar_k;
 };
 
 GmailToTrello.GmailView.prototype.detectEmailOpeningMode = function() {

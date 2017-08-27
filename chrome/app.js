@@ -126,10 +126,11 @@ GmailToTrello.App.prototype.bindEvents = function() {
     });
 
     this.popupView.event.addListener('detectButton', function () {
-        self.gmailView.preDetect();
-        self.popupView.$toolBar = self.gmailView.$toolBar;
-        self.popupView.$toolBarHolder = self.gmailView.$toolBarHolder;
-        self.popupView.confirmPopup();
+        if (self.gmailView.preDetect()) {
+            self.popupView.$toolBar = self.gmailView.$toolBar;
+            self.popupView.$toolBarHolder = self.gmailView.$toolBarHolder;
+            self.popupView.confirmPopup();            
+        }
     });
 
     this.gmailView.event.addListener('onDetected', function() {
@@ -159,6 +160,9 @@ GmailToTrello.App.prototype.updateData = function() {
 
 GmailToTrello.App.prototype.initialize = function() {
     this.model.isInitialized = false;
+
+    gtt_log('App:initialize');
+    
     this.gmailView.detect();
 
     service = analytics.getService('gmail_to_trello');
