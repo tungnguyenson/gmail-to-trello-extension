@@ -87,8 +87,10 @@ GmailToTrello.PopupView.prototype.confirmPopup = function() {
         if ($button[0].clientWidth <= 0) {
             gtt_log('confirmPopup: Button is in an inactive region. Moving...');
             //relocate
-            $button.appendTo(this.$toolBar);
-            $popup.appendTo(this.$toolBar);
+            $button.detach(); // In case copies were created
+            $popup.detach(); // In case copies were created
+            $button[0].appendTo(this.$toolBar);
+            $popup[0].appendTo(this.$toolBar);
         }
     }
 
