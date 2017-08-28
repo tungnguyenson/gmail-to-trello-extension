@@ -8,6 +8,7 @@ Version 2.7.2.10
 ----------------
 - detectToolbar return true if detected.
 - .detach button and popup and then only append one.
+- Make sign out an explicit button on the page
 
 Version 2.7.2.9
 ----------------
