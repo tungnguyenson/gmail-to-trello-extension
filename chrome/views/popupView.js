@@ -536,7 +536,7 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
         $.get(chrome.extension.getURL('views/signOut.html'), function(data) {
             self.showMessage(self, data);
             // chrome.identity.removeCacheAuthToken({'token': self.chrome_access_token});
-            self.event.fire('onRequestDeauthorizeTrello');
+            // self.event.fire('onRequestDeauthorizeTrello');
         });
     });
 
@@ -748,30 +748,55 @@ GmailToTrello.PopupView.prototype.showMessage = function(parent, text) {
         parent.hideMessage();
     });
 
-    $('#clearCacheNow', this.$popupMessage).click(function() {
-        chrome.browsingData.remove({
-            "since": 0,
-            "originTypes": {
-                "extension": true
-                }
-            }, {
-            "appcache": true,
-            "cache": true,
-            "cookies": true,
-            "downloads": false,
-            "fileSystems": false,
-            "formData": false,
-            "history": false,
-            "indexedDB": false,
-            "localStorage": false,
-            "serverBoundCertificates": false,
-            "pluginData": true,
-            "passwords": false,
-            "webSQL": false
-            }, function() {
-                alert('Cache cleared.');
-                }
-            );
+    $(':button', this.$popupMessage).click(function() {
+        let $status = $('span#' + this.id, self.$popupMessage) || '';
+        switch(this.id) {
+            case 'signout':
+                $status.html("Done");
+                self.event.fire('onRequestDeauthorizeTrello');
+                break;
+            case 'reload':
+                $status.html("Done");
+                window.location.reload(true);
+                break;
+            case 'clearCacheNow':
+                $status.html("Not implemented yet");
+                /*
+                chrome.browsingData.remove({
+                    "since": 0,
+                    "originTypes": {
+                        "extension": true
+                        }
+                    }, {
+                    "appcache": true,
+                    "cache": true,
+                    "cookies": true,
+                    "downloads": false,
+                    "fileSystems": false,
+                    "formData": false,
+                    "history": false,
+                    "indexedDB": false,
+                    "localStorage": false,
+                    "serverBoundCertificates": false,
+                    "pluginData": true,
+                    "passwords": false,
+                    "webSQL": false
+                    }, function() {
+                        $status.html("Cleared");
+                        setTimeout(function() {
+                            $status.html("&nbsp;");
+                        }, 2500);
+                    });
+                    */
+                break;
+            default:
+                gtt_log('showMessage: ERROR unhandled case "' + this.id + '"');
+        }
+        if ($status.length > 0) {
+            setTimeout(function() {
+                $status.html("&nbsp;");
+            }, 2500);            
+        }
     });
 
     this.$popupMessage.show();

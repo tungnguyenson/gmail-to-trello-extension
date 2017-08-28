@@ -13,7 +13,7 @@
   "page_action": {
     "default_icon": "images/icon-16.png",
     "default_title": "Gmail-to-Trello options",
-    "default_popup": "options.html"
+    "default_popup": "views/options.html"
   },
   "commands": {
     "gtt_keyboard_shortcut": {
@@ -76,7 +76,7 @@
     "https://www.google-analytics.com/",
     "https://*.googleusercontent.com/*"
   ],
-  "options_page": "options.html",
+  "options_page": "views/options.html",
   "oauth2": {
     "client_id": "931090930005-ma9ieb9t6i4i1lndtgsc57opm6r3u728.apps.googleusercontent.com",
     "scopes": [
