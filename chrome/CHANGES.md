@@ -4,11 +4,15 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.7.2.11
+-----------------
+- Fix missing views/options.html.
+
 Version 2.7.2.10
 ----------------
 - detectToolbar return true if detected.
 - .detach button and popup and then only append one.
-- Make sign out an explicit button on the page
+- Make sign out an explicit button on the page.
 
 Version 2.7.2.9
 ----------------
