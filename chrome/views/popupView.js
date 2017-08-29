@@ -761,13 +761,12 @@ GmailToTrello.PopupView.prototype.showMessage = function(parent, text) {
                 break;
             case 'clearCacheNow':
                 $status.html("Not implemented yet");
-                /*
-                chrome.browsingData.remove({
+                const opts_k = {
                     "since": 0,
-                    "originTypes": {
-                        "extension": true
-                        }
-                    }, {
+                    "originTypes": {"extension": true}
+                    };
+                /*
+                chrome.browsingData.remove(opts_k, {
                     "appcache": true,
                     "cache": true,
                     "cookies": true,
@@ -787,7 +786,7 @@ GmailToTrello.PopupView.prototype.showMessage = function(parent, text) {
                             $status.html("&nbsp;");
                         }, 2500);
                     });
-                    */
+                */
                 break;
             default:
                 gtt_log('showMessage: ERROR unhandled case "' + this.id + '"');
