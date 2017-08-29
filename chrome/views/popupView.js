@@ -89,8 +89,8 @@ GmailToTrello.PopupView.prototype.confirmPopup = function() {
             //relocate
             $button.detach(); // In case copies were created
             $popup.detach(); // In case copies were created
-            $button[0].appendTo(this.$toolBar);
-            $popup[0].appendTo(this.$toolBar);
+            $button.first().appendTo(this.$toolBar);
+            $popup.first().appendTo(this.$toolBar);
         }
     }
 
