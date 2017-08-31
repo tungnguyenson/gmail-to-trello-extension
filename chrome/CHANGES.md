@@ -4,6 +4,10 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.7.2.13
+-----------------
+- Restrict log to latest 100 lines.
+
 Version 2.7.2.12
 -----------------
 - Fix $button[0] -> $button.first().

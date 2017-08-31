@@ -25,7 +25,7 @@ function gtt_log(data) {
         window.gtt_log_g = {
             memory: [],
             count: 0,
-            max: 1000,
+            max: 100,
             debugMode: false
         };
         chrome.storage.sync.get('debugMode', function(response) {
