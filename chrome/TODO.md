@@ -16,6 +16,7 @@
 - https://github.com/bytepicker/Thrasher
 - https://developer.chrome.com/extensions/management#method-getself
 - https://stackoverflow.com/questions/8960193/how-to-make-html-element-resizable-using-pure-javascript
+- Simple Pure CSS Drop Down Menu: https://codepen.io/philhoyt/pen/ujHzd
 
 content-script.js:26 validateData: board:592d43422c9d39fe0cb22aea list:592d434b4eb392d5eb45535a title:[EXTERNAL] Re: Technischer Kundendienst / Tools für Entwickler - Integration [Incident: 170508-031288] [Incident: 170527-002190] desc:5041
 content-script.js:26 parsing data...
