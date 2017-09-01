@@ -69,7 +69,9 @@ GmailToTrello.PopupView.prototype.confirmPopup = function() {
         } else {
             var img = 'GtT';
             
-            if ($('div.asl.T-I-J3.J-J5-Ji', this.$toolBar).length > 0) {
+            // Refresh icon present? If so, use graphics, if not, use text:
+            if ($('div.asl.T-I-J3.J-J5-Ji', this.$toolBar).length > 0
+                || $('div.asf.T-I-J3.J-J5-Ji', this.$toolBar).length > 0) {
                 img = '<img class="f tk3N6e-I-J3" height="13" width="13" src="'
                   + chrome.extension.getURL('images/icon-13.jpg')
                   + '" />';
