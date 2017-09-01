@@ -1,4 +1,4 @@
-var CLEAR_EXT_BROWSING_DATA = 'clearExtensionBrowsingData';
+var CLEAR_EXT_BROWSING_DATA = 'gtt:clear_extension_browsing_data';
 
 /**
  * Detect Gmail's URL everytimes a tab is reloaded or openned

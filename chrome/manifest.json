@@ -59,6 +59,7 @@
     "views/signOut.html",
     "views/error.html",
     "views/subscribe.html",
+    "views/versionUpdate.html",
     "lib/jquery-3.1.1.min.map",
     "inject.js"
   ],
