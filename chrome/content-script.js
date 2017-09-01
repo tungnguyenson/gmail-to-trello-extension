@@ -89,7 +89,7 @@ function gtt_log(data) {
 }
 
 // Register Handler
-chrome.extension.onMessage.addListener(requestHandler);
+chrome.runtime.onMessage.addListener(requestHandler); // Was: chrome.extension.onMessage.addListener
 
 var GmailToTrello = GmailToTrello || {}; // Namespace initialization
 var app = new GmailToTrello.App();

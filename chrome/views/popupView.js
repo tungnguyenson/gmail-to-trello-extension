@@ -37,6 +37,8 @@ GmailToTrello.PopupView = function(parent) {
     this.lastError = '';
 
     this.EVENT_LISTENER = '.gtt_event_listener';
+
+    this.CLEAR_EXT_BROWSING_DATA = 'clearExtensionBrowsingData';
 };
 
 GmailToTrello.PopupView.prototype.init = function() {
@@ -760,33 +762,15 @@ GmailToTrello.PopupView.prototype.showMessage = function(parent, text) {
                 window.location.reload(true);
                 break;
             case 'clearCacheNow':
-                $status.html("Not implemented yet");
-                const opts_k = {
-                    "since": 0,
-                    "originTypes": {"extension": true}
-                    };
-                /*
-                chrome.browsingData.remove(opts_k, {
-                    "appcache": true,
-                    "cache": true,
-                    "cookies": true,
-                    "downloads": false,
-                    "fileSystems": false,
-                    "formData": false,
-                    "history": false,
-                    "indexedDB": false,
-                    "localStorage": false,
-                    "serverBoundCertificates": false,
-                    "pluginData": true,
-                    "passwords": false,
-                    "webSQL": false
-                    }, function() {
-                        $status.html("Cleared");
-                        setTimeout(function() {
-                            $status.html("&nbsp;");
-                        }, 2500);
-                    });
-                */
+                $status.html("Clearing");
+                var hash = {};
+                hash[self.CLEAR_EXT_BROWSING_DATA] = true;
+                chrome.runtime.sendMessage(hash, function() {
+                    $status.html("Done");
+                    setTimeout(function() {
+                        $status.html("&nbsp;");
+                    }, 2500);
+                });
                 break;
             default:
                 gtt_log('showMessage: ERROR unhandled case "' + this.id + '"');
