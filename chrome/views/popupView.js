@@ -38,7 +38,7 @@ GmailToTrello.PopupView = function(parent) {
 
     this.EVENT_LISTENER = '.gtt_event_listener';
 
-    this.CLEAR_EXT_BROWSING_DATA = 'clearExtensionBrowsingData';
+    this.CLEAR_EXT_BROWSING_DATA = 'gtt:clear_extension_browsing_data';
 };
 
 GmailToTrello.PopupView.prototype.init = function() {
@@ -474,7 +474,7 @@ GmailToTrello.PopupView.prototype.hidePopup = function() {
             // .draggable('disable') // was 'destroy'
             // .resizable('disable') // was 'destroy'
     }
-}
+};
 
 GmailToTrello.PopupView.prototype.popupVisible = function() {
     var self = this;
@@ -484,7 +484,25 @@ GmailToTrello.PopupView.prototype.popupVisible = function() {
     }
 
     return visible;
-}
+};
+
+GmailToTrello.PopupView.prototype.periodicChecks = function() {
+    var self = this;
+    const version_k = chrome.runtime.getManifest().version || 'unknown';
+    chrome.storage.sync.get('gtt:version', function (response) {
+        if (response && response['gtt:version'] !== version_k) {
+            $.get(chrome.extension.getURL('views/versionUpdate.html'), function(data) {
+                var dict = {'version_old': response['gtt:version'], 'version_new': version_k};
+                data = self.parent.replacer(data, dict);
+                self.showMessage(self, data);
+            });
+        }
+    });
+};
+
+GmailToTrello.PopupView.prototype.forceSetVersion = function() {
+    chrome.storage.sync.set({'gtt:version': chrome.runtime.getManifest().version || 'unknown'});
+};
 
 GmailToTrello.PopupView.prototype.bindData = function(data) {
     var self = this;
@@ -758,6 +776,7 @@ GmailToTrello.PopupView.prototype.showMessage = function(parent, text) {
                 self.event.fire('onRequestDeauthorizeTrello');
                 break;
             case 'reload':
+                self.forceSetVersion(); // Sets value for version if needing update
                 $status.html("Done");
                 window.location.reload(true);
                 break;

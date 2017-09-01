@@ -6,7 +6,9 @@ CHANGE LOG:
 
 Version 2.7.2.13
 -----------------
-- Restrict log to latest 100 lines.
+- Restrict log from 1000 to 100 lines.
+- Call browsingData from background to clear extension data.
+- Show message to reload when version changes.
 
 Version 2.7.2.12
 -----------------

@@ -158,7 +158,9 @@ dl#gttPopup {vertical-align: baseline;}
 .ui-tooltip-content img {border: 1px solid lightgray; max-width: 100%; height: auto; width: auto}
 
 #gttPopup .popupMsg #error {font-weight: bold;}
-#gttPopup .popupMsg #error dt {float: left; clear: left; width: 90px; text-align: right; color: red;}
+#gttPopup .popupMsg #error dt {float: left; clear: left; width: 110px; text-align: right; color: red;}
+
+#gttPopup .popupMsg dt {float: left; clear: left; width: 110px; text-align: right;}
 
 #gttPopup .gttWhere {width: 180px;}
 
