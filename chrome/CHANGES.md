@@ -7,6 +7,8 @@ CHANGE LOG:
 Version 2.7.2.14
 -----------------
 - Check for ASL or ASF div for Refresh icon.
+- Only call detach if more than one button/popup
+- Use '0' for unknown version in version check
 
 Version 2.7.2.13
 -----------------

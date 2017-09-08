@@ -70,8 +70,7 @@ GmailToTrello.PopupView.prototype.confirmPopup = function() {
             var img = 'GtT';
             
             // Refresh icon present? If so, use graphics, if not, use text:
-            if ($('div.asl.T-I-J3.J-J5-Ji', this.$toolBar).length > 0
-                || $('div.asf.T-I-J3.J-J5-Ji', this.$toolBar).length > 0) {
+            if ($('div.asl.T-I-J3.J-J5-Ji,div.asf.T-I-J3.J-J5-Ji', this.$toolBar).length > 0) {
                 img = '<img class="f tk3N6e-I-J3" height="13" width="13" src="'
                   + chrome.extension.getURL('images/icon-13.jpg')
                   + '" />';
@@ -88,11 +87,13 @@ GmailToTrello.PopupView.prototype.confirmPopup = function() {
         needInit = true;
     } else {
         gtt_log('confirmPopup: Found Button at: ' + JSON.stringify($button));
-        if ($button[0].clientWidth <= 0) {
+        if ($button.first().clientWidth <= 0) {
             gtt_log('confirmPopup: Button is in an inactive region. Moving...');
             //relocate
-            $button.detach(); // In case copies were created
-            $popup.detach(); // In case copies were created
+            if ($button.length > 1) {
+                $button.detach(); // In case multiple copies were created
+                $popup.detach(); // In case copies were created                
+            }
             $button.first().appendTo(this.$toolBar);
             $popup.first().appendTo(this.$toolBar);
         }
@@ -490,11 +491,11 @@ GmailToTrello.PopupView.prototype.popupVisible = function() {
 
 GmailToTrello.PopupView.prototype.periodicChecks = function() {
     var self = this;
-    const version_k = chrome.runtime.getManifest().version || 'unknown';
+    const version_k = chrome.runtime.getManifest().version || '0';
     chrome.storage.sync.get('gtt:version', function (response) {
         if (response && response['gtt:version'] !== version_k) {
             $.get(chrome.extension.getURL('views/versionUpdate.html'), function(data) {
-                var dict = {'version_old': response['gtt:version'], 'version_new': version_k};
+                var dict = {'version_old': response['gtt:version'] || '0', 'version_new': version_k};
                 data = self.parent.replacer(data, dict);
                 self.showMessage(self, data);
             });
@@ -779,7 +780,7 @@ GmailToTrello.PopupView.prototype.showMessage = function(parent, text) {
                 break;
             case 'reload':
                 self.forceSetVersion(); // Sets value for version if needing update
-                $status.html("Done");
+                $status.html("Reloading");
                 window.location.reload(true);
                 break;
             case 'clearCacheNow':
