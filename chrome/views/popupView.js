@@ -60,8 +60,8 @@ GmailToTrello.PopupView.prototype.init = function() {
 GmailToTrello.PopupView.prototype.confirmPopup = function() {
     var self = this,
         needInit = false,
-        $button = $('#gttButton', this.$toolBar),
-        $popup = $('#gttPopup', this.$toolBar);
+        $button = $('#gttButton'),
+        $popup = $('#gttPopup');
 
     if ($button.length < 1) {
         if (this.html && this.html['add_to_trello'] && this.html['add_to_trello'].length > 0) {
