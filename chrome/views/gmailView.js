@@ -19,7 +19,6 @@ GmailToTrello.GmailView = function(parent) {
     this.selectors = {
         /* selectors mapping, modify here when gmail's markup changes */
         toolbarButton: '.G-Ni:first',
-        toolBarHolder: '.G-atb',
         emailName: '.gD',
         emailAddress: '.gD', // Was: '.go', now using same name property
         emailSubject: '.hP',
@@ -71,17 +70,15 @@ GmailToTrello.GmailView.prototype.detect = function() {
 GmailToTrello.GmailView.prototype.detectToolbar = function() {
     gtt_log('GmailView:detectToolbar');
 
-    var $toolBarHolder = $("[gh='mtb']", this.$root);
-    var $toolBar = $toolBarHolder || null;
+    var $toolBar = $("[gh='mtb']", this.$root) || null;
     
     while($($toolBar).children().length === 1){
         $toolBar = $($toolBar).children().first();
     }
 
     this.$toolBar = $toolBar;
-    this.$toolBarHolder = $toolBarHolder;
     
-    const haveToolBar_k = $toolBarHolder && $toolBarHolder.length > 0 && $toolBar && $toolBar.length > 0
+    const haveToolBar_k = $toolBar && $toolBar.length > 0
                         ? true : false;
 
     return haveToolBar_k;
@@ -92,8 +89,7 @@ GmailToTrello.GmailView.prototype.detectEmailOpeningMode = function() {
     this.$expandedEmails = this.$root.find(this.selectors.expandedEmails);
     
     var result = this.$toolBar && this.$toolBar.length > 0
-              && this.$expandedEmails && this.$expandedEmails.length > 0
-              && this.$toolBarHolder && this.$toolBarHolder.length > 0;
+              && this.$expandedEmails && this.$expandedEmails.length > 0;
     if (result) {
         gtt_log('detectEmailOpeningMode: Detected an email is opening: ' + JSON.stringify(this.$expandedEmails));
         

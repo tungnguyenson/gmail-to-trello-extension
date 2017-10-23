@@ -25,7 +25,7 @@ function gtt_log(data) {
         window.gtt_log_g = {
             memory: [],
             count: 0,
-            max: 100,
+            max: 200,
             debugMode: false
         };
         chrome.storage.sync.get('debugMode', function(response) {
@@ -35,11 +35,11 @@ function gtt_log(data) {
         });
     }
 
-    var log_g = window.gtt_log_g;
+    var l = window.gtt_log_g;
 
     if (data) {
-        const count_size_k = (log_g.max).toString().length;
-        const counter_k = ('0'.repeat(count_size_k) + (log_g.count).toString()).slice(-count_size_k);
+        const count_size_k = (l.max).toString().length;
+        const counter_k = ('0'.repeat(count_size_k) + (l.count).toString()).slice(-count_size_k);
         const now_k = new Date().toISOString();
 
         if (typeof data !== 'string') {
@@ -48,15 +48,15 @@ function gtt_log(data) {
 
         data = now_k + '.' + counter_k + ' GtT::' + data;
 
-        log_g.memory[log_g.count] = data;
-        if (++log_g.count >= log_g.max) {
-            log_g = 0;
+        l.memory[l.count] = data;
+        if (++l.count >= l.max) {
+            l.count = 0;
         }
-        if (log_g.debugMode) {
+        if (l.debugMode) {
             console.log(data);
         }
     } else {
-        return log_g.memory.slice(log_g.count).join('\n') + log_g.memory.slice(0,log_g.count).join('\n');
+        return l.memory.slice(l.count).join('\n') + l.memory.slice(0,l.count).join('\n');
     }
 }
 

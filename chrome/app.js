@@ -135,14 +135,12 @@ GmailToTrello.App.prototype.bindEvents = function() {
     this.popupView.event.addListener('detectButton', function () {
         if (self.gmailView.preDetect()) {
             self.popupView.$toolBar = self.gmailView.$toolBar;
-            self.popupView.$toolBarHolder = self.gmailView.$toolBarHolder;
             self.popupView.confirmPopup();            
         }
     });
 
     this.gmailView.event.addListener('onDetected', function() {
         self.popupView.$toolBar = self.gmailView.$toolBar;
-        self.popupView.$toolBarHolder = self.gmailView.$toolBarHolder;
         self.popupView.init();
 
     });
