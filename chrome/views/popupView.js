@@ -45,9 +45,9 @@ GmailToTrello.PopupView.prototype.init = function() {
     gtt_log('PopupView:init');
     var self = this;
 
-    if (!this.$toolBar) {
-        return; // button not available yet
-    }
+ //   if (!this.$toolBar) {
+ //       return; // button not available yet
+ //   }
 
     // inject a button & a popup
     this.confirmPopup();
@@ -58,10 +58,14 @@ GmailToTrello.PopupView.prototype.init = function() {
 };
 
 GmailToTrello.PopupView.prototype.confirmPopup = function() {
+//    if (!this.$toolBar) {
+//        return; // button not available yet
+//    }
+
     var self = this,
         needInit = false,
-        $button = $('#gttButton', this.$toolBar),
-        $popup = $('#gttPopup', this.$toolBar);
+        $button = $('#gttButton'),
+        $popup = $('#gttPopup');
 
     if ($button.length < 1) {
         if (this.html && this.html['add_to_trello'] && this.html['add_to_trello'].length > 0) {
@@ -494,16 +498,21 @@ GmailToTrello.PopupView.prototype.popupVisible = function() {
 
 GmailToTrello.PopupView.prototype.periodicChecks = function() {
     var self = this;
-    const version_k = chrome.runtime.getManifest().version || '0';
-    chrome.storage.sync.get('gtt:version', function (response) {
-        if (response && response['gtt:version'] !== version_k) {
-            $.get(chrome.extension.getURL('views/versionUpdate.html'), function(data) {
-                var dict = {'version_old': response['gtt:version'] || '0', 'version_new': version_k};
-                data = self.parent.replacer(data, dict);
-                self.showMessage(self, data);
-            });
-        }
-    });
+    const this_version_k = chrome.runtime.getManifest().version || '0';
+
+    if (this_version_k > '0') {
+        chrome.storage.sync.get('gtt:version', function (response) {
+            const prev_version_k = response && response.hasOwnProperty('gtt:version')
+                                 ? response['gtt:version'] : '0';
+            if (prev_version_k > '0' && prev_version_k !== this_version_k) {
+                $.get(chrome.extension.getURL('views/versionUpdate.html'), function(data) {
+                    var dict = {'version_old': prev_version_k, 'version_new': this_version_k};
+                    data = self.parent.replacer(data, dict);
+                    self.showMessage(self, data);
+                });
+            }
+        });        
+    }
 };
 
 GmailToTrello.PopupView.prototype.forceSetVersion = function() {
@@ -1101,14 +1110,16 @@ GmailToTrello.PopupView.prototype.validateData = function() {
     var mime_array = function (tag) {
         var $jTag = $('#' + tag + ' input[type="checkbox"]', self.$popup);
         var array = [];
+        var array1 = {};
 
         $.each($jTag, function() {
-            array.push({
+           array1 = {
                 'url': $(this).attr('url'),
                 'name': $(this).attr('name'),
                 'mimeType': $(this).attr('mimeType'),
                 'checked': $(this).is(':checked')
-            });
+            };
+            array.push(array1);
         });
 
         return array;

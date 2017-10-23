@@ -336,7 +336,7 @@ GmailToTrello.Model.prototype.Uploader.prototype = {
         xhr.onload = function() {
             var fileReader = new FileReader();
             fileReader.onload = function() {
-                const filename_k = (param_k.split('/').pop().split('#')[0].split('?')[0]) || param_k || 'unknown_filename'; // Removes # or ? after filename
+                const filename_k = (param_k.split('/').pop().split('#')[0].split('?')[0]) || upload1.name || param_k || 'unknown_filename'; // Removes # or ? after filename
                 const file_k = new File([this.result], filename_k);
                 var form = new FormData();
                 form.append('file', file_k);
@@ -472,7 +472,7 @@ GmailToTrello.Model.prototype.submit = function() {
 
     $.each(imagesAndAttachments, function(iter, item) {
         if (item.hasOwnProperty('checked') && item.checked && item.url && item.url.length > 5) {
-            uploader.add({'property': uploader.attachments, 'value': item.url});
+            uploader.add({'property': uploader.attachments, 'value': item.url, 'name': item.name});
         }
     });
 

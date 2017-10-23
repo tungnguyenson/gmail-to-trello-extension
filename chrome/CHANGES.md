@@ -10,6 +10,11 @@ Version 2.7.2.14
 - Only call detach if more than one button/popup
 - Use '0' for unknown version in version check
 - More debugging logs for adding button / popup
+- Only show version update if previous version > 0
+- Remove toolBarHolder
+- Debug Multiple Inboxes - more to do
+- Circular log wasn't - hogged memory
+- inline image now should upload to Trello correctly
 
 Version 2.7.2.13
 -----------------
