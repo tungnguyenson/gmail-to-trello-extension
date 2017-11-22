@@ -68,8 +68,29 @@
     outline: none; 
 }
 
+#gttButton > div {
+    opacity:0.55;
+}
+
+#gttButton:hover > div {
+    opacity:1;
+}
+
 #gttButton * {outline:none}
-#gttButton img {vertical-align: -4px; height: 16px; padding-right:2px;}
+
+#gttButton img {
+    vertical-align: -3px;
+    height: 14px;
+    width: 14px;
+    padding-right: 2px;
+}
+
+#gttDownArrow {
+    opacity: 1;
+    background: none;
+    font-size: 10px;
+    line-height: 5px;
+}
 
 #gttPopup .content {
     position: relative;

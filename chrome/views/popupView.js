@@ -78,8 +78,8 @@ GmailToTrello.PopupView.prototype.confirmPopup = function() {
             
             // Refresh icon present? If so, use graphics, if not, use text:
             if ($('div.asl.T-I-J3.J-J5-Ji,div.asf.T-I-J3.J-J5-Ji', this.$toolBar).length > 0) {
-                img = '<img class="f tk3N6e-I-J3" height="13" width="13" src="'
-                  + chrome.extension.getURL('images/icon-13.jpg')
+                img = '<img class="f tk3N6e-I-J3" src="'
+                  + chrome.extension.getURL('images/trello-icon-black.png')
                   + '" />';
             }
 
@@ -88,7 +88,7 @@ GmailToTrello.PopupView.prototype.confirmPopup = function() {
                   + 'data-tooltip="Add this Gmail to Trello">'
                   + '<div aria-haspopup="true" role="button" class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3" tabindex="0">' // class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3">' // 
                   + img
-                  + '<div id="gttDownArrow" class="G-asx T-I-J3 J-J5-Ji">&nbsp;</div></div></div>';
+                  + '<div id="gttDownArrow" class="G-asx T-I-J3 J-J5-Ji">&#9662;</div></div></div>';
         }
         gtt_log('PopupView:confirmPopup: creating button');
         this.$toolBar.append(this.html['add_to_trello']);
