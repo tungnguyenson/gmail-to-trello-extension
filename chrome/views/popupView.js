@@ -66,69 +66,85 @@ GmailToTrello.PopupView.prototype.confirmPopup = function() {
 //    }
 
     var self = this,
-        needInit = false,
         $button = $('#gttButton'),
         $popup = $('#gttPopup');
 
     if ($button.length < 1) {
+
         if (this.html && this.html['add_to_trello'] && this.html['add_to_trello'].length > 0) {
-           gtt_log('PopupView:confirmPopup: add_to_trello_html already exists');
-        } else {
-            var img = 'GtT';
-            
-            // Refresh icon present? If so, use graphics, if not, use text:
-            if ($('div.asl.T-I-J3.J-J5-Ji,div.asf.T-I-J3.J-J5-Ji', this.$toolBar).length > 0) {
-                img = '<img class="f tk3N6e-I-J3" src="'
-                  + chrome.extension.getURL('images/trello-icon-black.png')
-                  + '" />';
-            }
-
-            this.html['add_to_trello'] =
-                '<div id="gttButton" class="T-I J-J5-Ji ar7 nf T-I-ax7 L3" ' // "lS T-I-ax7 ar7"
-                  + 'data-tooltip="Add this Gmail to Trello">'
-                  + '<div aria-haspopup="true" role="button" class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3" tabindex="0">' // class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3">' // 
-                  + img
-                  + '<span id="gttButtonText"></span>'
-                  + '<div id="gttDownArrow" class="G-asx T-I-J3 J-J5-Ji">&#9662;</div></div></div>';
+            gtt_log('PopupView:confirmPopup: creating button');
+            this.$toolBar.append(this.html['add_to_trello']);
+            self.addOrCreatePopup();
         }
-        gtt_log('PopupView:confirmPopup: creating button');
-        this.$toolBar.append(this.html['add_to_trello']);
-        needInit = true;
-    } else if ($button.first().is(":visible")) {
-        gtt_log('PopupView:confirmPopup: button visible');
+        else if (!self.parent.model.isThreadCardsLoaded) {
+            self.parent.model.loadThreadTrelloCards(); // loads cards, creates html, then circles back to confirmPopup
+        }
+        else {
+            // already waiting to load Trello cards, do nothing
+        }
+
     } else {
-        gtt_log('PopupView:confirmPopup: Button is in an inactive region. Moving...');
-        //relocate
-        if ($button.length > 1) {
-            $button.detach(); // In case multiple copies were created
-            if ($popup.length > 1) {
-                $popup.detach(); // In case copies were created
-            }
-        }
-        gtt_log('PopupView:confirmPopup: adding Button and Popup');
-        $button.first().appendTo(this.$toolBar);
-        $popup.first().appendTo(this.$toolBar);
-    }
 
-    if (needInit || $popup.length < 1) {
-        if (this.html && this.html['popup'] && this.html['popup'].length > 0) {
-            gtt_log('PopupView:confirmPopup: adding popup');
-            this.$toolBar.append(this.html['popup']);
-            needInit = true;
+        if ($button.first().is(":visible")) {
+            gtt_log('PopupView:confirmPopup: button visible');
         } else {
-            needInit = false;
-            $.get(chrome.extension.getURL('views/popupView.html'), function(data) {
-                // data = self.parent.replacer(data, {'jquery-ui-css': chrome.extension.getURL('lib/jquery-ui-1.12.1.min.css')}); // OBSOLETE (Ace@2017.06.09): Already loaded by manifest
-                self.html['popup'] = data;
-                gtt_log('PopupView:confirmPopup: creating popup')
-                self.$toolBar.append(data);
-                self.parent.loadSettings(self); // Calls init_popup
-            });
+            gtt_log('PopupView:confirmPopup: Button is in an inactive region. Moving...');
+            //relocate
+            if ($button.length > 1) {
+                $button.detach(); // In case multiple copies were created
+                if ($popup.length > 1) {
+                    $popup.detach(); // In case copies were created
+                }
+            }
+            gtt_log('PopupView:confirmPopup: adding Button and Popup');
+            $button.first().appendTo(this.$toolBar);
+            $popup.first().appendTo(this.$toolBar);
         }
+
+        if ($popup.length < 1) {
+            self.addOrCreatePopup();
+        }
+
     }
 
-    if (needInit) {
-        this.parent.loadSettings(this); // Calls init_popup
+};
+
+GmailToTrello.PopupView.prototype.buildPopupHtml = function() {
+    gtt_log('PopupView:buildPopupHtml: building add_to_trello html');
+    var self = this;
+
+    var img = 'GtT';
+    // Refresh icon present? If so, use graphics, if not, use text:
+    if ($('div.asl.T-I-J3.J-J5-Ji,div.asf.T-I-J3.J-J5-Ji', self.$toolBar).length > 0) {
+        img = '<img class="f tk3N6e-I-J3" src="'
+          + chrome.extension.getURL('images/trello-icon-black.png')
+          + '" />';
+    }
+    self.html['add_to_trello'] =
+        '<div id="gttButton" class="T-I J-J5-Ji ar7 nf T-I-ax7 L3" ' // "lS T-I-ax7 ar7"
+          + 'data-tooltip="Add this Gmail to Trello">'
+          + '<div aria-haspopup="true" role="button" class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3" tabindex="0">' // class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3">' // 
+          + img
+          + '<span id="gttButtonText"></span>'
+          + '<div id="gttDownArrow" class="G-asx T-I-J3 J-J5-Ji">&#9662;</div></div></div>';
+    self.confirmPopup();
+
+};
+
+GmailToTrello.PopupView.prototype.addOrCreatePopup = function () {
+    var self = this;
+    if (self.html && self.html['popup'] && self.html['popup'].length > 0) {
+        gtt_log('PopupView:addOrCreatePopup: adding popup');
+        self.$toolBar.append(self.html['popup']);
+        this.parent.loadSettings(self); // Calls init_popup
+    } else {
+        $.get(chrome.extension.getURL('views/popupView.html'), function(data) {
+            // data = self.parent.replacer(data, {'jquery-ui-css': chrome.extension.getURL('lib/jquery-ui-1.12.1.min.css')}); // OBSOLETE (Ace@2017.06.09): Already loaded by manifest
+            self.html['popup'] = data;
+            gtt_log('PopupView:addOrCreatePopup: creating popup')
+            self.$toolBar.append(data);
+            self.parent.loadSettings(self); // Calls init_popup
+        });
     }
 };
 

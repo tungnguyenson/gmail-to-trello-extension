@@ -31,11 +31,11 @@ GmailToTrello.App.prototype.bindEvents = function() {
         gtt_log("Status: " + Trello.authorized().toString());
     });
     
-    this.model.event.addListener('onBeforeLoadTrello', function() {
+    this.model.event.addListener('onBeforeLoadPopup', function() {
         self.popupView.showMessage(self, 'Loading Trello data...');
     });
     
-    this.model.event.addListener('onTrelloDataReady', function() {
+    this.model.event.addListener('onPopupDataReady', function() {
         self.popupView.$popupContent.show();
         self.popupView.hideMessage();
 
@@ -90,10 +90,10 @@ GmailToTrello.App.prototype.bindEvents = function() {
     this.popupView.event.addListener('onPopupVisible', function() {
         self.gmailView.parsingData = false;
         self.model.gmail = self.gmailView.parseData();
-        if (!self.model.isInitialized) {
+        if (!self.model.isPopupDataLoaded) {
             self.popupView.showMessage(self, 'Initializing...');
             self.popupView.$popupContent.hide();
-            self.model.init();
+            self.model.loadPopupData();
         }
         else {
             self.popupView.reset();
@@ -166,7 +166,11 @@ GmailToTrello.App.prototype.updateData = function() {
 GmailToTrello.App.prototype.initialize = function() {
     var self = this;
 
-    this.model.isInitialized = false;
+    self.model.isPopupDataLoaded = false;
+    self.model.isThreadCardsLoaded = false;
+    self.gmailView.parsingData = false;
+    self.model.gmail = self.gmailView.parseData();
+    self.model.init();
 
     gtt_log('App:initialize');
     
