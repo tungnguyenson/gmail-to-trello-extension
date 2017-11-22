@@ -85,11 +85,13 @@ GmailToTrello.Model.prototype.makeAvatarUrl = function(avatarHash) {
 GmailToTrello.Model.prototype.loadTrelloData = function() {
     gtt_log('loadTrelloData');
 
-    this.event.fire('onBeforeLoadTrello');
-    this.trello.user = null;
-
-
     var self = this;
+
+    self.event.fire('onBeforeLoadTrello');
+
+    self.trello.user = null;
+    self.trello.boards = null;
+    self.trello.threadCards = null;
 
     // get user's info
     gtt_log('loadTrelloData: User info');
@@ -97,48 +99,100 @@ GmailToTrello.Model.prototype.loadTrelloData = function() {
         if (!data || !data.hasOwnProperty('id')) {
             return false;
         }
-
         self.trello.user = data;
-
-        gtt_log('loadTrelloData: User boards');
-        self.trello.boards = null;
-        Trello.get('members/me/boards', {
-                'organization': 'true',
-                'organization_fields': 'displayName',
-                'filter': 'open',
-                'fields': 'name' /* "name,closed" */
-            }, function(data) {
-                var validData = Array();
-                for (var i = 0; i < data.length; i++) {
-                    // if (data[i].idOrganization === null)
-                    //   data[i].idOrganization = '-1';
-
-                    // Only accept opening boards
-                    if (i==0) {
-                        // gtt_log(JSON.stringify(data[i]));
-                    }
-                    if (data[i].closed != true) {
-                        validData.push(data[i]);
-                    }
-                }
-                // gtt_log('loadTrelloData: Boards data');
-                // gtt_log(JSON.stringify(data));
-                // gtt_log(JSON.stringify(validData));
-                self.trello.boards = validData;
-                self.checkTrelloDataReady();
-            }, function failure(data) {
-            self.event.fire('onAPIFailure', {data:data});
-            }
-        );
         self.checkTrelloDataReady();
     }, function failure(data) {
         self.event.fire('onAPIFailure', {data:data});
     });
+
+    // get user's boards
+    gtt_log('loadTrelloData: User boards');
+    Trello.get('members/me/boards', {
+            'organization': 'true',
+            'organization_fields': 'displayName',
+            'filter': 'open',
+            'fields': 'name' /* "name,closed" */
+        }, function(data) {
+            var validData = Array();
+            for (var i = 0; i < data.length; i++) {
+                // if (data[i].idOrganization === null)
+                //   data[i].idOrganization = '-1';
+
+                // Only accept opening boards
+                if (i==0) {
+                    // gtt_log(JSON.stringify(data[i]));
+                }
+                if (data[i].closed != true) {
+                    validData.push(data[i]);
+                }
+            }
+            // gtt_log('loadTrelloData: Boards data');
+            // gtt_log(JSON.stringify(data));
+            // gtt_log(JSON.stringify(validData));
+            self.trello.boards = validData;
+            self.checkTrelloDataReady();
+        }, function failure(data) {
+            self.event.fire('onAPIFailure', {data:data});
+        }
+    );
+
+    // get cards associated with the thread on the current thread
+    // i would love to do this with the message ids, but there's no way to get all of them to search
+    // so let's use the subject and time method
+    if ($('h2.hP').length < 1) {
+        gtt_log('loadTrelloData: Current page is not a thread');
+        self.trello.threadCards = [];
+        self.checkTrelloDataReady();
+    }
+    else {
+        gtt_log('loadTrelloData: Cards for current thread');
+        var query = encodeURIComponent(self.gmail.subject);
+        Trello.get('search', {'query': query, 'modelTypes': 'cards'}, function(data) {
+
+            if (!data || !data.hasOwnProperty('cards')) {
+                data = {'cards': []}
+            }
+
+            // need to make sure the time matches
+            // because i may not be in the same time zone as when it was set, give a 24-hour window on either side
+            var messageTimes = [];
+            $('.g3').each(function () {
+                messageTimes.push(Date.parse($(this).attr('title').replace(' at ', ' ')).getTime());
+            });
+
+            var cards = [];
+            data['cards'].forEach(function (card) {
+                var addCard = false;
+                var matches = card.desc.match(/&within=1d&date=(\S+)/g);
+                matches.forEach(function (str) {
+                    var cardTime = Date.parse(decodeURIComponent(str.substring(16)).replace(' at ', ' ')).getTime();
+                    messageTimes.forEach(function (messageTime) {
+                        var diff = cardTime - messageTime;
+                        if (diff < 86400000 && diff > -86400000) {
+                            addCard = true;
+                        }
+                    });
+                });
+                if (addCard) {
+                    cards.push(card);
+                }
+            });
+
+            self.trello.threadCards = cards;
+            self.checkTrelloDataReady();
+
+        }, function failure(data) {
+            self.event.fire('onAPIFailure', {data:data});
+        });
+    }
+
+
 };
 
 GmailToTrello.Model.prototype.checkTrelloDataReady = function() {
     if (this.trello.user !== null &&
-        this.trello.boards !== null) {
+        this.trello.boards !== null &&
+        this.trello.threadCards !== null) {
         // yeah! the data is ready
         //gtt_log('checkTrelloDataReady: YES');
         //gtt_log(this);

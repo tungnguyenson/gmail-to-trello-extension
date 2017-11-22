@@ -88,6 +88,8 @@ GmailToTrello.App.prototype.bindEvents = function() {
     /*** PopupView's events binding ***/
 
     this.popupView.event.addListener('onPopupVisible', function() {
+        self.gmailView.parsingData = false;
+        self.model.gmail = self.gmailView.parseData();
         if (!self.model.isInitialized) {
             self.popupView.showMessage(self, 'Initializing...');
             self.popupView.$popupContent.hide();
@@ -96,8 +98,6 @@ GmailToTrello.App.prototype.bindEvents = function() {
         else {
             self.popupView.reset();
         }
-        self.gmailView.parsingData = false;
-        self.model.gmail = self.gmailView.parseData();
         self.popupView.bindGmailData(self.model.gmail);
         self.popupView.event.fire('periodicChecks');
     });
