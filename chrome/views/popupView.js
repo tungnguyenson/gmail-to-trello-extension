@@ -88,6 +88,7 @@ GmailToTrello.PopupView.prototype.confirmPopup = function() {
                   + 'data-tooltip="Add this Gmail to Trello">'
                   + '<div aria-haspopup="true" role="button" class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3" tabindex="0">' // class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3">' // 
                   + img
+                  + '<span id="gttButtonText"></span>'
                   + '<div id="gttDownArrow" class="G-asx T-I-J3 J-J5-Ji">&#9662;</div></div></div>';
         }
         gtt_log('PopupView:confirmPopup: creating button');

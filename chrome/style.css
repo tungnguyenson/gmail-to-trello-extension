@@ -85,11 +85,34 @@
     padding-right: 2px;
 }
 
-#gttDownArrow {
+#gttButton #gttDownArrow {
     opacity: 1;
     background: none;
     font-size: 12px;
     line-height: 5px;
+}
+
+#gttButton.withCards {
+    background-color: #0f9d58;
+    background-image: linear-gradient(to bottom,#0f9d58,#0f9152);
+    color: #ffffff;
+}
+
+#gttButton.withCards:hover {
+    background-image: linear-gradient(to bottom,#0f9d58,#058545);
+    border: 1px solid #007038;
+}
+
+#gttButton.withCards > div {
+    opacity:1;
+}
+
+#gttButton.withCards:hover > div {
+    opacity:1;
+}
+
+#gttButton.withCards img {
+    filter: invert(100%);
 }
 
 #gttPopup .content {
