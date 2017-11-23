@@ -139,21 +139,22 @@ GmailToTrello.App.prototype.bindEvents = function() {
     this.popupView.event.addListener('detectButton', function () {
         if (self.gmailView.preDetect()) {
             self.popupView.$toolBar = self.gmailView.$toolBar;
-            self.popupView.confirmPopup();            
+            self.popupView.confirmPopup();
         }
     });
 
     this.gmailView.event.addListener('onDetected', function() {
+        self.gmailView.parsingData = false;
+        self.model.gmail = self.gmailView.parseData();
         self.popupView.$toolBar = self.gmailView.$toolBar;
         self.popupView.init();
-
     });
 
     chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         if (request && request.hasOwnProperty('message') && request.message === 'gtt:keyboard_shortcut') {
             self.popupView.showPopup();
         }
-    }); 
+    });
 };
 
 GmailToTrello.App.prototype.updateData = function() {
@@ -172,8 +173,6 @@ GmailToTrello.App.prototype.initialize = function() {
 
     self.model.isPopupDataLoaded = false;
     self.model.isThreadCardsLoaded = false;
-    self.gmailView.parsingData = false;
-    self.model.gmail = self.gmailView.parseData();
     self.model.init();
 
     gtt_log('App:initialize');

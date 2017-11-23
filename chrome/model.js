@@ -224,12 +224,10 @@ GmailToTrello.Model.prototype.loadThreadTrelloCards = function () {
 
     self.isThreadCardsLoaded = true;
 
-    // TODO: The data for this should come from gmailView, not be gathered here
-
     // get cards associated with the thread on the current thread
     // i would love to do this with the message ids, but there's no way to get all of them to search
     // so let's use the subject and time method
-    if ($('h2.hP').length < 1) {
+    if (self.gmail.subject.length < 1) {
         gtt_log('loadThreadTrelloCards: Current page is not a thread');
         self.trello.threadCards = [];
         self.event.fire('onLoadThreadTrelloCardsSuccess');
@@ -245,11 +243,6 @@ GmailToTrello.Model.prototype.loadThreadTrelloCards = function () {
 
             // need to make sure the time matches
             // because i may not be in the same time zone as when it was set, give a 24-hour window on either side
-            var messageTimes = [];
-            $('.g3').each(function () {
-                messageTimes.push(Date.parse($(this).attr('title').replace(' at ', ' ')).getTime());
-            });
-
             var cards = [];
             data['cards'].forEach(function (card) {
                 var addCard = false;
@@ -257,7 +250,7 @@ GmailToTrello.Model.prototype.loadThreadTrelloCards = function () {
                 if (matches) {
                   matches.forEach(function (str) {
                       var cardTime = Date.parse(decodeURIComponent(str.substring(16)).replace(' at ', ' ')).getTime();
-                      messageTimes.forEach(function (messageTime) {
+                      self.gmail.messageTimes.forEach(function (messageTime) {
                           var diff = cardTime - messageTime;
                           if (diff < 86400000 && diff > -86400000) {
                               addCard = true;
