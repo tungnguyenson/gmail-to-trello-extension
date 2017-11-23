@@ -225,7 +225,6 @@ GmailToTrello.Model.prototype.loadThreadTrelloCards = function () {
     self.isThreadCardsLoaded = true;
 
     // TODO: The data for this should come from gmailView, not be gathered here
-    // TODO: When this is done, it needs to add the data to popupView somehow, then fire an event which should trigger popupView.buildPopupHtml
 
     // get cards associated with the thread on the current thread
     // i would love to do this with the message ids, but there's no way to get all of them to search
@@ -233,7 +232,7 @@ GmailToTrello.Model.prototype.loadThreadTrelloCards = function () {
     if ($('h2.hP').length < 1) {
         gtt_log('loadThreadTrelloCards: Current page is not a thread');
         self.trello.threadCards = [];
-        // TODO: Trigger event
+        self.event.fire('onLoadThreadTrelloCardsSuccess');
     }
     else {
         gtt_log('loadThreadTrelloCards: Cards for current thread');
@@ -255,22 +254,24 @@ GmailToTrello.Model.prototype.loadThreadTrelloCards = function () {
             data['cards'].forEach(function (card) {
                 var addCard = false;
                 var matches = card.desc.match(/&within=1d&date=(\S+)/g);
-                matches.forEach(function (str) {
-                    var cardTime = Date.parse(decodeURIComponent(str.substring(16)).replace(' at ', ' ')).getTime();
-                    messageTimes.forEach(function (messageTime) {
-                        var diff = cardTime - messageTime;
-                        if (diff < 86400000 && diff > -86400000) {
-                            addCard = true;
-                        }
-                    });
-                });
+                if (matches) {
+                  matches.forEach(function (str) {
+                      var cardTime = Date.parse(decodeURIComponent(str.substring(16)).replace(' at ', ' ')).getTime();
+                      messageTimes.forEach(function (messageTime) {
+                          var diff = cardTime - messageTime;
+                          if (diff < 86400000 && diff > -86400000) {
+                              addCard = true;
+                          }
+                      });
+                  });
+                }
                 if (addCard) {
                     cards.push(card);
                 }
             });
 
             self.trello.threadCards = cards;
-            // TODO: trigger event
+            self.event.fire('onLoadThreadTrelloCardsSuccess');
 
         }, function failure(data) {
             self.event.fire('onAPIFailure', {data:data});

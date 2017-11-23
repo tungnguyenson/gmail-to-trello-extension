@@ -69,22 +69,17 @@ GmailToTrello.PopupView.prototype.confirmPopup = function() {
         $button = $('#gttButton'),
         $popup = $('#gttPopup');
 
-    if ($button.length < 1) {
+    // If we need to load the cards for this thread
+    if (!self.parent.model.isThreadCardsLoaded) {
+        $button.detach();
+        $popup.detach();
+        gtt_log('PopupView:confirmPopup: getting data for button');
+        self.parent.model.loadThreadTrelloCards(); // loads cards, creates html, then circles back to confirmPopup
+        return;
+    }
 
-        if (this.html && this.html['add_to_trello'] && this.html['add_to_trello'].length > 0) {
-            gtt_log('PopupView:confirmPopup: creating button');
-            this.$toolBar.append(this.html['add_to_trello']);
-            self.addOrCreatePopup();
-        }
-        else if (!self.parent.model.isThreadCardsLoaded) {
-            self.parent.model.loadThreadTrelloCards(); // loads cards, creates html, then circles back to confirmPopup
-        }
-        else {
-            // already waiting to load Trello cards, do nothing
-        }
-
-    } else {
-
+    // If the button already exists on the page
+    if ($button.length > 0) {
         if ($button.first().is(":visible")) {
             gtt_log('PopupView:confirmPopup: button visible');
         } else {
@@ -100,18 +95,63 @@ GmailToTrello.PopupView.prototype.confirmPopup = function() {
             $button.first().appendTo(this.$toolBar);
             $popup.first().appendTo(this.$toolBar);
         }
-
         if ($popup.length < 1) {
             self.addOrCreatePopup();
         }
+        return;
+    }
 
+    // If the button doesn't exist but the html is set for it
+    if (this.html && this.html['add_to_trello'] && this.html['add_to_trello'].length > 0) {
+        gtt_log('PopupView:confirmPopup: creating button');
+        this.$toolBar.append(this.html['add_to_trello']);
+        self.addOrCreatePopup();
+        return;
     }
 
 };
 
-GmailToTrello.PopupView.prototype.buildPopupHtml = function() {
+GmailToTrello.PopupView.prototype.buildPopupHtml = function(threadCards) {
     gtt_log('PopupView:buildPopupHtml: building add_to_trello html');
     var self = this;
+
+    var className = '';
+    var buttonText = '';
+
+    if (threadCards.length > 0) {
+        var allClosed = true;
+        var minDue = null;
+        className = ' withCards';
+        threadCards.forEach(function (card) {
+            if (card['closed'] === false && card['dueComplete'] === false) {
+                allClosed = false;
+                if (card['due']) {
+                    var due = new Date(card['due'].replace('T',' ') + ' UTC');
+                    if (minDue === null || due < minDue) {
+                        minDue = due;
+                    }
+                }
+            }
+        });
+        if (allClosed) {
+            buttonText = 'Complete';
+        }
+        else if (!minDue) {
+            buttonText = threadCards.length + ' Card' + (threadCards.length === 1 ? '' : 's');
+        }
+        else if (minDue < new Date()) {
+            buttonText = 'Overdue';
+        }
+        else if (minDue.toString('yyyy-MM-dd') === Date.today().toString('yyyy-MM-dd')) {
+            buttonText = 'Today';
+        }
+        else if (minDue.toString('yyyy-MM-dd') === Date.parse('tomorrow').toString('yyyy-MM-dd')) {
+            buttonText = 'Tomorrow';
+        }
+        else {
+            buttonText = minDue.toString('MMM d, yyyy');
+        }
+    }
 
     var img = 'GtT';
     // Refresh icon present? If so, use graphics, if not, use text:
@@ -120,13 +160,16 @@ GmailToTrello.PopupView.prototype.buildPopupHtml = function() {
           + chrome.extension.getURL('images/trello-icon-black.png')
           + '" />';
     }
+
     self.html['add_to_trello'] =
-        '<div id="gttButton" class="T-I J-J5-Ji ar7 nf T-I-ax7 L3" ' // "lS T-I-ax7 ar7"
+        '<div id="gttButton" class="T-I J-J5-Ji ar7 nf T-I-ax7 L3' + className + '" ' // "lS T-I-ax7 ar7"
           + 'data-tooltip="Add this Gmail to Trello">'
           + '<div aria-haspopup="true" role="button" class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3" tabindex="0">' // class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3">' // 
           + img
           + '<span id="gttButtonText"></span>'
+          + (buttonText.length > 0 ? '&nbsp;' + buttonText + '&nbsp;' : '')
           + '<div id="gttDownArrow" class="G-asx T-I-J3 J-J5-Ji">&#9662;</div></div></div>';
+
     self.confirmPopup();
 
 };

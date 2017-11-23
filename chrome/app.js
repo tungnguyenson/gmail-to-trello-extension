@@ -62,6 +62,10 @@ GmailToTrello.App.prototype.bindEvents = function() {
         self.popupView.validateData();
     });
 
+    this.model.event.addListener('onLoadThreadTrelloCardsSuccess', function () {
+        self.popupView.buildPopupHtml(self.model.trello.threadCards);
+    });
+
     this.model.event.addListener('onCardSubmitComplete', function(target, params) {
         self.popupView.displaySubmitCompleteForm();
         // If card lists or labels have been updated, reload:
