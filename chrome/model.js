@@ -227,7 +227,7 @@ GmailToTrello.Model.prototype.loadThreadTrelloCards = function () {
     // get cards associated with the thread on the current thread
     // i would love to do this with the message ids, but there's no way to get all of them to search
     // so let's use the subject and time method
-    if (self.gmail.subject.length < 1) {
+    if (!self.gmail || !self.gmail.subject || self.gmail.subject.length < 1) {
         gtt_log('loadThreadTrelloCards: Current page is not a thread');
         self.trello.threadCards = [];
         self.event.fire('onLoadThreadTrelloCardsSuccess');

@@ -163,8 +163,6 @@ GmailToTrello.App.prototype.updateData = function() {
     if (self.model.trello.user !== null && self.model.trello.boards !== null) {
         self.popupView.bindData(self.model);
     }
-    self.gmailView.parsingData = false;
-    self.model.gmail = self.gmailView.parseData();
     self.popupView.bindGmailData(self.model.gmail);
 };
 
@@ -593,7 +591,7 @@ GmailToTrello.App.prototype.loadSettings = function(popup) {
         if (response && response.hasOwnProperty(setID)) {
             self.popupView.data.settings = JSON.parse(response[setID]); // NOTE (Ace, 7-Feb-2017): Might need to store these off the app object
         }
-        if (popup) { 
+        if (popup) {
             popup.init_popup();
             self.updateData();
         }

@@ -179,7 +179,6 @@ GmailToTrello.PopupView.prototype.addOrCreatePopup = function () {
     if (self.html && self.html['popup'] && self.html['popup'].length > 0) {
         gtt_log('PopupView:addOrCreatePopup: adding popup');
         self.$toolBar.append(self.html['popup']);
-        // TODO: loadSettings here calls parseData, which is redundant because we just called it...
         this.parent.loadSettings(self); // Calls init_popup
     } else {
         $.get(chrome.extension.getURL('views/popupView.html'), function(data) {
