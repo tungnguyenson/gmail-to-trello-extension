@@ -263,6 +263,19 @@ GmailToTrello.Model.prototype.loadThreadTrelloCards = function () {
                 }
             });
 
+            cards.sort(function (a,b) {
+                if (!a.closed && b.closed) { return -1; }
+                if (a.closed && !b.closed) { return 1; }
+                if (!a.dueComplete && b.dueComplete) { return -1; }
+                if (a.dueComplete && !b.dueComplete) { return 1; }
+                if (a.due && !b.due) { return -1; }
+                if (b.due && !a.due) { return 1; }
+                if (a.due && b.due) {
+                    return new Date(a.due.replace('T',' ')).getTime() - new Date(b.due.replace('T',' ')).getTime();
+                }
+                return 0;
+            });
+
             self.trello.threadCards = cards;
             self.event.fire('onLoadThreadTrelloCardsSuccess');
 

@@ -115,10 +115,156 @@
     filter: invert(100%);
 }
 
+#gttPopup .outerContent {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+#gttPopup #threadCards {
+    background: #E2E4E6;
+    border-bottom: 1px solid #d8d8d8;
+    padding: 10px 10px 7px 10px;
+    margin-bottom: 10px;
+}
+
+#gttPopup #threadCards .threadCard {
+    overflow: hidden;
+    padding: 6px 6px 2px 8px;
+    position: relative;
+    display: block;
+    float: left;
+    background: #ffffff;
+    color: #4d4d4d;
+    word-wrap: break-word;
+    border-bottom: 1px solid #ccc;
+    border-radius: 3px;
+    cursor: pointer;
+    margin: 0 6px 3px 0;
+    width: 180px;
+    min-height: 20px;
+    text-decoration: none;
+}
+
+#gttPopup #threadCards .threadCard:hover {
+    background: #EDEFF0;
+    border-bottom-color: #D6DADC;
+}
+
+#gttPopup #threadCards .threadCard .cardLabels {
+    margin: 2px 0 4px 0;
+    overflow: auto;
+    display: block;
+}
+
+#gttPopup #threadCards .threadCard .cardLabels .cardLabel {
+    font-size: 10px;
+    height: 12px;
+    line-height: 12px;
+    padding: 0 4px;
+    -webkit-font-smoothing: antialiased;
+    max-width: 120px;
+    overflow: hidden;
+    border-radius: 3px;
+    color: #fff;
+    display: block;
+    float: left;
+    font-weight: 600;
+    margin: 0 3px 3px 0;
+    min-width: 42px;
+    text-shadow: none;
+    width: auto;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#gttPopup #threadCards .threadCard .green { background-color: #61BD4F; }
+#gttPopup #threadCards .threadCard .yellow { background-color: #F2D600; }
+#gttPopup #threadCards .threadCard .orange { background-color: #FFAB4A; }
+#gttPopup #threadCards .threadCard .red { background-color: #EB5A46; }
+#gttPopup #threadCards .threadCard .purple { background-color: #C377E0; }
+#gttPopup #threadCards .threadCard .blue { background-color: #0079BF; }
+#gttPopup #threadCards .threadCard .sky { background-color: #00C2E0; }
+#gttPopup #threadCards .threadCard .lime { background-color: #51E898; }
+#gttPopup #threadCards .threadCard .pink { background-color: #FF80CE; }
+#gttPopup #threadCards .threadCard .black { background-color: #4d4d4d; }
+
+#gttPopup #threadCards .threadCard .cardName {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+#gttPopup #threadCards .threadCard .cardDue {
+    margin: 4px 10px 4px 0;
+    display: block;
+    float: left;
+    font-size: 10px;
+    height: 16px;
+    line-height: 16px;
+    padding: 0 4px;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+    border-radius: 3px;
+    color: #fff;
+    font-weight: 600;
+    text-shadow: none;
+    width: auto;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#gttPopup #threadCards .threadCard .cardDue img {
+    height: 11px;
+    width: 11px;
+    filter: invert(100%);
+    vertical-align: middle;
+    padding-bottom: 1px;
+}
+
+#gttPopup #threadCards .threadCard .cardDue.nocolor {
+    color: #000;
+    opacity: 0.4;
+    font-weight: 400;
+    -webkit-font-smoothing: inherit;
+}
+
+#gttPopup #threadCards .threadCard .cardDue.nocolor img {
+    filter: invert(0%);
+}
+
+#gttPopup #threadCards .threadCard .archived {
+    color: #000;
+    opacity: 0.4;
+    margin: 4px 0;
+    display: block;
+    float: left;
+    font-size: 10px;
+    height: 16px;
+    line-height: 16px;
+    padding: 0 4px;
+    overflow: hidden;
+    text-shadow: none;
+    width: auto;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#gttPopup #threadCards .threadCard .archived img {
+    height: 12px;
+    vertical-align: middle;
+    padding-bottom: 2px;
+}
+
 #gttPopup .content {
     position: relative;
-    left: 0; 
+    left: 0;
     padding: 5px;
+}
+
+#gttPopup .ui-resizable-handle {
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }
 
 #gttPopup .popupMsg {border:1px solid #EDC967; background: #F9EDB8; padding:5px 10px 15px; margin: 10px;}

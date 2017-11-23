@@ -254,6 +254,9 @@ GmailToTrello.PopupView.prototype.onResize = function() {
 };
 
 GmailToTrello.PopupView.prototype.resetDragResize = function() {
+    if (this.$popup.hasClass('ui-resizable')) {
+      this.$popup.draggable('destroy').resizeable('destroy');
+    }
     this.$popup
         .draggable({ disabled: false })
         .resizable({
@@ -296,6 +299,57 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
     }, function() {
         $(this).removeClass('T-I-JW');
     });
+
+    // add existing cards to the popup if they exist
+    var $tcdiv = $('#threadCards', this.$popup);
+    $tcdiv.html('').hide(); // clear out
+    var threadCards = self.parent.model.trello.threadCards;
+    if (threadCards.length > 0) {
+        threadCards.forEach(function (cardData) {
+            var $card = $('<a class="threadCard"></a>');
+            $card.attr('href', cardData.url);
+            if (cardData.labels.length > 0) {
+              var $labels = $('<span class="cardLabels"></span>');
+              cardData.labels.forEach(function (labelData) {
+                  if (!labelData.color)
+                    return;
+                  var $label = $('<span class="cardLabel"></span>');
+                  $label.addClass(labelData.color);
+                  $label.text(labelData.name);
+                  $labels.append($label);
+              });
+              $card.append($labels);
+            }
+            var $name = $('<span class="cardName"></span>');
+            $name.text(cardData.name);
+            $card.append($name);
+            if (cardData.closed) {
+                var box = chrome.extension.getURL('images/archived.png');
+                $card.append('<span class="archived"><img src="'+box+'" /> Archived</span>');
+            }
+            else if (cardData.due) {
+                var clock = chrome.extension.getURL('images/clock.png');
+                var due = new Date(cardData.due.replace('T', ' ') + ' UTC');
+                var $date = $('<span class="cardDue"><img src="'+clock+'" /> '+due.toString('MMM dd')+'</span>');
+                if (cardData.dueComplete) {
+                    $date.addClass('green');
+                }
+                else if (due.getTime() - new Date().getTime() < 0) {
+                    $date.addClass('red');
+                }
+                else if (due.getTime() - new Date().getTime() < 86400000) {
+                    $date.addClass('yellow');
+                }
+                else {
+                    $date.addClass('nocolor');
+                }
+                $card.append($date);
+            }
+            $tcdiv.append($card);
+        });
+        $tcdiv.append('<span style="display:block;clear:both"></span>');
+        $tcdiv.show();
+    }
 
     var $board = $('#gttBoard', this.$popup);
     $board.change(function() {
