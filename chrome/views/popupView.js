@@ -36,6 +36,8 @@ GmailToTrello.PopupView = function(parent) {
 
     this.lastError = '';
 
+    this.detectButtonInterval = null;
+
     this.EVENT_LISTENER = '.gtt_event_listener';
 
     this.CLEAR_EXT_BROWSING_DATA = 'gtt:clear_extension_browsing_data';
@@ -52,7 +54,8 @@ GmailToTrello.PopupView.prototype.init = function() {
     // inject a button & a popup
     this.confirmPopup();
 
-    setInterval(function() {
+    clearInterval(self.detectButtonInterval);
+    self.detectButtonInterval = setInterval(function() {
         self.event.fire('detectButton');
     }, 2000);
 };
@@ -63,68 +66,128 @@ GmailToTrello.PopupView.prototype.confirmPopup = function() {
 //    }
 
     var self = this,
-        needInit = false,
         $button = $('#gttButton'),
         $popup = $('#gttPopup');
 
-    if ($button.length < 1) {
-        if (this.html && this.html['add_to_trello'] && this.html['add_to_trello'].length > 0) {
-           gtt_log('PopupView:confirmPopup: add_to_trello_html already exists');
-        } else {
-            var img = 'GtT';
-            
-            // Refresh icon present? If so, use graphics, if not, use text:
-            if ($('div.asl.T-I-J3.J-J5-Ji,div.asf.T-I-J3.J-J5-Ji', this.$toolBar).length > 0) {
-                img = '<img class="f tk3N6e-I-J3" height="13" width="13" src="'
-                  + chrome.extension.getURL('images/icon-13.jpg')
-                  + '" />';
-            }
+    // If we need to load the cards for this thread
+    if (!self.parent.model.isThreadCardsLoaded) {
+        $button.detach();
+        $popup.detach();
+        gtt_log('PopupView:confirmPopup: getting data for button');
+        self.parent.model.loadThreadTrelloCards(); // loads cards, creates html, then circles back to confirmPopup
+        return;
+    }
 
-            this.html['add_to_trello'] =
-                '<div id="gttButton" class="T-I J-J5-Ji ar7 nf T-I-ax7 L3" ' // "lS T-I-ax7 ar7"
-                  + 'data-tooltip="Add this Gmail to Trello">'
-                  + '<div aria-haspopup="true" role="button" class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3" tabindex="0">' // class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3">' // 
-                  + img
-                  + '<div id="gttDownArrow" class="G-asx T-I-J3 J-J5-Ji">&nbsp;</div></div></div>';
+    // If the button already exists on the page
+    if ($button.length > 0) {
+        if ($button.first().is(":visible")) {
+            gtt_log('PopupView:confirmPopup: button visible');
+        } else {
+            gtt_log('PopupView:confirmPopup: Button is in an inactive region. Moving...');
+            //relocate
+            if ($button.length > 1) {
+                $button.detach(); // In case multiple copies were created
+                if ($popup.length > 1) {
+                    $popup.detach(); // In case copies were created
+                }
+            }
+            gtt_log('PopupView:confirmPopup: adding Button and Popup');
+            $button.first().appendTo(this.$toolBar);
+            $popup.first().appendTo(this.$toolBar);
         }
+        if ($popup.length < 1) {
+            self.addOrCreatePopup();
+        }
+        return;
+    }
+
+    // If the button doesn't exist but the html is set for it
+    if (this.html && this.html['add_to_trello'] && this.html['add_to_trello'].length > 0) {
         gtt_log('PopupView:confirmPopup: creating button');
         this.$toolBar.append(this.html['add_to_trello']);
-        needInit = true;
-    } else if ($button.first().is(":visible")) {
-        gtt_log('PopupView:confirmPopup: button visible');
-    } else {
-        gtt_log('PopupView:confirmPopup: Button is in an inactive region. Moving...');
-        //relocate
-        if ($button.length > 1) {
-            $button.detach(); // In case multiple copies were created
-            if ($popup.length > 1) {
-                $popup.detach(); // In case copies were created
+        self.addOrCreatePopup();
+        return;
+    }
+
+};
+
+GmailToTrello.PopupView.prototype.buildPopupHtml = function(threadCards) {
+    gtt_log('PopupView:buildPopupHtml: building add_to_trello html');
+    var self = this;
+
+    var className = '';
+    var buttonText = '';
+
+    if (threadCards.length > 0) {
+        var allClosed = true;
+        var minDue = null;
+        className = ' withCards';
+        threadCards.forEach(function (card) {
+            if (card['closed'] === false && card['dueComplete'] === false) {
+                allClosed = false;
+                if (card['due']) {
+                    var due = new Date(card['due'].replace('T',' ') + ' UTC');
+                    if (minDue === null || due < minDue) {
+                        minDue = due;
+                    }
+                }
             }
+        });
+        if (allClosed) {
+            buttonText = 'Complete';
         }
-        gtt_log('PopupView:confirmPopup: adding Button and Popup');
-        $button.first().appendTo(this.$toolBar);
-        $popup.first().appendTo(this.$toolBar);
-    }
-
-    if (needInit || $popup.length < 1) {
-        if (this.html && this.html['popup'] && this.html['popup'].length > 0) {
-            gtt_log('PopupView:confirmPopup: adding popup');
-            this.$toolBar.append(this.html['popup']);
-            needInit = true;
-        } else {
-            needInit = false;
-            $.get(chrome.extension.getURL('views/popupView.html'), function(data) {
-                // data = self.parent.replacer(data, {'jquery-ui-css': chrome.extension.getURL('lib/jquery-ui-1.12.1.min.css')}); // OBSOLETE (Ace@2017.06.09): Already loaded by manifest
-                self.html['popup'] = data;
-                gtt_log('PopupView:confirmPopup: creating popup')
-                self.$toolBar.append(data);
-                self.parent.loadSettings(self); // Calls init_popup
-            });
+        else if (!minDue) {
+            buttonText = threadCards.length + ' Card' + (threadCards.length === 1 ? '' : 's');
+        }
+        else if (minDue < new Date()) {
+            buttonText = 'Overdue';
+        }
+        else if (minDue.toString('yyyy-MM-dd') === Date.today().toString('yyyy-MM-dd')) {
+            buttonText = 'Today';
+        }
+        else if (minDue.toString('yyyy-MM-dd') === Date.parse('tomorrow').toString('yyyy-MM-dd')) {
+            buttonText = 'Tomorrow';
+        }
+        else {
+            buttonText = minDue.toString('MMM d, yyyy');
         }
     }
 
-    if (needInit) {
-        this.parent.loadSettings(this); // Calls init_popup
+    var img = 'GtT';
+    // Refresh icon present? If so, use graphics, if not, use text:
+    if ($('div.asl.T-I-J3.J-J5-Ji,div.asf.T-I-J3.J-J5-Ji', self.$toolBar).length > 0) {
+        img = '<img class="f tk3N6e-I-J3" src="'
+          + chrome.extension.getURL('images/trello-icon-black.png')
+          + '" />';
+    }
+
+    self.html['add_to_trello'] =
+        '<div id="gttButton" class="T-I J-J5-Ji ar7 nf T-I-ax7 L3' + className + '" ' // "lS T-I-ax7 ar7"
+          + 'data-tooltip="Add this Gmail to Trello">'
+          + '<div aria-haspopup="true" role="button" class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3" tabindex="0">' // class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3">' // 
+          + img
+          + '<span id="gttButtonText"></span>'
+          + (buttonText.length > 0 ? '&nbsp;' + buttonText + '&nbsp;' : '')
+          + '<div id="gttDownArrow" class="G-asx T-I-J3 J-J5-Ji">&#9662;</div></div></div>';
+
+    self.confirmPopup();
+
+};
+
+GmailToTrello.PopupView.prototype.addOrCreatePopup = function () {
+    var self = this;
+    if (self.html && self.html['popup'] && self.html['popup'].length > 0) {
+        gtt_log('PopupView:addOrCreatePopup: adding popup');
+        self.$toolBar.append(self.html['popup']);
+        this.parent.loadSettings(self); // Calls init_popup
+    } else {
+        $.get(chrome.extension.getURL('views/popupView.html'), function(data) {
+            // data = self.parent.replacer(data, {'jquery-ui-css': chrome.extension.getURL('lib/jquery-ui-1.12.1.min.css')}); // OBSOLETE (Ace@2017.06.09): Already loaded by manifest
+            self.html['popup'] = data;
+            gtt_log('PopupView:addOrCreatePopup: creating popup')
+            self.$toolBar.append(data);
+            self.parent.loadSettings(self); // Calls init_popup
+        });
     }
 };
 
@@ -191,6 +254,9 @@ GmailToTrello.PopupView.prototype.onResize = function() {
 };
 
 GmailToTrello.PopupView.prototype.resetDragResize = function() {
+    if (this.$popup.hasClass('ui-resizable')) {
+      this.$popup.draggable('destroy').resizeable('destroy');
+    }
     this.$popup
         .draggable({ disabled: false })
         .resizable({
@@ -233,6 +299,57 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
     }, function() {
         $(this).removeClass('T-I-JW');
     });
+
+    // add existing cards to the popup if they exist
+    var $tcdiv = $('#threadCards', this.$popup);
+    $tcdiv.html('').hide(); // clear out
+    var threadCards = self.parent.model.trello.threadCards;
+    if (threadCards.length > 0) {
+        threadCards.forEach(function (cardData) {
+            var $card = $('<a class="threadCard"></a>');
+            $card.attr('href', cardData.url);
+            if (cardData.labels.length > 0) {
+              var $labels = $('<span class="cardLabels"></span>');
+              cardData.labels.forEach(function (labelData) {
+                  if (!labelData.color)
+                    return;
+                  var $label = $('<span class="cardLabel"></span>');
+                  $label.addClass(labelData.color);
+                  $label.text(labelData.name);
+                  $labels.append($label);
+              });
+              $card.append($labels);
+            }
+            var $name = $('<span class="cardName"></span>');
+            $name.text(cardData.name);
+            $card.append($name);
+            if (cardData.closed) {
+                var box = chrome.extension.getURL('images/archived.png');
+                $card.append('<span class="archived"><img src="'+box+'" /> Archived</span>');
+            }
+            else if (cardData.due) {
+                var clock = chrome.extension.getURL('images/clock.png');
+                var due = new Date(cardData.due.replace('T', ' ') + ' UTC');
+                var $date = $('<span class="cardDue"><img src="'+clock+'" /> '+due.toString('MMM dd')+'</span>');
+                if (cardData.dueComplete) {
+                    $date.addClass('green');
+                }
+                else if (due.getTime() - new Date().getTime() < 0) {
+                    $date.addClass('red');
+                }
+                else if (due.getTime() - new Date().getTime() < 86400000) {
+                    $date.addClass('yellow');
+                }
+                else {
+                    $date.addClass('nocolor');
+                }
+                $card.append($date);
+            }
+            $tcdiv.append($card);
+        });
+        $tcdiv.append('<span style="display:block;clear:both"></span>');
+        $tcdiv.show();
+    }
 
     var $board = $('#gttBoard', this.$popup);
     $board.change(function() {
@@ -1165,28 +1282,6 @@ GmailToTrello.PopupView.prototype.validateData = function() {
 GmailToTrello.PopupView.prototype.reset = function() {
     this.$popupMessage.hide();
     this.$popupContent.show();
-};
-
-GmailToTrello.PopupView.prototype.displaySubmitCompleteForm = function() {
-    var self = this;
-    var data = this.data.newCard;
-    gtt_log('displaySubmitCompleteForm: ' + this.data);
-
-    // NB: this is a terrible hack. The existing showMessage displays HTML by directly substituting text strings.
-    // This is very dangerous (very succeptible to XSS attacks) and generally bad practice.  It should be either 
-    // switched to a templating system, or changed to use jQuery. For now, I've used this to fix
-    // vulnerabilities without having to completely rewrite the substitution part of this code.
-    // TODO(vijayp): clean this up in the future
-    var jQueryToRawHtml = function(jQueryObject) {
-        return jQueryObject.prop('outerHTML');
-    }
-    this.showMessage(self, '<a class="hideMsg" title="Dismiss message">&times;</a>Trello card updated: ' + 
-        jQueryToRawHtml($('<a>')
-            .attr('href', data.url)
-            .attr('target', '_blank')
-            .append(data.title))
-        );
-    this.$popupContent.hide();
 };
 
 GmailToTrello.PopupView.prototype.displayAPIFailedForm = function(response) {

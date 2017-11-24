@@ -31,11 +31,11 @@ GmailToTrello.App.prototype.bindEvents = function() {
         gtt_log("Status: " + Trello.authorized().toString());
     });
     
-    this.model.event.addListener('onBeforeLoadTrello', function() {
+    this.model.event.addListener('onBeforeLoadPopup', function() {
         self.popupView.showMessage(self, 'Loading Trello data...');
     });
     
-    this.model.event.addListener('onTrelloDataReady', function() {
+    this.model.event.addListener('onPopupDataReady', function() {
         self.popupView.$popupContent.show();
         self.popupView.hideMessage();
 
@@ -62,8 +62,14 @@ GmailToTrello.App.prototype.bindEvents = function() {
         self.popupView.validateData();
     });
 
+    this.model.event.addListener('onLoadThreadTrelloCardsSuccess', function () {
+        self.popupView.buildPopupHtml(self.model.trello.threadCards);
+    });
+
     this.model.event.addListener('onCardSubmitComplete', function(target, params) {
-        self.popupView.displaySubmitCompleteForm();
+        self.popupView.$gttButton.detach();
+        self.popupView.$popup.detach();
+        self.popupView.buildPopupHtml(self.model.trello.threadCards);
         // If card lists or labels have been updated, reload:
         const data_k = self.deep_link(params, ['data']);
         const listId_k = self.deep_link(data_k, ['data', 'list', 'id']);
@@ -88,16 +94,16 @@ GmailToTrello.App.prototype.bindEvents = function() {
     /*** PopupView's events binding ***/
 
     this.popupView.event.addListener('onPopupVisible', function() {
-        if (!self.model.isInitialized) {
+        self.gmailView.parsingData = false;
+        self.model.gmail = self.gmailView.parseData();
+        if (!self.model.isPopupDataLoaded) {
             self.popupView.showMessage(self, 'Initializing...');
             self.popupView.$popupContent.hide();
-            self.model.init();
+            self.model.loadPopupData();
         }
         else {
             self.popupView.reset();
         }
-        self.gmailView.parsingData = false;
-        self.model.gmail = self.gmailView.parseData();
         self.popupView.bindGmailData(self.model.gmail);
         self.popupView.event.fire('periodicChecks');
     });
@@ -135,21 +141,22 @@ GmailToTrello.App.prototype.bindEvents = function() {
     this.popupView.event.addListener('detectButton', function () {
         if (self.gmailView.preDetect()) {
             self.popupView.$toolBar = self.gmailView.$toolBar;
-            self.popupView.confirmPopup();            
+            self.popupView.confirmPopup();
         }
     });
 
     this.gmailView.event.addListener('onDetected', function() {
+        self.gmailView.parsingData = false;
+        self.model.gmail = self.gmailView.parseData();
         self.popupView.$toolBar = self.gmailView.$toolBar;
         self.popupView.init();
-
     });
 
     chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         if (request && request.hasOwnProperty('message') && request.message === 'gtt:keyboard_shortcut') {
             self.popupView.showPopup();
         }
-    }); 
+    });
 };
 
 GmailToTrello.App.prototype.updateData = function() {
@@ -158,15 +165,15 @@ GmailToTrello.App.prototype.updateData = function() {
     if (self.model.trello.user !== null && self.model.trello.boards !== null) {
         self.popupView.bindData(self.model);
     }
-    self.gmailView.parsingData = false;
-    self.model.gmail = self.gmailView.parseData();
     self.popupView.bindGmailData(self.model.gmail);
 };
 
 GmailToTrello.App.prototype.initialize = function() {
     var self = this;
 
-    this.model.isInitialized = false;
+    self.model.isPopupDataLoaded = false;
+    self.model.isThreadCardsLoaded = false;
+    self.model.init();
 
     gtt_log('App:initialize');
     
@@ -586,7 +593,7 @@ GmailToTrello.App.prototype.loadSettings = function(popup) {
         if (response && response.hasOwnProperty(setID)) {
             self.popupView.data.settings = JSON.parse(response[setID]); // NOTE (Ace, 7-Feb-2017): Might need to store these off the app object
         }
-        if (popup) { 
+        if (popup) {
             popup.init_popup();
             self.updateData();
         }

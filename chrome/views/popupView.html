@@ -9,54 +9,57 @@
         <a id="close-button" title="Close">&times;</a>
     </div>
     <div class="popupMsg">Loading...</div>
-    <div class="content" style="display: none;">
-        <div class="gttTopRight">
-            <div style="float: left;" class="clearfix listrow">
-                <ul id="gttPosition" />
+    <div class="outerContent">
+        <div id="threadCards" style="display: none;"></div>
+        <div class="content" style="display: none;">
+            <div class="gttTopRight">
+                <div style="float: left;" class="clearfix listrow">
+                    <ul id="gttPosition" />
+                </div>
+                <div style="float: left;"><input type="button" disabled="true" id="addToTrello" title="Add this Gmail data to Trello" value="+Trello!" /></div>
             </div>
-            <div style="float: left;"><input type="button" disabled="true" id="addToTrello" title="Add this Gmail data to Trello" value="+Trello!" /></div>
+            <dl>
+                <dt>Where:</dt>
+                <dd><select id="gttBoard" class="gttWhere">
+                        <option value="">Select a board...</option>
+                    </select>
+                    <select id="gttList" class="gttWhere">
+                        <option value="">...please pick a board...</option>
+                    </select>
+                    <select id="gttCard" class="gttWhere">
+                        <option value="">...please pick a list...</option>
+                    </select>
+                </dd>
+                <dt id="gttLabelsHeader" title="Shift-click me to clear all labels">Labels:</dt>
+                <dd class="clearfix listrow">
+                    <div id="gttLabelsMsg">...please pick a board...</div>
+                    <ul id="gttLabels" />
+                </dd>
+                <dt id="gttMembersHeader" title="Shift-click me to clear all assignments">Assign:</dt>
+                <dd class="clearfix listrow">
+                    <div id="gttMembersMsg">...please pick a board...</div>
+                    <ul id="gttMembers" />
+                </dd>
+                <dt>Due:</dt>
+                <dd>
+                    <input type="date" id="gttDue_Date" /> <input type="time" id="gttDue_Time" />
+                    <select id="gttDue_Shortcuts" style="width: 3em;">
+                        <option value="d=0 am=0">--</option>
+                    </select>
+                    <input type="checkbox" checked="checked" id="chkMarkdown" style="margin-left: 10px;" />
+                    <label for="chkMarkdown">Markdown</label>
+                    <input type="checkbox" checked="checked" id="chkBackLink" style="margin-left: 10px;" />
+                    <label for="chkBackLink">Add Gmail link</label>
+                </dd>
+                <dt>Title:</dt>
+                <dd><input type="text" id="gttTitle" /></dd>
+                <dt>Body:</dt>
+                <dd><textarea id="gttDesc" rows="4"></textarea></dd>
+                <dt>Attach:</dt>
+                <dd id="gttAttachments" />
+                <dt>Images:</dt>
+                <dd id="gttImages" />
+           </dl>
         </div>
-        <dl>
-            <dt>Where:</dt>
-            <dd><select id="gttBoard" class="gttWhere">
-                    <option value="">Select a board...</option>
-                </select>
-                <select id="gttList" class="gttWhere">
-                    <option value="">...please pick a board...</option>
-                </select>
-                <select id="gttCard" class="gttWhere">
-                    <option value="">...please pick a list...</option>
-                </select>
-            </dd>
-            <dt id="gttLabelsHeader" title="Shift-click me to clear all labels">Labels:</dt>
-            <dd class="clearfix listrow">
-                <div id="gttLabelsMsg">...please pick a board...</div>
-                <ul id="gttLabels" />
-            </dd>
-            <dt id="gttMembersHeader" title="Shift-click me to clear all assignments">Assign:</dt>
-            <dd class="clearfix listrow">
-                <div id="gttMembersMsg">...please pick a board...</div>
-                <ul id="gttMembers" />
-            </dd>
-            <dt>Due:</dt>
-            <dd>
-                <input type="date" id="gttDue_Date" /> <input type="time" id="gttDue_Time" />
-                <select id="gttDue_Shortcuts" style="width: 3em;">
-                    <option value="d=0 am=0">--</option>
-                </select>
-                <input type="checkbox" checked="checked" id="chkMarkdown" style="margin-left: 10px;" />
-                <label for="chkMarkdown">Markdown</label>
-                <input type="checkbox" checked="checked" id="chkBackLink" style="margin-left: 10px;" />
-                <label for="chkBackLink">Add Gmail link</label>
-            </dd>
-            <dt>Title:</dt>
-            <dd><input type="text" id="gttTitle" /></dd>
-            <dt>Body:</dt>
-            <dd><textarea id="gttDesc" rows="4"></textarea></dd>
-            <dt>Attach:</dt>
-            <dd id="gttAttachments" />
-            <dt>Images:</dt>
-            <dd id="gttImages" />
-       </dl>
     </div>
 </div>

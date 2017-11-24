@@ -25,12 +25,13 @@ GmailToTrello.GmailView = function(parent) {
         emailBody: '.adP:first', // Was: '.adO:first'
         emailAttachments: '.aZo', // Was: '.aQy',
         emailThreadID: '.a3s.aXjCH',
-        viewport: '.aeJ:first',
+        viewport: '[role="main"]',
         viewportSplit: '.aNW:first', //reading panel
         expandedEmails: '.h7',
         hiddenEmails: '.kv',
         emailInThreads: '.kv,.h7',
         timestamp: '.gH .gK .g3:first',
+        messageTimes: '.g3',
         host: 'a.gb_b.gb_eb.gb_R'
     };
 };
@@ -43,7 +44,6 @@ GmailToTrello.GmailView.prototype.preDetect = function() {
     
     if ($activeGroup.find('.apv').length > 0) {
         gtt_log('detect: Detected SplitLayout');
-
         this.layoutMode = this.LAYOUT_SPLIT;
         this.$root = $activeGroup;
     } else {
@@ -228,8 +228,14 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     var from_raw = emailName + ' <' + emailAddress + '> ' + data.time;
     var from_md = '[' + emailName + '](' + emailAddress + ') ' + data.time;  // FYI (Ace, 10-Jan-2017): [name](url "comment") is markdown syntax
 
+    // all message times in this thread
+    data.messageTimes = [];
+    $(this.selectors.messageTimes, $viewport).each(function () {
+        data.messageTimes.push(Date.parse($(this).attr('title').replace(' at ', ' ')).getTime());
+    });
+
     // subject
-    data.subject = ($(this.selectors.emailSubject, this.$root).text() || '').trim();
+    data.subject = ($(this.selectors.emailSubject, $viewport).text() || '').trim();
 
     var subject = encodeURIComponent(data.subject);
     var dateSearch = encodeURIComponent(data.time);
