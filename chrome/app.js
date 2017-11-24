@@ -67,7 +67,9 @@ GmailToTrello.App.prototype.bindEvents = function() {
     });
 
     this.model.event.addListener('onCardSubmitComplete', function(target, params) {
-        self.popupView.displaySubmitCompleteForm();
+        self.popupView.$gttButton.detach();
+        self.popupView.$popup.detach();
+        self.popupView.buildPopupHtml(self.model.trello.threadCards);
         // If card lists or labels have been updated, reload:
         const data_k = self.deep_link(params, ['data']);
         const listId_k = self.deep_link(data_k, ['data', 'list', 'id']);

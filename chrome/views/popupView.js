@@ -1284,28 +1284,6 @@ GmailToTrello.PopupView.prototype.reset = function() {
     this.$popupContent.show();
 };
 
-GmailToTrello.PopupView.prototype.displaySubmitCompleteForm = function() {
-    var self = this;
-    var data = this.data.newCard;
-    gtt_log('displaySubmitCompleteForm: ' + this.data);
-
-    // NB: this is a terrible hack. The existing showMessage displays HTML by directly substituting text strings.
-    // This is very dangerous (very succeptible to XSS attacks) and generally bad practice.  It should be either 
-    // switched to a templating system, or changed to use jQuery. For now, I've used this to fix
-    // vulnerabilities without having to completely rewrite the substitution part of this code.
-    // TODO(vijayp): clean this up in the future
-    var jQueryToRawHtml = function(jQueryObject) {
-        return jQueryObject.prop('outerHTML');
-    }
-    this.showMessage(self, '<a class="hideMsg" title="Dismiss message">&times;</a>Trello card updated: ' + 
-        jQueryToRawHtml($('<a>')
-            .attr('href', data.url)
-            .attr('target', '_blank')
-            .append(data.title))
-        );
-    this.$popupContent.hide();
-};
-
 GmailToTrello.PopupView.prototype.displayAPIFailedForm = function(response) {
     var self = this;
     

@@ -263,20 +263,8 @@ GmailToTrello.Model.prototype.loadThreadTrelloCards = function () {
                 }
             });
 
-            cards.sort(function (a,b) {
-                if (!a.closed && b.closed) { return -1; }
-                if (a.closed && !b.closed) { return 1; }
-                if (!a.dueComplete && b.dueComplete) { return -1; }
-                if (a.dueComplete && !b.dueComplete) { return 1; }
-                if (a.due && !b.due) { return -1; }
-                if (b.due && !a.due) { return 1; }
-                if (a.due && b.due) {
-                    return new Date(a.due.replace('T',' ')).getTime() - new Date(b.due.replace('T',' ')).getTime();
-                }
-                return 0;
-            });
-
             self.trello.threadCards = cards;
+            self.sortThreadCards();
             self.event.fire('onLoadThreadTrelloCardsSuccess');
 
         }, function failure(data) {
@@ -285,6 +273,24 @@ GmailToTrello.Model.prototype.loadThreadTrelloCards = function () {
     }
 
 };
+
+GmailToTrello.Model.prototype.sortThreadCards = function () {
+
+    var self = this;
+    self.trello.threadCards.sort(function (a,b) {
+        if (!a.closed && b.closed) { return -1; }
+        if (a.closed && !b.closed) { return 1; }
+        if (!a.dueComplete && b.dueComplete) { return -1; }
+        if (a.dueComplete && !b.dueComplete) { return 1; }
+        if (a.due && !b.due) { return -1; }
+        if (b.due && !a.due) { return 1; }
+        if (a.due && b.due) {
+            return new Date(a.due.replace('T',' ')).getTime() - new Date(b.due.replace('T',' ')).getTime();
+        }
+        return 0;
+    });
+
+}
 
 GmailToTrello.Model.prototype.Uploader = function(args) {
     if (!args || !args.hasOwnProperty('parent')) {
@@ -448,6 +454,10 @@ GmailToTrello.Model.prototype.Uploader.prototype = {
 
             let self = this;
             fn_k(method, property, upload1, function success(data) {
+                if (data.idBoard) {
+                  self.parent.trello.threadCards.push(data); // if it's a card, add to the list
+                  self.parent.sortThreadCards();
+                }
                 $.extend(data, {'method': method + ' ' + property, 'keys': generateKeysAndValues(upload1)});
                 self.process_response(data);
                 if (self.data && self.data.length > 0) {
