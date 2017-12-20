@@ -22,7 +22,7 @@ GmailToTrello.GmailView = function(parent) {
         emailName: '.gD',
         emailAddress: '.gD', // Was: '.go', now using same name property
         emailSubject: '.hP',
-        emailBody: '.adP:first', // Was: '.adO:first'
+        emailBody: '.adn.ads .gs:first .a3s.aXjCH', // Was: "div[dir='ltr']:first", // Was: '.adP:first', // Was: '.adO:first'
         emailAttachments: '.aZo', // Was: '.aQy',
         emailThreadID: '.a3s.aXjCH',
         viewport: '.aeJ:first',
@@ -31,13 +31,13 @@ GmailToTrello.GmailView = function(parent) {
         hiddenEmails: '.kv',
         emailInThreads: '.kv,.h7',
         timestamp: '.gH .gK .g3:first',
-        host: 'a.gb_b.gb_eb.gb_R'
+        host: "span[dir='ltr']:first" // Was: 'a.gb_b.gb_eb.gb_R'
     };
 };
 
 GmailToTrello.GmailView.prototype.preDetect = function() {
     var self = this;
-    gtt_log('GmailView:preDetect');
+    // gtt_log('GmailView:preDetect');
 
     var $activeGroup = $('.BltHke[role="main"]');
     
@@ -56,7 +56,7 @@ GmailToTrello.GmailView.prototype.preDetect = function() {
 
 GmailToTrello.GmailView.prototype.detect = function() {
     var self = this;
-    gtt_log('GmailView:detect');
+    // gtt_log('GmailView:detect');
 
     const pre_k = this.preDetect();
 
@@ -68,7 +68,7 @@ GmailToTrello.GmailView.prototype.detect = function() {
 };
 
 GmailToTrello.GmailView.prototype.detectToolbar = function() {
-    gtt_log('GmailView:detectToolbar');
+    // gtt_log('GmailView:detectToolbar');
 
     var $toolBar = $("[gh='mtb']", this.$root) || null;
     
@@ -91,7 +91,7 @@ GmailToTrello.GmailView.prototype.detectEmailOpeningMode = function() {
     var result = this.$toolBar && this.$toolBar.length > 0
               && this.$expandedEmails && this.$expandedEmails.length > 0;
     if (result) {
-        gtt_log('detectEmailOpeningMode: Detected an email is opening: ' + JSON.stringify(this.$expandedEmails));
+        // gtt_log('detectEmailOpeningMode: Detected an email is opening: ' + JSON.stringify(this.$expandedEmails));
         
         //bind events
         var counter = 0;
@@ -114,7 +114,7 @@ GmailToTrello.GmailView.prototype.detectEmailOpeningMode = function() {
 };
 
 GmailToTrello.GmailView.prototype.parseData = function() {
-    gtt_log('parseData');
+    // gtt_log('parseData');
     if (this.parsingData) {
         return;
     }
@@ -128,7 +128,7 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     } else {
         $viewport = $(this.selectors.viewport, this.$root);
     }
-    gtt_log('viewport: ' + JSON.stringify($viewport));
+    gtt_log('parseData::viewport: ' + JSON.stringify($viewport));
     if ($viewport.length == 0) {
         return;
     }
@@ -142,6 +142,10 @@ GmailToTrello.GmailView.prototype.parseData = function() {
         if ($visibleMail === null && $this.offset().top >= y0)
             $visibleMail = $this;
     });
+    
+    if (!$visibleMail) {
+        return;
+    }
 
     // Check for email body first. If we don't have this, then bail.
     var $emailBody = $(this.selectors.emailBody, $visibleMail);
@@ -154,7 +158,10 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     // var startTime = new Date().getTime();
     
     // host name
-    var $host = $(this.selectors.host);
+    var $host = $(this.selectors.host, $visibleMail);
+    var hostName = ($host.attr('name') || '').trim();
+    var hostEmail = ($host.attr('email') || '').trim();
+    /*
     var title  = ($host.attr('title') || "").trim();
     var matched = title.match(/[^:]+:\s+([^\(]+)\(([^\)]+)\)/);
     var hostName = 'unknown';
@@ -163,6 +170,7 @@ GmailToTrello.GmailView.prototype.parseData = function() {
         hostName = matched[1].trim();
         hostEmail = matched[2].trim();
     }
+    */
 
     // email name
     var emailName = ($(this.selectors.emailName, $visibleMail).attr('name') || "").trim();
@@ -190,6 +198,7 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     });
 
     // email thread id
+    /* Was:
     var emailId = 0;
     var class1 = '';
     var classnames = ($(this.selectors.emailThreadID, $visibleMail).attr('class') || "").split(' ');
@@ -198,10 +207,12 @@ GmailToTrello.GmailView.prototype.parseData = function() {
             emailId = class1.substr(1);
         }
     }
+    */
+    var emailId = ($emailBody1.classList[$emailBody1.classList.length-1] || '00') . substr(1); // Get last item, hopefully 'm' + long id
     
     // timestamp
     const $time_k = $(this.selectors.timestamp, $visibleMail);
-    const timeAttr_k = (($time_k) ? ($time_k.attr('title') || $time_k.text() || $time_k.attr('alt')) : '').trim();
+    const timeAttr_k = (($time_k.length > 0) ? ($time_k.attr('title') || $time_k.text() || $time_k.attr('alt')) : '').trim();
     
     /* Used to do this to convert to a true dateTime object, but there is too much hassle in doing so:
     const timeCorrected_k = self.parent.parseInternationalDateTime(timeAttr_k);

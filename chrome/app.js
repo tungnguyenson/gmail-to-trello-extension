@@ -310,7 +310,7 @@ GmailToTrello.App.prototype.markdownify = function($emailBody, features, preproc
     };
 
     var body = $emailBody.innerText || "";
-    var $html = $emailBody.innerHTML || "";
+    var $html = $emailBody || ''; // Was: $emailBody.innerHTML || "";
 
     // Replace hr:
     var replaced = body.replace(/\s*-{3,}\s*/g, "---\n");
