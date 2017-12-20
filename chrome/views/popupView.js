@@ -36,6 +36,8 @@ GmailToTrello.PopupView = function(parent) {
 
     this.lastError = '';
 
+    this.intervalId = 0;
+
     this.EVENT_LISTENER = '.gtt_event_listener';
 
     this.CLEAR_EXT_BROWSING_DATA = 'gtt:clear_extension_browsing_data';
@@ -52,7 +54,11 @@ GmailToTrello.PopupView.prototype.init = function() {
     // inject a button & a popup
     this.confirmPopup();
 
-    setInterval(function() {
+    if (self.intervalId) {
+        clearInterval(self.intervalId);
+    }
+
+    self.intervalId = setInterval(function() {
         self.event.fire('detectButton');
     }, 2000);
 };
