@@ -4,6 +4,12 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.7.2.15
+-----------------
+- Up debug log
+- Silence logging of button positioner [still need to fix]
+- Gmails coming up blank content in GtT - Change .adP:first to use more deterministic tag
+
 Version 2.7.2.14
 -----------------
 - Check for ASL or ASF div for Refresh icon.

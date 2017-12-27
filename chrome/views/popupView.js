@@ -36,7 +36,7 @@ GmailToTrello.PopupView = function(parent) {
 
     this.lastError = '';
 
-    this.detectButtonInterval = null;
+    this.intervalId = 0;
 
     this.EVENT_LISTENER = '.gtt_event_listener';
 
@@ -54,8 +54,11 @@ GmailToTrello.PopupView.prototype.init = function() {
     // inject a button & a popup
     this.confirmPopup();
 
-    clearInterval(self.detectButtonInterval);
-    self.detectButtonInterval = setInterval(function() {
+    if (self.intervalId) {
+        clearInterval(self.intervalId);
+    }
+
+    self.intervalId = setInterval(function() {
         self.event.fire('detectButton');
     }, 2000);
 };
@@ -81,9 +84,9 @@ GmailToTrello.PopupView.prototype.confirmPopup = function() {
     // If the button already exists on the page
     if ($button.length > 0) {
         if ($button.first().is(":visible")) {
-            gtt_log('PopupView:confirmPopup: button visible');
+            // gtt_log('PopupView:confirmPopup: button visible');
         } else {
-            gtt_log('PopupView:confirmPopup: Button is in an inactive region. Moving...');
+            // gtt_log('PopupView:confirmPopup: Button is in an inactive region. Moving...');
             //relocate
             if ($button.length > 1) {
                 $button.detach(); // In case multiple copies were created
@@ -103,7 +106,7 @@ GmailToTrello.PopupView.prototype.confirmPopup = function() {
 
     // If the button doesn't exist but the html is set for it
     if (this.html && this.html['add_to_trello'] && this.html['add_to_trello'].length > 0) {
-        gtt_log('PopupView:confirmPopup: creating button');
+        // gtt_log('PopupView:confirmPopup: creating button');
         this.$toolBar.append(this.html['add_to_trello']);
         self.addOrCreatePopup();
         return;
@@ -177,7 +180,7 @@ GmailToTrello.PopupView.prototype.buildPopupHtml = function(threadCards) {
 GmailToTrello.PopupView.prototype.addOrCreatePopup = function () {
     var self = this;
     if (self.html && self.html['popup'] && self.html['popup'].length > 0) {
-        gtt_log('PopupView:addOrCreatePopup: adding popup');
+        // gtt_log('PopupView:addOrCreatePopup: adding popup');
         self.$toolBar.append(self.html['popup']);
         this.parent.loadSettings(self); // Calls init_popup
     } else {

@@ -10,6 +10,9 @@
 - [done] Add to an existing card
 - [done] Remove console.log() to use our log()
 - [done] Move attachment upload logic to model.js
+- Less noisy button creation
+- Evaluate pull request
+
 - https://stackoverflow.com/questions/14149209/read-the-version-from-manifest-json: chrome.runtime.getManifest().version and ask to reload on new version
 - https://developer.chrome.com/extensions/contextMenus
 - https://github.com/brainbreaker/clearData-WebExtension-Demo
