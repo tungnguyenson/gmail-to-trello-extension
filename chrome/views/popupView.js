@@ -980,16 +980,29 @@ GmailToTrello.PopupView.prototype.updateLabels = function() {
     var labels = this.data.trello.labels;
     var $gtt = $('#gttLabels', this.$popup);
     $gtt.html(''); // Clear out
+    const colorValues = {
+        "green":"#61bd4f",
+        "yellow":"#f2d600",
+        "orange":"#ffab4a",
+        "red":"#eb5a46",
+        "purple":"#c377e0",
+        "blue":"#0079bf",
+        "sky":"#00c2e0",
+        "lime":"#51e898",
+        "pink":"#ff80ce",
+        "black":"#4d4d4d"
+    };
 
     for (var i = 0; i < labels.length; i++) {
         var item = labels[i];
         if (item.name && item.name.length > 0) {
             var $color = $("<div id='gtt_temp'>").css('color', item.color);
-            var bkColor = self.parent.luminance($color.css('color')); // If you'd like to determine whether to make the background light or dark
+            //var bkColor = self.parent.luminance($color.css('color')); // If you'd like to determine whether to make the background light or dark
+            
+            if (colorValues[item.color] !== undefined) item.color = colorValues[item.color];
             $gtt.append($('<li>')
                 .attr('trelloId-label', item.id)
-                .css('border-color', item.color)
-                .css('background-color', bkColor)
+                .css('background-color', item.color)
                 .append(item.name)
             )
         }
@@ -1040,10 +1053,10 @@ GmailToTrello.PopupView.prototype.updateMembers = function() {
             $gtt.append($('<li>')
                 .attr('trelloId-member', item.id)
                 .attr('title', item.fullName + ' @' + item.username || '?')
-                .append($('<img>')
+                .append(avatar !== "" ? $('<img>')
                     .attr('src', avatar)
                     .attr('width', size_k)
-                    .attr('height', size_k)
+                    .attr('height', size_k) : ""
                 ).append(' ' + txt)
             )
         }

@@ -31,9 +31,8 @@
     -webkit-user-select: none;
     border-top: 2px solid #ccc; /*#0088C3; */
     border-bottom: 2px solid #ccc; 
-    background: #FEFEFE; 
+    background: #edeff0; 
     padding: 0; 
-    opacity: 0.95; 
     z-index: 9999;
     overflow: hidden;
     white-space: normal; 
@@ -86,23 +85,33 @@
 
 #gttLabels {margin: 0; padding: 0; min-height: 40px; max-height: 96px; width: 100%; overflow: auto;}
 
-#gttMembers {margin: 0; padding: 0; min-height: 50px; max-height: 124px; width: 100%; overflow: auto;}
+#gttMembers {margin: 0; padding: 0; min-height: 30px; max-height: 124px; width: 100%; overflow: auto;}
 
 ul#gttPosition {display: inline-block; float: left; padding: 0; margin: 0 0 2px 0;}
 
-#gttLabels li, #gttMembers li {
+#gttMembers li {
     float: left; 
-    margin: 0 2px 2px 0; 
-    padding: 6px 6px; 
+    margin: 0 4px 4px 0; 
+    padding: 7px 19px 7px 7px; 
     list-style: none; 
-    border-radius: 3px; 
-    border: 1px solid #ccc; 
-    border-top-width: 5px; 
     cursor: pointer; 
-    background: #F2F2F2; 
-    font-size: 11px; 
-    font-weight: bold; 
-    color: #888;
+    background: #fff; 
+    font-size: 12px; 
+    color: #000;
+    height: 14px;
+    border-radius:3px;
+    position: relative;
+}
+
+#gttMembers li img{
+    border-radius:10px;
+    margin-top: -3px;
+    vertical-align: middle;
+}
+
+#gttMembers li.active, #gttMembers li:hover {
+    background-color:#298fca;
+    color: #fff;
 }
 
 #gttPosition li {
@@ -120,8 +129,38 @@ ul#gttPosition {display: inline-block; float: left; padding: 0; margin: 0 0 2px 
     vertical-align: middle;
 }
 
-#gttLabels li:hover, #gttMembers li:hover, #gttLabels li.active:hover, #gttMembers li.active:hover {border-color: #52A8D9; color: #1789C0;}
-#gttLabels li.active, #gttMembers li.active {border-color: inherit; color: black; padding: 4px 4px; border: 3px solid; border-top-width:7px;}
+#gttLabels li {
+    position: relative;
+    float: left; 
+    margin: 0 4px 4px 0; 
+    padding: 8px 19px 8px 8px; 
+    list-style: none; 
+    border-radius: 3px; 
+    cursor: pointer; 
+    font-size: 12px; 
+    color: #fff;
+    opacity: 0.8;
+    filter: saturate(35%) contrast(120%);
+}
+
+#gttLabels li.active, #gttLabels li:hover {
+    opacity: 1;
+    filter: saturate(100%) contrast(100%);
+}
+
+#gttLabels li.active:after, #gttMembers li.active:after {
+    position: absolute;
+    right: 6px;
+    top: 10px;
+    content: '';
+    display: block;
+    width: 3px;
+    height: 6px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
 #gttPosition li:hover, #gttPosition li.active:hover {color: black;}
 #gttPosition li.active {color: darkgreen; background: #F2F2F2;}
 
