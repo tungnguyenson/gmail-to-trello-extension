@@ -168,13 +168,13 @@ dl#gttPopup {vertical-align: baseline;}
 #gttPopup dt {width: 70px; float: left; text-align: right; padding-right: 5px; vertical-align: baseline;}
 #gttPopup dd {display: block; margin: 8px; margin-left: 75px;}
 
-#gttPopup input,#gttPopup select,#gttPopup option {font-size:12px;}
+#gttPopup input,#gttPopup select,#gttPopup option {font-size:12px; padding: 5px;}
 
-#gttPopup .gttTopRight {float: right; vertical-align: top; margin: 0;}
+#gttPopup .gttTopRight {float: right; vertical-align: top; margin: 13px 0 0 0;}
 
-#gttPopup #addToTrello /* input[type=button] */ {font-size: 14px; padding: 5px 18px; color: white; background:linear-gradient(to top, #24a828 0, #1b7e1e 100%); border: 0; border-radius: 3px; cursor: pointer}
-#gttPopup #addToTrello:hover /* input[type=button]:hover */ {background:linear-gradient(to bottom, #1f9323 0, #166919 100%)}
-#gttPopup input[type=text], #gttPopup textarea {padding: 3px; border: 1px solid #A1A1A1; border-radius: 3px;}
+#gttPopup #addToTrello /* input[type=button] */ {font-size: 14px; padding: 5px 18px; color: white; background:#5aac44;box-shadow: 0 1px 0 #519839; border: 0; border-radius: 3px; cursor: pointer; font-weight: bold;}
+#gttPopup #addToTrello:hover /* input[type=button]:hover */ {background:#519839 100%;}
+#gttPopup input[type=text], #gttPopup textarea {padding: 5px; border: 1px solid #A1A1A1; border-radius: 3px;background-color:#fff;}
 
 #gttPopup #addToTrello[disabled], #gttPopup #addToTrello[disabled]:hover, #gttPopup input[disabled], #gttPopup input[disabled]:hover {background: #ccc; color:#666; cursor:default;}
 
@@ -202,6 +202,8 @@ dl#gttPopup {vertical-align: baseline;}
 #gttPopup .popupMsg dt {float: left; clear: left; width: 110px; text-align: right;}
 
 #gttPopup .gttWhere {width: 180px;}
+
+#gttPopup #gttCard {margin-top: 4px;}
 
 #gttPopup .positionGroup .gtt-button {
     background-color: lightgray;
