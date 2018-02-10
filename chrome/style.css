@@ -190,9 +190,9 @@ dl#gttPopup {vertical-align: baseline;}
 
 #gttPopup #gttAttachments, #gttPopup #gttImages {min-height: 60px; max-height: 120px; width: 100%; display: inline-block; overflow: auto; padding: 0; margin: 0;}
 #gttPopup #gttAttachments input[type=checkbox], #gttPopup #gttImages input[type=checkbox] {width: 15px;}
-#gttPopup #gttAttachments label, #gttPopup #gttImages label {display: inline-block; padding-left: 24px; text-indent: -18px;}
+#gttPopup #gttAttachments label, #gttPopup #gttImages label {display: inline-block; padding:3px 8px 3px 24px; text-indent: -18px;background-color:#fff;margin: 0 4px 6px 0;border-radius:3px;}
 
-#gttPopup #gttImages img {vertical-align: middle; border: 1px solid lightgray; margin: 1px; padding: 1px; height: 32px; width: 32px; display: inline-block;}
+#gttPopup #gttImages img {vertical-align: middle; margin: 1px; padding: 1px; height: 32px; width: 32px; display: inline-block;}
 .ui-tooltip {max-height: 500px; max-width: 500px; width: 500px; overflow: auto}
 .ui-tooltip-content img {border: 1px solid lightgray; max-width: 100%; height: auto; width: auto}
 

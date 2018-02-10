@@ -747,7 +747,7 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
             };
 
             html += self.parent.replacer (
-              '<label title="%name%"><input type="checkbox" mimeType="%mimeType%" name="%name%" url="%url%" /> %img%%name%</label><br />\n',
+              '<label title="%name%"><input type="checkbox" mimeType="%mimeType%" name="%name%" url="%url%" /> %img%%name%</label>\n',
               dict
             );
         });
