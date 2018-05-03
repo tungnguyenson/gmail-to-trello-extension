@@ -3,7 +3,7 @@
 .clearfix:after {
     content: "";
     /* Seems to do better than "block": */
-    display: table; 
+    display: table;
     clear: both;
 }
 
@@ -20,23 +20,23 @@
 */
 
 /* toolbar holder */
-.iH div {position: static}
+/*.iH div {position: static} /* Caused bug on the new gmail, disabled on May 3rd  */
 
 #gttPopup {
-    position: absolute; 
+    position: absolute;
     max-height: none;
     min-height: 460px;
-    min-width: 620px; 
-    max-width: 1400px; 
+    min-width: 620px;
+    max-width: 1400px;
     -webkit-user-select: none;
     border-top: 2px solid #ccc; /*#0088C3; */
-    border-bottom: 2px solid #ccc; 
-    background: #FEFEFE; 
-    padding: 0; 
-    opacity: 0.95; 
+    border-bottom: 2px solid #ccc;
+    background: #FEFEFE;
+    padding: 0;
+    opacity: 0.95;
     z-index: 9999;
     overflow: hidden;
-    white-space: normal; 
+    white-space: normal;
 }
 
 #gttTitle {
@@ -51,7 +51,7 @@
     z-index: 2;
     position: relative;
     line-height: normal;
-    font-size: 13px; 
+    font-size: 13px;
     -webkit-transition: none;
     transition: none;
     overflow: auto;
@@ -60,12 +60,12 @@
 }
 
 #gttButton {
-    padding-left: 10px; 
-    padding-right: 10px; 
-    -webkit-user-select: none; 
-    margin-bottom: 0px; 
-    margin-top:-2px; 
-    outline: none; 
+    padding-left: 10px;
+    padding-right: 10px;
+    -webkit-user-select: none;
+    margin-bottom: 0px;
+    margin-top:-2px;
+    outline: none;
 }
 
 #gttButton * {outline:none}
@@ -73,7 +73,7 @@
 
 #gttPopup .content {
     position: relative;
-    left: 0; 
+    left: 0;
     padding: 5px;
 }
 
@@ -91,27 +91,27 @@
 ul#gttPosition {display: inline-block; float: left; padding: 0; margin: 0 0 2px 0;}
 
 #gttLabels li, #gttMembers li {
-    float: left; 
-    margin: 0 2px 2px 0; 
-    padding: 6px 6px; 
-    list-style: none; 
-    border-radius: 3px; 
-    border: 1px solid #ccc; 
-    border-top-width: 5px; 
-    cursor: pointer; 
-    background: #F2F2F2; 
-    font-size: 11px; 
-    font-weight: bold; 
+    float: left;
+    margin: 0 2px 2px 0;
+    padding: 6px 6px;
+    list-style: none;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    border-top-width: 5px;
+    cursor: pointer;
+    background: #F2F2F2;
+    font-size: 11px;
+    font-weight: bold;
     color: #888;
 }
 
 #gttPosition li {
-    float: left; 
+    float: left;
     cursor: pointer;
     list-style: none;
     /* background: #F2F2F2; */
-    font-size: 20px; 
-    font-weight: bold; 
+    font-size: 20px;
+    font-weight: bold;
     color: #ccc;
     height: 26px;
     width: 22px;

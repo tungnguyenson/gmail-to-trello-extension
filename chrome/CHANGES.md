@@ -4,6 +4,10 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.7.2.17
+-----------------
+- Fix bug on the new Gmail that cause toolbar buttons failed to work properly
+
 Version 2.7.2.16
 -----------------
 - Remove overlapping intervals, thanks to Travis Hardman.
@@ -387,7 +391,7 @@ Version 2.0.6
 
 Version 2.0.5
 ----------
-- Fix bug: Boards are not in any organizations doesn't show up. 
+- Fix bug: Boards are not in any organizations doesn't show up.
 
 Version 2.0.4
 ----------
