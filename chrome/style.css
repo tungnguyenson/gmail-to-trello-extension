@@ -69,7 +69,7 @@
 }
 
 #gttButton * {outline:none}
-#gttButton img {vertical-align: -4px; height: 16px; padding-right:2px;}
+#gttButton img {vertical-align: middle; height: 20px; padding-right:2px;}
 
 #gttPopup .content {
     position: relative;
@@ -153,7 +153,8 @@ dl#gttPopup {vertical-align: baseline;}
 #gttPopup #gttAttachments input[type=checkbox], #gttPopup #gttImages input[type=checkbox] {width: 15px;}
 #gttPopup #gttAttachments label, #gttPopup #gttImages label {display: inline-block; padding-left: 24px; text-indent: -18px;}
 
-#gttPopup #gttImages img {vertical-align: middle; border: 1px solid lightgray; margin: 1px; padding: 1px; height: 32px; width: 32px; display: inline-block;}
+#gttPopup #gttImages .img-container {width: 32px; height: 32px; display: inline-block; text-indent: 0; padding-right: 8px; margin: 5px 0}
+#gttPopup #gttImages img {vertical-align: middle; border: 1px solid lightgray; margin: 1px; padding: 1px; max-width: 100%; max-height: 100%; display: inline-block;}
 .ui-tooltip {max-height: 500px; max-width: 500px; width: 500px; overflow: auto}
 .ui-tooltip-content img {border: 1px solid lightgray; max-width: 100%; height: auto; width: auto}
 

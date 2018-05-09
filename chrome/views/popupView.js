@@ -81,8 +81,8 @@ GmailToTrello.PopupView.prototype.confirmPopup = function() {
             
             // Refresh icon present? If so, use graphics, if not, use text:
             if ($('div.asl.T-I-J3.J-J5-Ji,div.asf.T-I-J3.J-J5-Ji', this.$toolBar).length > 0) {
-                img = '<img class="f tk3N6e-I-J3" height="13" width="13" src="'
-                  + chrome.extension.getURL('images/icon-13.jpg')
+                img = '<img class="f tk3N6e-I-J3" height="20" width="20" src="'
+                  + chrome.extension.getURL('images/icon-48.png')
                   + '" />';
             }
 
@@ -733,9 +733,9 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
         var img_big = '';
         const domTag_k = '#gtt' + tag.charAt(0).toUpperCase() + tag.slice(1).toLowerCase();
         var $domTag = $(domTag_k, self.$popup);
-        
+
         if (isImage && isImage === true) {
-            img = '<img src="%url%" alt="%name%" /> '; // See style.css for #gttImage img style REMOVED: height="32" width="32" 
+            img = '<div class="img-container"><img src="%url%" alt="%name%" /></div> '; // See style.css for #gttImage img style REMOVED: height="32" width="32"
         }
 
         $.each(data[tag], function(iter, item) {
