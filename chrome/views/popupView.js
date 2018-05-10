@@ -7,7 +7,7 @@ GmailToTrello.PopupView = function(parent) {
     this.isInitialized = false;
 
     this.data = {settings:{}};
-    
+
     this.size_k = {
         'width': {
             'min': 620,
@@ -78,7 +78,7 @@ GmailToTrello.PopupView.prototype.confirmPopup = function() {
            // gtt_log('PopupView:confirmPopup: add_to_trello_html already exists');
         } else {
             var img = 'GtT';
-            
+
             // Refresh icon present? If so, use graphics, if not, use text:
             if ($('div.asl.T-I-J3.J-J5-Ji,div.asf.T-I-J3.J-J5-Ji', this.$toolBar).length > 0) {
                 img = '<img class="f tk3N6e-I-J3" height="20" width="20" src="'
@@ -89,7 +89,7 @@ GmailToTrello.PopupView.prototype.confirmPopup = function() {
             this.html['add_to_trello'] =
                 '<div id="gttButton" class="T-I J-J5-Ji ar7 nf T-I-ax7 L3" ' // "lS T-I-ax7 ar7"
                   + 'data-tooltip="Add this Gmail to Trello">'
-                  + '<div aria-haspopup="true" role="button" class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3" tabindex="0">' // class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3">' // 
+                  + '<div aria-haspopup="true" role="button" class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3" tabindex="0">' // class="J-J5-Ji W6eDmd L3 J-J5-Ji Bq L3">' //
                   + img
                   + '<div id="gttDownArrow" class="G-asx T-I-J3 J-J5-Ji">&nbsp;</div></div></div>';
         }
@@ -134,14 +134,14 @@ GmailToTrello.PopupView.prototype.confirmPopup = function() {
     }
 };
 
-/** 
+/**
  * Set the initial width by measuring from the left corner of the
  * "Add card" button to the edge of the window and then center that under the "Add card" button:
  */
-GmailToTrello.PopupView.prototype.centerPopup = function(useWidth) {    
+GmailToTrello.PopupView.prototype.centerPopup = function(useWidth) {
     var addCardLeft = this.$gttButton.position().left;
     var addCardCenter = addCardLeft + (this.$gttButton.outerWidth() / 2);
-    
+
     var parent = this.$gttButton.offsetParent();
     var parentRight = parent.position().left + parent.width();
 
@@ -162,7 +162,7 @@ GmailToTrello.PopupView.prototype.centerPopup = function(useWidth) {
     } else if (newPopupWidth > this.size_k.width.max) {
         newPopupWidth = this.size_k.width.max;
     }
-    
+
     this.$popup.css('width', newPopupWidth + 'px');
 
     var newPopupLeft = addCardCenter - (newPopupWidth / 2);
@@ -180,7 +180,7 @@ GmailToTrello.PopupView.prototype.init_popup = function() {
 
     this.$popupMessage = $('.popupMsg', this.$popup);
     this.$popupContent = $('.content', this.$popup);
-    
+
     this.centerPopup();
 
     this.bindEvents();
@@ -323,7 +323,7 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
                 while (d.getDay() !== weekday_num_k) {
                     d.setDate(d.getDate() + 1);
                 }
-                new_date = d.toString(dom_date_format_k);                
+                new_date = d.toString(dom_date_format_k);
             }
         } else {
             gtt_log('due_Shortcuts:change: Unknown due date shortcut: "' + due_date + '"');
@@ -371,14 +371,14 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         const body_md_k = $gttDesc.attr('gmail-body-md') || '';
         const link_raw_k = $gttDesc.attr('gmail-link-raw') || '';
         const link_md_k = $gttDesc.attr('gmail-link-md') || '';
-        
+
         const body_k = markdown_k ? body_md_k : body_raw_k;
         const link_k = useBackLink_k ? ((markdown_k ? link_md_k : link_raw_k) + ' ') : '';
 
         const desc_k = self.parent.truncate(body_k, self.MAX_BODY_SIZE - link_k.length, '...');
 
         $gttDesc.val(link_k + desc_k);
-        $gttDesc.change();        
+        $gttDesc.change();
     };
 
     $('#chkBackLink', this.$popup).change(function() {
@@ -393,7 +393,7 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
         if (self.parent.modKey(event)) {
             self.displayAPIFailedForm();
         } else {
-            self.submit();            
+            self.submit();
         }
     });
 
@@ -412,7 +412,7 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
 
 GmailToTrello.PopupView.prototype.submit = function() {
     var self = this;
-    
+
     if (self.validateData()) {
         //$('#addToTrello', this.$popup).attr('disabled', 'disabled');
         self.$popupContent.hide();
@@ -465,7 +465,7 @@ GmailToTrello.PopupView.prototype.showPopup = function() {
             if ($(event.target).closest('#gttButton').length == 0
                && $(event.target).closest('#gttPopup').length == 0) {
                 self.hidePopup();
-            }            
+            }
         });
 
         if (self.posDirty) {
@@ -517,7 +517,7 @@ GmailToTrello.PopupView.prototype.periodicChecks = function() {
                     self.showMessage(self, data);
                 });
             }
-        });        
+        });
     }
 };
 
@@ -536,13 +536,13 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
     // Need to keep this from getting blown over if it exists:
     var settings = this.data && this.data.settings && this.data.settings.boardId ? this.data.settings : '';
     this.data = data;
-    
+
     if (data && data.settings && data.settings.boardId) {
         // leave settings that came in, they look valid
     } else if (settings) {
         this.data.settings = settings;
     }
-    
+
     this.$popupMessage.hide();
     this.$popupContent.show();
 
@@ -558,7 +558,7 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
         } else if (me.fullName && me.fullName.length > 1) {
             var matched = me.fullName.match(/^(\w).*?[\s\\W]+(\w)\w*$/);
             if (matched && matched.length > 1) {
-                initials = matched[1] + matched[2]; // 0 is whole string            
+                initials = matched[1] + matched[2]; // 0 is whole string
             }
         } else if (me.username && me.username.length > 0) {
             initials = me.username.slice(0,1);
@@ -602,7 +602,7 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
             */
         });
     });
-        
+
     if (data.settings.hasOwnProperty('useBackLink')) {
         $('#chkBackLink', this.$popup).prop('checked', data.settings.useBackLink);
     }
@@ -664,14 +664,14 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
             "noon": "d=monday pm=12:00",
             "pm": "d=monday pm=3:00",
             "end": "d=monday pm=6:00",
-            "eve": "d=monday pm=11:00"    
+            "eve": "d=monday pm=11:00"
           },
           "next friday": {
             "am": "d=friday am=9:00",
             "noon": "d=friday pm=12:00",
             "pm": "d=friday pm=3:00",
             "end": "d=friday pm=6:00",
-            "eve": "d=friday pm=11:00"    
+            "eve": "d=friday pm=11:00"
           }
         });
 
@@ -700,10 +700,10 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
     });
 
     this.initPosition();
-    
+
     this.updateBoards();
 };
-    
+
 GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
     var self = this;
 
@@ -726,7 +726,7 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
         .attr('gmail-body-md', data.body_md || '')
         .attr('gmail-link-raw', data.link_raw || '')
         .attr('gmail-link-md', data.link_md || '');
-    
+
     var mime_html = function(tag, isImage) {
         var html = '';
         var img = '';
@@ -734,10 +734,15 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
         const domTag_k = '#gtt' + tag.charAt(0).toUpperCase() + tag.slice(1).toLowerCase();
         var $domTag = $(domTag_k, self.$popup);
 
+        const domTagContainer = domTag_k + 'Container';
+        var $domTagContainer = $(domTagContainer, self.$popup);
+        $domTagContainer.css('display', data[tag].length > 0 ? 'block' : 'none');
+
         if (isImage && isImage === true) {
             img = '<div class="img-container"><img src="%url%" alt="%name%" /></div> '; // See style.css for #gttImage img style REMOVED: height="32" width="32"
         }
 
+        // console.log('gtt', tag, data[tag].length)
         $.each(data[tag], function(iter, item) {
             var dict = {
               'url': item.url,
@@ -764,7 +769,7 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
                     'content': function() {
                         var dict = {
                             'src': $img.attr('src'),
-                            'alt': $img.attr('alt')                        
+                            'alt': $img.attr('alt')
                         };
                         return self.parent.replacer ('<img src="%src%"><br />%alt%', dict);
                     }
@@ -818,7 +823,7 @@ GmailToTrello.PopupView.prototype.showMessage = function(parent, text) {
         if ($status.length > 0) {
             setTimeout(function() {
                 $status.html("&nbsp;");
-            }, 2500);            
+            }, 2500);
         }
     });
 
@@ -859,7 +864,7 @@ GmailToTrello.PopupView.prototype.initPosition = function() {
     var settings = this.data.settings;
     var settingId = settings.position || 'below';
     $('#gttPosition li[trelloId-position="' + settingId + '"]', self.$popup).click();
- 
+
     $gtt.show();
 };
 
@@ -868,7 +873,7 @@ GmailToTrello.PopupView.prototype.clearBoard = function() {
     $gtt.html(''); // Clear it.
 
     $gtt.append($('<option value="">Select a board....</option>'));
-    
+
     $gtt.change();
 };
 
@@ -901,7 +906,7 @@ GmailToTrello.PopupView.prototype.updateBoards = function(tempBoardId) {
     $gtt.html(''); // Clear it.
 
     $gtt.append($('<option value="">Select a board....</option>'));
-    
+
     $.each(Object.keys(newBoards).sort(), function(iter, item) {
         var id = newBoards[item].id;
         var display = newBoards[item].display;
@@ -915,7 +920,7 @@ GmailToTrello.PopupView.prototype.updateBoards = function(tempBoardId) {
 GmailToTrello.PopupView.prototype.updateLists = function() {
     var self = this;
     var lists = this.data.trello.lists;
-    
+
     var settings = this.data.settings;
     var boardId = $('#gttBoard', this.$popup).val();
     var settingId = (lists[0] ? lists[0].id : '0'); // Default to first item
@@ -933,7 +938,7 @@ GmailToTrello.PopupView.prototype.updateLists = function() {
         $gtt.append($('<option>').attr('value', id).prop('selected', selected).append(display));
     });
 
-    $gtt.change();        
+    $gtt.change();
 };
 
 GmailToTrello.PopupView.prototype.updateCards = function() {
@@ -942,7 +947,7 @@ GmailToTrello.PopupView.prototype.updateCards = function() {
     const newcard_k = '<option value="-1">(new card)</option>';
 
     var cards = this.data.trello.cards;
-    
+
     var settings = this.data.settings;
     var listId = $('#gttList', this.$popup).val();
     var settingId = 0; // (cards[0] ? cards[0].id : '0'); // Default to first item
@@ -994,7 +999,7 @@ GmailToTrello.PopupView.prototype.updateLabels = function() {
             )
         }
     }
-    
+
     $('#gttLabelsMsg', this.$popup).hide();
 
     var control = new MenuControl({'selectors': '#gttLabels li', 'nonexclusive': true});
@@ -1048,7 +1053,7 @@ GmailToTrello.PopupView.prototype.updateMembers = function() {
             )
         }
     }
-    
+
     $('#gttMembersMsg', this.$popup).hide();
 
     var control = new MenuControl({'selectors': '#gttMembers li', 'nonexclusive': true});
@@ -1133,7 +1138,7 @@ GmailToTrello.PopupView.prototype.validateData = function() {
 
     var attachments = mime_array('gttAttachments');
     var images = mime_array('gttImages');
-    
+
     var validateStatus = boardId && listId && title && description ? true : false; // Labels are not required
     gtt_log('validateData: board:' + boardId + ' list:' + listId + ' title:' + title + ' desc:' + ((description || '') . length));
 
@@ -1179,14 +1184,14 @@ GmailToTrello.PopupView.prototype.displaySubmitCompleteForm = function() {
     gtt_log('displaySubmitCompleteForm: ' + this.data);
 
     // NB: this is a terrible hack. The existing showMessage displays HTML by directly substituting text strings.
-    // This is very dangerous (very succeptible to XSS attacks) and generally bad practice.  It should be either 
+    // This is very dangerous (very succeptible to XSS attacks) and generally bad practice.  It should be either
     // switched to a templating system, or changed to use jQuery. For now, I've used this to fix
     // vulnerabilities without having to completely rewrite the substitution part of this code.
     // TODO(vijayp): clean this up in the future
     var jQueryToRawHtml = function(jQueryObject) {
         return jQueryObject.prop('outerHTML');
     }
-    this.showMessage(self, '<a class="hideMsg" title="Dismiss message">&times;</a>Trello card updated: ' + 
+    this.showMessage(self, '<a class="hideMsg" title="Dismiss message">&times;</a>Trello card updated: ' +
         jQueryToRawHtml($('<a>')
             .attr('href', data.url)
             .attr('target', '_blank')
@@ -1197,7 +1202,7 @@ GmailToTrello.PopupView.prototype.displaySubmitCompleteForm = function() {
 
 GmailToTrello.PopupView.prototype.displayAPIFailedForm = function(response) {
     var self = this;
-    
+
     var resp = {};
     if (response && response.data) {
         resp = response.data;

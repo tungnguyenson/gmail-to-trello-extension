@@ -8,6 +8,8 @@ Version 2.7.2.18
 -----------------
 - New HD toolbar icon & sketch version
 - Attachment image previews are now scale-to-fit
+- Attachment file and image sections are hidden when there is no attachment
+- [dev] Change form markups from dl/dt/dd to regular divs
 
 Version 2.7.2.17
 -----------------
