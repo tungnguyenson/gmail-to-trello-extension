@@ -10,7 +10,7 @@ GmailToTrello.PopupView = function(parent) {
 
     this.size_k = {
         'width': {
-            'min': 620,
+            'min': 300,
             'max': 1400
         },
         'height': {
@@ -139,33 +139,39 @@ GmailToTrello.PopupView.prototype.confirmPopup = function() {
  * "Add card" button to the edge of the window and then center that under the "Add card" button:
  */
 GmailToTrello.PopupView.prototype.centerPopup = function(useWidth) {
-    var addCardLeft = this.$gttButton.position().left;
-    var addCardCenter = addCardLeft + (this.$gttButton.outerWidth() / 2);
+    var gttLeft = this.$gttButton.position().left;
+    var gttRight = gttLeft + this.$gttButton.width();
+    var gttCenter = gttLeft + (this.$gttButton.outerWidth() / 2);
 
     var parent = this.$gttButton.offsetParent();
     var parentRight = parent.position().left + parent.width();
+
+    const length_from_left_k = gttLeft * 1.50;
+    const length_from_right_k = (parentRight - gttRight) * 1.50;
+    const calcWidth_k = Math.min(length_from_left_k, length_from_right_k); // If we need a width to use
 
     // We'll make our popup 1.25x as wide as the button to the end of the window up to max width:
     var newPopupWidth = this.size_k.width.min;
     if (useWidth && useWidth > 0) {
         newPopupWidth = useWidth; // May snap to min if necessary
-        addCardCenter = this.$popup.position().left;
-        addCardCenter += this.$popup.width() / 2;
+        gttCenter = this.$popup.position().left;
+        gttCenter += this.$popup.width() / 2;
     } else if (this.data && this.data.settings && this.data.settings.popupWidth && this.data.settings.popupWidth.length > 0) {
         newPopupWidth = parseFloat(this.data.settings.popupWidth, 10 /* base 10 */);
     } else {
-        newPopupWidth = 1.25*(parentRight - addCardLeft); // Make popup 1.25x as wide as the button to the end of the window up to max width
+        newPopupWidth = calcWidth_k;
     }
 
-    if (newPopupWidth < this.size_k.width.min) {
-        newPopupWidth = this.size_k.width.min;
-    } else if (newPopupWidth > this.size_k.width.max) {
-        newPopupWidth = this.size_k.width.max;
+    newPopupWidth = Math.min(this.size_k.width.max, Math.max(this.size_k.width.min, newPopupWidth));
+
+    var newPopupLeft = gttCenter - (newPopupWidth / 2);
+
+    if (newPopupLeft < 0) { // button positions have moved, recalculate
+        newPopupWidth = calcWidth_k;
+        newPopupLeft = gttCenter - (newPopupWidth / 2);
     }
 
     this.$popup.css('width', newPopupWidth + 'px');
-
-    var newPopupLeft = addCardCenter - (newPopupWidth / 2);
 
     this.$popup.css('left', newPopupLeft + 'px');
 
