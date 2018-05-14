@@ -42,7 +42,7 @@ GmailToTrello.GmailView.prototype.preDetect = function() {
     var $activeGroup = $('.BltHke[role="main"]');
     
     if ($activeGroup.find('.apv').length > 0) {
-        gtt_log('detect: Detected SplitLayout');
+        // gtt_log('detect: Detected SplitLayout');
 
         this.layoutMode = this.LAYOUT_SPLIT;
         this.$root = $activeGroup;

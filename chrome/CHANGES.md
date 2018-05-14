@@ -4,6 +4,10 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.7.2.19
+-----------------
+- Fix calculation for pop-up when button position has changed
+
 Version 2.7.2.18
 -----------------
 - New HD toolbar icon & sketch version
