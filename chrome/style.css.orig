@@ -30,9 +30,16 @@
     max-width: 1400px;
     -webkit-user-select: none;
     border-top: 2px solid #ccc; /*#0088C3; */
-    border-bottom: 2px solid #ccc;
+<<<<<<< HEAD
+    border-bottom: 2px solid #ccc; 
     background: #edeff0; 
+    padding: 0; 
+=======
+    border-bottom: 2px solid #ccc;
+    background: #FEFEFE;
     padding: 0;
+    opacity: 0.95;
+>>>>>>> 770af10bdbd4835457faf41a82f73a6651c12939
     z-index: 9999;
     overflow: hidden;
     white-space: normal;
@@ -89,12 +96,13 @@
 
 ul#gttPosition {display: inline-block; float: left; padding: 0; margin: 0 0 2px 0;}
 
+<<<<<<< HEAD
 #gttMembers li {
-    float: left;
+    float: left; 
     margin: 0 4px 4px 0; 
     padding: 7px 19px 7px 7px; 
-    list-style: none;
-    cursor: pointer;
+    list-style: none; 
+    cursor: pointer; 
     background: #fff; 
     font-size: 12px; 
     color: #000;
@@ -112,6 +120,21 @@ ul#gttPosition {display: inline-block; float: left; padding: 0; margin: 0 0 2px 
 #gttMembers li.active, #gttMembers li:hover {
     background-color:#298fca;
     color: #fff;
+=======
+#gttLabels li, #gttMembers li {
+    float: left;
+    margin: 0 2px 2px 0;
+    padding: 6px 6px;
+    list-style: none;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    border-top-width: 5px;
+    cursor: pointer;
+    background: #F2F2F2;
+    font-size: 11px;
+    font-weight: bold;
+    color: #888;
+>>>>>>> 770af10bdbd4835457faf41a82f73a6651c12939
 }
 
 #gttPosition li {
@@ -192,8 +215,12 @@ dl#gttPopup {vertical-align: baseline;}
 #gttPopup #gttAttachments input[type=checkbox], #gttPopup #gttImages input[type=checkbox] {width: 15px;}
 #gttPopup #gttAttachments label, #gttPopup #gttImages label {display: inline-block; padding:3px 8px 3px 24px; text-indent: -18px;background-color:#fff;margin: 0 4px 6px 0;border-radius:3px;}
 
+<<<<<<< HEAD
 #gttPopup #gttImages img {vertical-align: middle; margin: 1px; padding: 1px; height: 32px; width: 32px; display: inline-block;}
+=======
+#gttPopup #gttImages .img-container {width: 32px; height: 32px; display: inline-block; text-indent: 0; padding-right: 8px; margin: 5px 0}
 #gttPopup #gttImages img {vertical-align: middle; border: 1px solid lightgray; margin: 1px; padding: 1px; max-width: 100%; max-height: 100%; display: inline-block;}
+>>>>>>> 770af10bdbd4835457faf41a82f73a6651c12939
 .ui-tooltip {max-height: 500px; max-width: 500px; width: 500px; overflow: auto}
 .ui-tooltip-content img {border: 1px solid lightgray; max-width: 100%; height: auto; width: auto}
 
