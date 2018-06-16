@@ -41,7 +41,7 @@ GmailToTrello.GmailView.prototype.preDetect = function() {
 
     var $activeGroup = $('.BltHke[role="main"]');
     
-    if ($activeGroup.find('.apv').length > 0) {
+    if ($activeGroup.find('.apv, .apN').length > 0) { // .apv = old gmail, .apN = new gmail
         // gtt_log('detect: Detected SplitLayout');
 
         this.layoutMode = this.LAYOUT_SPLIT;

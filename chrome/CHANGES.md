@@ -4,6 +4,10 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Verison 2.7.2.21
+-----------------
+- Find new Gmail views
+
 Version 2.7.2.20
 -----------------
 - Make getManifest version check more robust error-handling-wise
