@@ -41,7 +41,7 @@ GmailToTrello.GmailView.prototype.preDetect = function() {
 
     var $activeGroup = $('.BltHke[role="main"]');
     
-    if ($activeGroup.find('.apv').length > 0) {
+    if ($activeGroup.find('.apv, .apN').length > 0) { // .apv = old gmail, .apN = new gmail
         // gtt_log('detect: Detected SplitLayout');
 
         this.layoutMode = this.LAYOUT_SPLIT;
@@ -208,7 +208,16 @@ GmailToTrello.GmailView.prototype.parseData = function() {
         }
     }
     */
+    /* Was:
     var emailId = ($emailBody1.classList[$emailBody1.classList.length-1] || '00') . substr(1); // Get last item, hopefully 'm' + long id
+    */
+    var emailId = $emailBody1.classList[$emailBody1.classList.length-1];
+    if (emailId && emailId.length > 1 && emailId.charAt(0) === 'm') {
+        emailId = emailId.substr(1);
+    } else {
+        // Find emailId via legacy
+        // <span data-thread-id="#thread-f:1602441164947422913" data-legacy-thread-id="163d03bfda277ec1" data-legacy-last-message-id="163d03bfda277ec1">Tips for using your new inbox</span>
+    }
     
     // timestamp
     const $time_k = $(this.selectors.timestamp, $visibleMail);
