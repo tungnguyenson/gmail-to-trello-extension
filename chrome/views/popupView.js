@@ -64,9 +64,9 @@ GmailToTrello.PopupView.prototype.init = function() {
 };
 
 GmailToTrello.PopupView.prototype.confirmPopup = function() {
-//    if (!this.$toolBar) {
-//        return; // button not available yet
-//    }
+    if (!this.$toolBar) {
+        return; // button not available yet
+    }
 
     var self = this,
         needInit = false,
