@@ -4,11 +4,11 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
-Verison 2.7.2.22
+Version 2.7.2.22
 -----------------
-- Get Legacy Gmail Thread ID for backlink
+- Get Legacy Gmail Thread ID for backlink on new Gmail
 
-Verison 2.7.2.21
+Version 2.7.2.21
 -----------------
 - Find new Gmail views
 
