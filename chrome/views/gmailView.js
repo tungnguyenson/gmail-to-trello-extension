@@ -27,7 +27,7 @@ GmailToTrello.GmailView = function(parent) {
         emailBody: '.adn.ads .gs:first .a3s.aXjCH', // Was: "div[dir='ltr']:first", // Was: '.adP:first', // Was: '.adO:first'
         emailAttachments: '.aZo', // Was: '.aQy',
         emailThreadID: '.a3s.aXjCH',
-        dataLegacyID: 'data-legacy-thread-id',
+        emailIDs: ['data-thread-perm-id', 'data-thread-id', 'data-legacy-thread-id'],
         viewport: '.aeJ:first',
         viewportSplit: '.aNW:first', //reading panel
         expandedEmails: '.h7',
@@ -275,10 +275,10 @@ GmailToTrello.GmailView.prototype.parseData = function() {
 
     // Find emailId via legacy
     // <span data-thread-id="#thread-f:1602441164947422913" data-legacy-thread-id="163d03bfda277ec1" data-legacy-last-message-id="163d03bfda277ec1">Tips for using your new inbox</span>
-    if (!emailId) {
-        emailId = ($subject.attr(this.selectors.dataLegacyID) || '').trim(); // Try new Gmail format
+    var ids = this.selectors.emailIDs;
+    while ((id1 = ids.shift()) && !emailId) {
+        emailId = ($subject.attr(id1) || '').trim(); // Try new Gmail format
     }
-
 
     var subject = encodeURIComponent(data.subject);
     var dateSearch = encodeURIComponent(data.time);
