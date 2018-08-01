@@ -275,10 +275,11 @@ GmailToTrello.GmailView.prototype.parseData = function() {
 
     // Find emailId via legacy
     // <span data-thread-id="#thread-f:1602441164947422913" data-legacy-thread-id="163d03bfda277ec1" data-legacy-last-message-id="163d03bfda277ec1">Tips for using your new inbox</span>
-    var ids = this.selectors.emailIDs;
-    while ((id1 = ids.shift()) && !emailId) {
-        emailId = ($subject.attr(id1) || '').trim(); // Try new Gmail format
-    }
+    const ids_len_k = this.selectors.emailIDs.length;
+    var iter = 0;
+    do {
+        emailId = ($subject.attr(this.selectors.emailIDs[iter]) || '').trim(); // Try new Gmail format
+    } while (!emailId && ++iter < ids_len_k);
 
     var subject = encodeURIComponent(data.subject);
     var dateSearch = encodeURIComponent(data.time);
