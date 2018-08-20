@@ -215,31 +215,6 @@ GmailToTrello.GmailView.prototype.parseData = function() {
         }
     });
 
-    // email thread id
-    /* Was:
-    var emailId = 0;
-    var class1 = '';
-    var classnames = ($(this.selectors.emailThreadID, $visibleMail).attr('class') || "").split(' ');
-    while ((class1 = classnames.pop()) && emailId === 0) {
-        if (class1 && class1.indexOf('m') === 0) {
-            emailId = class1.substr(1);
-        }
-    }
-    */
-    /* Was:
-    var emailId = ($emailBody1.classList[$emailBody1.classList.length-1] || '00') . substr(1); // Get last item, hopefully 'm' + long id
-    */
-    var emailId = $emailBody1.classList[$emailBody1.classList.length-1];
-    if (emailId && emailId.length > 1) {
-        if (emailId.charAt(0) === 'm' && emailId.charAt(1) <= '9') { // Only useful class is m####### otherwise use data legacy
-            emailId = emailId.substr(1);
-        } else {
-            emailId = 0; // Didn't find anything useful
-        }
-    } else {
-        emailId = 0;
-    }
-    
     // timestamp
     const $time_k = $(this.selectors.timestamp, $visibleMail);
     const timeAttr_k = (($time_k.length > 0) ? ($time_k.attr('title') || $time_k.text() || $time_k.attr('alt')) : '').trim();
@@ -277,10 +252,24 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     // <span data-thread-id="#thread-f:1602441164947422913" data-legacy-thread-id="163d03bfda277ec1" data-legacy-last-message-id="163d03bfda277ec1">Tips for using your new inbox</span>
     const ids_len_k = this.selectors.emailIDs.length;
     var iter = 0;
+    var emailId = 0;
     do {
         emailId = ($subject.attr(this.selectors.emailIDs[iter]) || '').trim(); // Try new Gmail format
     } while (!emailId && ++iter < ids_len_k);
 
+    if (!emailId) { // try to find via explicitly named class item:
+        var emailIdViaClass = $emailBody1.classList[$emailBody1.classList.length-1];
+        if (emailIdViaClass && emailIdViaClass.length > 1) {
+            if (emailIdViaClass.charAt(0) === 'm' && emailIdViaClass.charAt(1) <= '9') { // Only useful class is m####### otherwise use data legacy
+                emailId = emailIdViaClass.substr(1);
+            } else {
+                emailId = 0; // Didn't find anything useful
+            }
+        } else {
+            emailId = 0;
+        }
+    }
+    
     var subject = encodeURIComponent(data.subject);
     var dateSearch = encodeURIComponent(data.time);
     
