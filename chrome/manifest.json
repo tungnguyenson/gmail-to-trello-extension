@@ -1,7 +1,7 @@
 {
   "name": "Gmail-to-Trello",
   "short_name": "GtT",
-  "version": "2.7.2.15",
+  "version": "2.7.2.25",
   "manifest_version": 2,
   "description": "Gmail-to-Trello integration. Create new Trello cards from Google mail threads with backlinks.",
   "icons": {
@@ -30,17 +30,17 @@
       "js": [
           "lib/jquery-3.1.1.min.js",
           "lib/jquery-ui-1.12.1.min.js",
-          "lib/trello.min.js", 
-          "lib/date.js", 
-          "lib/google-analytics-bundle.js", 
+          "lib/trello.min.js",
+          "lib/date.js",
+          "lib/google-analytics-bundle.js",
           "lib/google-chrome-buy.js",
-          "lib/eventTarget.js", 
-          "lib/menuControl.js", 
+          "lib/eventTarget.js",
+          "lib/menuControl.js",
           "lib/waitCounter.js",
-          "views/gmailView.js", 
-          "views/popupView.js", 
-          "model.js", 
-          "app.js", 
+          "views/gmailView.js",
+          "views/popupView.js",
+          "model.js",
+          "app.js",
           "content-script.js"
       ],
       "css": [
@@ -50,7 +50,7 @@
     }
   ],
   "web_accessible_resources":[
-    "images/icon-13.jpg",
+    "images/icon-48.png",
     "images/icon-16.jpg",
     "images/new_icon.gif",
     "images/clock.png",
@@ -70,7 +70,7 @@
   "offline_enabled": false,
   "permissions": [
     "browsingData",
-    "tabs", 
+    "tabs",
     "storage",
     "identity",
     "contextMenus",

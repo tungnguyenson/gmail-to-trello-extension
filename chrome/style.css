@@ -3,7 +3,7 @@
 .clearfix:after {
     content: "";
     /* Seems to do better than "block": */
-    display: table; 
+    display: table;
     clear: both;
 }
 
@@ -20,23 +20,24 @@
 */
 
 /* toolbar holder */
-.iH div {position: static}
+/*.iH div {position: static} /* Caused bug on the new gmail, disabled on May 3rd  */
 
 #gttPopup {
-    position: absolute; 
+    position: absolute;
+    top: 47px;
     max-height: none;
     min-height: 460px;
-    min-width: 620px; 
-    max-width: 1400px; 
+    min-width: 620px;
+    max-width: 1400px;
     -webkit-user-select: none;
     border-top: 2px solid #ccc; /*#0088C3; */
-    border-bottom: 2px solid #ccc; 
-    background: #FEFEFE; 
-    padding: 0; 
-    opacity: 0.95; 
+    border-bottom: 2px solid #ccc;
+    background: #FEFEFE;
+    padding: 0;
+    opacity: 0.95;
     z-index: 9999;
     overflow: hidden;
-    white-space: normal; 
+    white-space: normal;
 }
 
 #gttTitle {
@@ -51,7 +52,7 @@
     z-index: 2;
     position: relative;
     line-height: normal;
-    font-size: 13px; 
+    font-size: 13px;
     -webkit-transition: none;
     transition: none;
     overflow: auto;
@@ -60,15 +61,27 @@
 }
 
 #gttButton {
-    padding-left: 10px; 
-    padding-right: 10px; 
-    -webkit-user-select: none; 
-    margin-bottom: 0px; 
-    margin-top:-2px; 
-    outline: none; 
+    -webkit-user-select: none;
+    margin-bottom: 0px;
+    margin-top: -10px;
+    margin-left: -10px;
+    outline: none;
+    width: 40px;
+    height: 40px;
+    position: relative;
+    border-radius: 50%;
+}
+
+#gttButton:hover {
+    background: rgba(32,33,36,0.059);
 }
 
 #gttButton > div {
+    position: absolute;
+    top: 13px;
+    left: 13px;
+    width: 14px;
+    height: 14px;
     opacity:0.55;
 }
 
@@ -83,28 +96,29 @@
     height: 14px;
     width: 14px;
     padding-right: 2px;
-}
-
-#gttButton #gttDownArrow {
-    opacity: 1;
-    background: none;
-    font-size: 12px;
-    line-height: 5px;
+    display: block;
 }
 
 #gttButton.withCards {
-    background-color: #0f9d58;
-    background-image: linear-gradient(to bottom,#0f9d58,#0f9152);
+    background: #34A853;
     color: #ffffff;
+    width: auto;
+    padding: 0 10px 0 15px;
+    margin-left: 0;
+    border-radius: 20px;
 }
 
 #gttButton.withCards:hover {
-    background-image: linear-gradient(to bottom,#0f9d58,#058545);
-    border: 1px solid #007038;
+    background: #35ac19;
+    box-shadow: 3px 3px 12px #aaa;
 }
 
 #gttButton.withCards > div {
     opacity:1;
+    position: static;
+    width: auto;
+    height: auto;
+    white-space: nowrap;
 }
 
 #gttButton.withCards:hover > div {
@@ -112,7 +126,9 @@
 }
 
 #gttButton.withCards img {
+    display: inline-block;
     filter: invert(100%);
+    margin-top: -2px;
 }
 
 #gttPopup .outerContent {
@@ -192,6 +208,7 @@
     display: block;
     font-size: 12px;
     margin-bottom: 4px;
+    line-height: 1.3em;
 }
 
 #gttPopup #threadCards .threadCard .cardDue {
@@ -270,7 +287,7 @@
 #gttPopup .popupMsg {border:1px solid #EDC967; background: #F9EDB8; padding:5px 10px 15px; margin: 10px;}
 #gttPopup #resize-icon {position: relative; bottom: 24px; right: 24px;}
 
-#gttPopup .listrow {min-height: 31px;}
+#gttPopup .gttFormControl {min-height: 31px;}
 
 #gttLabelsMsg, #gttMembersMsg {background: #F9EDB8; height: 16px; width: 29%; padding-left: 1%; margin-right: 70%; margin-bottom: 50px;}
 
@@ -281,27 +298,27 @@
 ul#gttPosition {display: inline-block; float: left; padding: 0; margin: 0 0 2px 0;}
 
 #gttLabels li, #gttMembers li {
-    float: left; 
-    margin: 0 2px 2px 0; 
-    padding: 6px 6px; 
-    list-style: none; 
-    border-radius: 3px; 
-    border: 1px solid #ccc; 
-    border-top-width: 5px; 
-    cursor: pointer; 
-    background: #F2F2F2; 
-    font-size: 11px; 
-    font-weight: bold; 
+    float: left;
+    margin: 0 2px 2px 0;
+    padding: 2px 6px;
+    list-style: none;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    border-top-width: 5px;
+    cursor: pointer;
+    background: #F2F2F2;
+    font-size: 11px;
+    font-weight: bold;
     color: #888;
 }
 
 #gttPosition li {
-    float: left; 
+    float: left;
     cursor: pointer;
     list-style: none;
     /* background: #F2F2F2; */
-    font-size: 20px; 
-    font-weight: bold; 
+    font-size: 20px;
+    font-weight: bold;
     color: #ccc;
     height: 26px;
     width: 22px;
@@ -311,13 +328,13 @@ ul#gttPosition {display: inline-block; float: left; padding: 0; margin: 0 0 2px 
 }
 
 #gttLabels li:hover, #gttMembers li:hover, #gttLabels li.active:hover, #gttMembers li.active:hover {border-color: #52A8D9; color: #1789C0;}
-#gttLabels li.active, #gttMembers li.active {border-color: inherit; color: black; padding: 4px 4px; border: 3px solid; border-top-width:7px;}
+#gttLabels li.active, #gttMembers li.active {border-color: inherit; color: black; padding: 0 4px; border: 3px solid; border-top-width:7px;}
 #gttPosition li:hover, #gttPosition li.active:hover {color: black;}
 #gttPosition li.active {color: darkgreen; background: #F2F2F2;}
 
 dl#gttPopup {vertical-align: baseline;}
-#gttPopup dt {width: 70px; float: left; text-align: right; padding-right: 5px; vertical-align: baseline;}
-#gttPopup dd {display: block; margin: 8px; margin-left: 75px;}
+#gttPopup .gttFormLabel {width: 70px; float: left; text-align: right; padding-right: 5px; vertical-align: baseline;}
+#gttPopup .gttFormControl {display: block; margin: 8px; margin-left: 75px;}
 
 #gttPopup input,#gttPopup select,#gttPopup option {font-size:12px;}
 
@@ -343,7 +360,8 @@ dl#gttPopup {vertical-align: baseline;}
 #gttPopup #gttAttachments input[type=checkbox], #gttPopup #gttImages input[type=checkbox] {width: 15px;}
 #gttPopup #gttAttachments label, #gttPopup #gttImages label {display: inline-block; padding-left: 24px; text-indent: -18px;}
 
-#gttPopup #gttImages img {vertical-align: middle; border: 1px solid lightgray; margin: 1px; padding: 1px; height: 32px; width: 32px; display: inline-block;}
+#gttPopup #gttImages .img-container {width: 32px; height: 32px; display: inline-block; text-indent: 0; padding-right: 8px; margin: 5px 0}
+#gttPopup #gttImages img {vertical-align: middle; border: 1px solid lightgray; margin: 1px; padding: 1px; max-width: 100%; max-height: 100%; display: inline-block;}
 .ui-tooltip {max-height: 500px; max-width: 500px; width: 500px; overflow: auto}
 .ui-tooltip-content img {border: 1px solid lightgray; max-width: 100%; height: auto; width: auto}
 

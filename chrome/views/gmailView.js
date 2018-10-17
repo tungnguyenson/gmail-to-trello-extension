@@ -16,6 +16,8 @@ GmailToTrello.GmailView = function(parent) {
 
     this.parsingData = false;
 
+    this.runaway = 0;
+
     this.selectors = {
         /* selectors mapping, modify here when gmail's markup changes */
         toolbarButton: '.G-Ni:first',
@@ -26,6 +28,8 @@ GmailToTrello.GmailView = function(parent) {
         emailAttachments: '.aZo', // Was: '.aQy',
         emailThreadID: '.a3s.aXjCH',
         viewport: '[role="main"]',
+        emailIDs: ['data-thread-perm-id', 'data-thread-id', 'data-legacy-thread-id'],
+        viewport: '.aeJ:first',
         viewportSplit: '.aNW:first', //reading panel
         expandedEmails: '.h7',
         hiddenEmails: '.kv',
@@ -42,8 +46,8 @@ GmailToTrello.GmailView.prototype.preDetect = function() {
 
     var $activeGroup = $('.BltHke[role="main"]');
     
-    if ($activeGroup.find('.apv').length > 0) {
-        gtt_log('detect: Detected SplitLayout');
+    if ($activeGroup.find('.apv, .apN').length > 0) { // .apv = old gmail, .apN = new gmail
+        // gtt_log('detect: Detected SplitLayout');
         this.layoutMode = this.LAYOUT_SPLIT;
         this.$root = $activeGroup;
     } else {
@@ -61,14 +65,15 @@ GmailToTrello.GmailView.prototype.detect = function() {
     const pre_k = this.preDetect();
 
     if (pre_k) {
-        this.event.fire('onDetected');
+        self.event.fire('onDetected');
     } else {
-        this.detectEmailOpeningMode();
+        self.detectEmailOpeningMode();
     }
 };
 
 GmailToTrello.GmailView.prototype.detectToolbar = function() {
     // gtt_log('GmailView:detectToolbar');
+    var self = this;
 
     var $toolBar = $("[gh='mtb']", this.$root) || null;
     
@@ -80,6 +85,20 @@ GmailToTrello.GmailView.prototype.detectToolbar = function() {
     
     const haveToolBar_k = $toolBar && $toolBar.length > 0
                         ? true : false;
+
+    if (!haveToolBar_k) {
+        setTimeout(function() {
+            self.runaway++;
+            if (self.runaway > 5) {
+                self.runaway = 0;
+                gtt_log('GmailView:detectToolbar RUNAWAY FIRED!');
+            } else {
+                self.event.fire('detectButton');
+            }
+        }, 2000);
+    }
+
+    self.runaway = 0;
 
     return haveToolBar_k;
 };
@@ -173,8 +192,8 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     */
 
     // email name
-    var emailName = ($(this.selectors.emailName, $visibleMail).attr('name') || "").trim();
-    var emailAddress = ($(this.selectors.emailAddress, $visibleMail).attr('email') || "").trim();
+    var emailName = ($(this.selectors.emailName, $visibleMail).attr('name') || '').trim();
+    var emailAddress = ($(this.selectors.emailAddress, $visibleMail).attr('email') || '').trim();
     var emailAttachments = $(this.selectors.emailAttachments, $visibleMail).map(function() {
         var item = $(this).attr('download_url');
         if (item && item.length > 0) {
@@ -197,19 +216,6 @@ GmailToTrello.GmailView.prototype.parseData = function() {
         }
     });
 
-    // email thread id
-    /* Was:
-    var emailId = 0;
-    var class1 = '';
-    var classnames = ($(this.selectors.emailThreadID, $visibleMail).attr('class') || "").split(' ');
-    while ((class1 = classnames.pop()) && emailId === 0) {
-        if (class1 && class1.indexOf('m') === 0) {
-            emailId = class1.substr(1);
-        }
-    }
-    */
-    var emailId = ($emailBody1.classList[$emailBody1.classList.length-1] || '00') . substr(1); // Get last item, hopefully 'm' + long id
-    
     // timestamp
     const $time_k = $(this.selectors.timestamp, $visibleMail);
     const timeAttr_k = (($time_k.length > 0) ? ($time_k.attr('title') || $time_k.text() || $time_k.attr('alt')) : '').trim();
@@ -246,8 +252,31 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     });
 
     // subject
-    data.subject = ($(this.selectors.emailSubject, $viewport).text() || '').trim();
+    var $subject = $(this.selectors.emailSubject, this.$root);
+    data.subject = ($subject.text() || '').trim();
 
+    // Find emailId via legacy
+    // <span data-thread-id="#thread-f:1602441164947422913" data-legacy-thread-id="163d03bfda277ec1" data-legacy-last-message-id="163d03bfda277ec1">Tips for using your new inbox</span>
+    const ids_len_k = this.selectors.emailIDs.length;
+    var iter = 0;
+    var emailId = 0;
+    do {
+        emailId = ($subject.attr(this.selectors.emailIDs[iter]) || '').trim(); // Try new Gmail format
+    } while (!emailId && ++iter < ids_len_k);
+
+    if (!emailId) { // try to find via explicitly named class item:
+        var emailIdViaClass = $emailBody1.classList[$emailBody1.classList.length-1];
+        if (emailIdViaClass && emailIdViaClass.length > 1) {
+            if (emailIdViaClass.charAt(0) === 'm' && emailIdViaClass.charAt(1) <= '9') { // Only useful class is m####### otherwise use data legacy
+                emailId = emailIdViaClass.substr(1);
+            } else {
+                emailId = 0; // Didn't find anything useful
+            }
+        } else {
+            emailId = 0;
+        }
+    }
+    
     var subject = encodeURIComponent(data.subject);
     var dateSearch = encodeURIComponent(data.time);
     
