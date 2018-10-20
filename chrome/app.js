@@ -19,18 +19,23 @@ GmailToTrello.App.prototype.bindEvents = function() {
 
     /*** Data's events binding ***/
     this.model.event.addListener('onBeforeAuthorize', function() {
+        self.popupView.bindData(''); // Intentionally blank
         self.popupView.showMessage(self, 'Authorizing...');    
     });
     
-    this.model.event.addListener('onAuthenticateFailed', function() {
-        self.popupView.showMessage(self, 'Trello authorization failed');    
+    this.model.event.addListener('onAuthorizeFail', function() {
+        // self.model.isInitialized = false;
+        self.popupView.showMessage(self,
+            'Trello authorization failed <button id="showsignout">Sign out and try again</button>');
     });
     
     this.model.event.addListener('onAuthorized', function() {
         gtt_log('onAuthorized');
         gtt_log("Status: " + Trello.authorized().toString());
+        self.popupView.$popupContent.show();
+        self.popupView.hideMessage();
     });
-    
+
     this.model.event.addListener('onBeforeLoadTrello', function() {
         self.popupView.showMessage(self, 'Loading Trello data...');
     });
@@ -124,6 +129,11 @@ GmailToTrello.App.prototype.bindEvents = function() {
     
     this.popupView.event.addListener('onSubmit', function() {
         self.model.submit();
+    });
+
+    this.popupView.event.addListener('checkTrelloAuthorized', function() {
+        self.popupView.showMessage(self, 'Authorizing...');
+        self.model.checkTrelloAuthorized();
     });
 
     this.popupView.event.addListener('onRequestDeauthorizeTrello', function() {
