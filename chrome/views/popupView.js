@@ -543,66 +543,27 @@ GmailToTrello.PopupView.prototype.forceSetVersion = function() {
 };
 
 
+GmailToTrello.PopupView.prototype.showSignOutOptions = function(data) {
+    var self = this;
+
+    $.get(chrome.extension.getURL('views/signOut.html'), function(data_in) {
+        self.showMessage(self, data_in);
+        // chrome.identity.removeCacheAuthToken({'token': self.chrome_access_token});
+        // self.event.fire('onRequestDeauthorizeTrello');
+    });
+};
+
 GmailToTrello.PopupView.prototype.bindData = function(data) {
     var self = this;
 
-    if (!data) {
-        gtt_log('bindData missing data!');
-        return;
-    }
-
-    // Need to keep this from getting blown over if it exists:
-    var settings = this.data && this.data.settings && this.data.settings.boardId ? this.data.settings : '';
-    this.data = data;
-
-    if (data && data.settings && data.settings.boardId) {
-        // leave settings that came in, they look valid
-    } else if (settings) {
-        this.data.settings = settings;
-    }
-
-    this.$popupMessage.hide();
-    this.$popupContent.show();
-
-    //bind trello data
-    var me = data.trello.user; // First member is always this user
-    var avatarSrc = self.parent.model.makeAvatarUrl(me.avatarHash);
-    var avatarText = '';
-
-    if (!avatarSrc) {
-        var initials = '?';
-        if (me.initials && me.initials.length > 0) {
-            initials = me.initials;
-        } else if (me.fullName && me.fullName.length > 1) {
-            var matched = me.fullName.match(/^(\w).*?[\s\\W]+(\w)\w*$/);
-            if (matched && matched.length > 1) {
-                initials = matched[1] + matched[2]; // 0 is whole string
-            }
-        } else if (me.username && me.username.length > 0) {
-            initials = me.username.slice(0,1);
-        }
-
-        avatarText = initials.toUpperCase();
-    }
-
-    // NOTE (Ace, 6-Feb-2017): Assigning .userInfo to a variable and then updating it doesn't work right, so refer explicitly to item:
-    $('#gttAvatarURL', this.$popup).attr('href', me.url);
-    $('#gttAvatarText', this.$popup).text(avatarText);
-    $('#gttAvatarImg', this.$popup).attr('src', avatarSrc);
-    $('#gttUsername', this.$popup).attr('href', me.url).text(me.username || '?');
-
-    $('#gttSignOutButton', this.$popup).click(function() {
-        $.get(chrome.extension.getURL('views/signOut.html'), function(data) {
-            self.showMessage(self, data);
-            // chrome.identity.removeCacheAuthToken({'token': self.chrome_access_token});
-            // self.event.fire('onRequestDeauthorizeTrello');
-        });
+    $('#gttSignOutButton', self.$popup).click(function() {
+        self.showSignOutOptions();
     });
 
     // GET https://www.googleapis.com/chromewebstore/v1.1/items/oceoildfbiaeclndnjknjpfaoofeekgl/skus/gmail_to_trello_yearly_subscription_29_99
-    $('#gttSubscribe', this.$popup).click(function() {
-        $.get(chrome.extension.getURL('views/subscribe.html'), function(data) {
-            self.showMessage(self, data);
+    $('#gttSubscribe', self.$popup).click(function() {
+        $.get(chrome.extension.getURL('views/subscribe.html'), function(data_in) {
+            self.showMessage(self, data_in);
             google.payments.inapp.getSkuDetails({ // getSkuDetails({
                   'parameters': {'env': 'prod'},
                   'sku': 'gmail_to_trello_yearly_subscription_29_99',
@@ -620,45 +581,6 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
             */
         });
     });
-
-    if (data.settings.hasOwnProperty('useBackLink')) {
-        $('#chkBackLink', this.$popup).prop('checked', data.settings.useBackLink);
-    }
-
-    if (data.settings.hasOwnProperty('markdown')) {
-        $('#chkMarkdown', this.$popup).prop('checked', data.settings.markdown);
-    }
-
-    if (data.settings.hasOwnProperty('due_Date')) {
-        $('#gttDue_Date', this.$popup).val(data.settings.due_Date);
-    }
-
-    if (data.settings.hasOwnProperty('due_Time')) {
-        $('#gttDue_Time', this.$popup).val(data.settings.due_Time);
-    }
-
-    // Attach reportError function to report id if in text:
-    $('#report', this.$popup).click(function() {
-        self.reset();
-
-        const lastError_k = (self.lastError || '') + (self.lastError ? '\n' : '');
-
-        const dl_k = self.parent.deep_link; // Pointer to function for expedience
-        const data_k = dl_k(self, ['data']);
-        const newCard_k = dl_k(data_k, ['newCard']);
-        let newCard = $.extend({}, newCard_k);
-        // delete newCard.title;
-        delete newCard.description;
-        const user_k = dl_k(data_k, ['trello', 'user']);
-        const username_k = dl_k(user_k, ['username']);
-        const fullname_k = dl_k(user_k, ['fullName']);
-        const date_k = new Date().toISOString().substr(0,10);
-        self.updateBoards('52e1397addf85d4751f99319'); // GtT board
-        $('#gttDesc', self.$popup).val(lastError_k + JSON.stringify(newCard) + '\n' + gtt_log());
-        $('#gttTitle', self.$popup).val('Error report card: ' + [fullname_k, username_k].join(' @') + ' ' + date_k);
-        self.validateData();
-    });
-
 
     chrome.storage.sync.get('dueShortcuts', function(response) {
         // Borrowed from options file until this gets persisted everywhere:
@@ -695,7 +617,7 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
 
         var due = JSON.parse(response.dueShortcuts || dueShortcuts_k);
 
-        var $gtt = $('#gttDue_Shortcuts', this.$popup);
+        var $gtt = $('#gttDue_Shortcuts', self.$popup);
         $gtt.html(''); // Clear it.
 
         var opt = '<option value="d=0 am=0">--</option>';
@@ -717,9 +639,92 @@ GmailToTrello.PopupView.prototype.bindData = function(data) {
         }
     });
 
-    this.initPosition();
+    if (!data) {
+        gtt_log("bindData shouldn't continue without data!");
+        return;
+    }
 
-    this.updateBoards();
+    // Need to keep this from getting blown over if it exists:
+    var settings = self.data && self.data.settings && self.data.settings.boardId ? self.data.settings : '';
+    self.data = data;
+
+    if (data && data.settings && data.settings.boardId) {
+        // leave settings that came in, they look valid
+    } else if (settings) {
+        self.data.settings = settings;
+    }
+
+    //bind trello data
+    var me = data.trello.user; // First member is always this user
+    var avatarSrc = self.parent.model.makeAvatarUrl(me.avatarHash);
+    var avatarText = '';
+
+    if (!avatarSrc) {
+        var initials = '?';
+        if (me.initials && me.initials.length > 0) {
+            initials = me.initials;
+        } else if (me.fullName && me.fullName.length > 1) {
+            var matched = me.fullName.match(/^(\w).*?[\s\\W]+(\w)\w*$/);
+            if (matched && matched.length > 1) {
+                initials = matched[1] + matched[2]; // 0 is whole string
+            }
+        } else if (me.username && me.username.length > 0) {
+            initials = me.username.slice(0,1);
+        }
+
+        avatarText = initials.toUpperCase();
+    }
+
+    // NOTE (Ace, 6-Feb-2017): Assigning .userInfo to a variable and then updating it doesn't work right, so refer explicitly to item:
+    $('#gttAvatarURL', this.$popup).attr('href', me.url);
+    $('#gttAvatarText', this.$popup).text(avatarText);
+    $('#gttAvatarImg', this.$popup).attr('src', avatarSrc);
+    $('#gttUsername', this.$popup).attr('href', me.url).text(me.username || '?');
+
+    if (data.settings.hasOwnProperty('useBackLink')) {
+        $('#chkBackLink', this.$popup).prop('checked', data.settings.useBackLink);
+    }
+
+    if (data.settings.hasOwnProperty('markdown')) {
+        $('#chkMarkdown', this.$popup).prop('checked', data.settings.markdown);
+    }
+
+    if (data.settings.hasOwnProperty('due_Date')) {
+        $('#gttDue_Date', this.$popup).val(data.settings.due_Date);
+    }
+
+    if (data.settings.hasOwnProperty('due_Time')) {
+        $('#gttDue_Time', this.$popup).val(data.settings.due_Time);
+    }
+
+    // Attach reportError function to report id if in text:
+    $('#report', self.$popup).click(function() {
+        self.reset();
+
+        const lastError_k = (self.lastError || '') + (self.lastError ? '\n' : '');
+
+        const dl_k = self.parent.deep_link; // Pointer to function for expedience
+        const data_k = dl_k(self, ['data']);
+        const newCard_k = dl_k(data_k, ['newCard']);
+        let newCard = $.extend({}, newCard_k);
+        // delete newCard.title;
+        delete newCard.description;
+        const user_k = dl_k(data_k, ['trello', 'user']);
+        const username_k = dl_k(user_k, ['username']);
+        const fullname_k = dl_k(user_k, ['fullName']);
+        const date_k = new Date().toISOString().substr(0,10);
+        self.updateBoards('52e1397addf85d4751f99319'); // GtT board
+        $('#gttDesc', self.$popup).val(lastError_k + JSON.stringify(newCard) + '\n' + gtt_log());
+        $('#gttTitle', self.$popup).val('Error report card: ' + [fullname_k, username_k].join(' @') + ' ' + date_k);
+        self.validateData();
+    });
+
+    self.$popupMessage.hide();
+    self.$popupContent.show();
+
+    self.initPosition();
+
+    self.updateBoards();
 };
 
 GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
@@ -729,16 +734,16 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
         return;
     }
 
-    $('#gttTitle', this.$popup).val(data.subject);
+    $('#gttTitle', self.$popup).val(data.subject);
 
-    const markdown_k = $('#chkMarkdown', this.$popup).is(':checked');
-    const useBackLink_k = $('#chkBackLink', this.$popup).is(':checked');
+    const markdown_k = $('#chkMarkdown', self.$popup).is(':checked');
+    const useBackLink_k = $('#chkBackLink', self.$popup).is(':checked');
 
     const body_k = markdown_k ? data.body_md : data.body_raw;
     const link_k = useBackLink_k ? ((markdown_k ? data.link_md : data.link_raw) + ' ') : '';
     const desc_k = self.parent.truncate(body_k, self.MAX_BODY_SIZE - link_k.length, '...');
 
-    $('#gttDesc', this.$popup)
+    $('#gttDesc', self.$popup)
         .val(link_k + desc_k)
         .attr('gmail-body-raw', data.body_raw || '')
         .attr('gmail-body-md', data.body_md || '')
@@ -805,14 +810,14 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
 
 GmailToTrello.PopupView.prototype.showMessage = function(parent, text) {
     let self = this;
-    this.$popupMessage.html(text);
+    self.$popupMessage.html(text);
 
     // Attach hideMessage function to hideMsg class if in text:
-    $('.hideMsg', this.$popupMessage).click(function() {
+    $('.hideMsg', self.$popupMessage).click(function() {
         parent.hideMessage();
     });
 
-    $(':button', this.$popupMessage).click(function() {
+    $(':button', self.$popupMessage).click(function() {
         let $status = $('span#' + this.id, self.$popupMessage) || '';
         switch(this.id) {
             case 'signout':
@@ -835,6 +840,8 @@ GmailToTrello.PopupView.prototype.showMessage = function(parent, text) {
                     }, 2500);
                 });
                 break;
+            case 'showsignout':
+                self.showSignOutOptions();
             default:
                 gtt_log('showMessage: ERROR unhandled case "' + this.id + '"');
         }
@@ -845,7 +852,7 @@ GmailToTrello.PopupView.prototype.showMessage = function(parent, text) {
         }
     });
 
-    this.$popupMessage.show();
+    self.$popupMessage.show();
 };
 
 GmailToTrello.PopupView.prototype.hideMessage = function() {

@@ -28,43 +28,54 @@ GmailToTrello.Model.prototype.initTrello = function() {
 
     var self = this;
 
-    this.trello.user = null;
-    this.trello.boards = null;
+    self.trello.user = null;
+    self.trello.boards = null;
 
-    Trello.setKey(this.trello.apiKey);
+    Trello.setKey(self.trello.apiKey);
+    self.checkTrelloAuthorized();
+};
+
+GmailToTrello.Model.prototype.checkTrelloAuthorized = function() {
+    gtt_log("checkTrelloAuthorized");
+
+    var self = this;
+
+    // Assures there's a token or not:
     Trello.authorize({
         interactive: false,
-        success: function() {
+        success: function(data) {
             self.event.fire('onAuthorized');
             self.loadTrelloData();
+        },
+        error: function(data) {
+            if (!Trello.authorized()) { // Assure token is invalid
+                self.event.fire('onBeforeAuthorize');
+                Trello.authorize({
+                    type: 'popup',
+                    name: "Gmail-to-Trello",
+                    interactive: true,
+                    persit: true,
+                    scope: {read: true, write: true},
+                    expiration: 'never',
+                    success: function(data) {
+                        gtt_log('checkTrelloAuthorized: Trello authorization successful');
+                        // gtt_log(data);
+                        self.event.fire('onAuthorized');
+                        self.loadTrelloData();
+                    },
+                    error: function(data) {
+                        self.event.fire('onAuthorizeFail');
+                    }
+                });
+            } else {
+                // We have a valid token, so...how did we get here?
+                // self.event.fire('onAuthorized');
+                // self.loadTrelloData();
+                // gtt_log(Trello);
+                // gtt_log(Trello.token());
+            }
         }
     });
-
-    if (!Trello.authorized()) {
-        this.event.fire('onBeforeAuthorize');
-
-        Trello.authorize({
-            type: 'popup',
-            name: "Gmail-to-Trello",
-            persit: true,
-            scope: {read: true, write: true},
-            expiration: 'never',
-            success: function(data) {
-                gtt_log('initTrello: Trello authorization successful');
-                // gtt_log(data);
-                self.event.fire('onAuthorized');
-                self.loadTrelloData();
-            },
-            error: function() {
-                self.event.fire('onAuthenticateFailed');
-            }
-        });
-
-    }
-    else {
-        //gtt_log(Trello);
-        //gtt_log(Trello.token());
-    }
 };
 
 GmailToTrello.Model.prototype.deauthorizeTrello = function() {

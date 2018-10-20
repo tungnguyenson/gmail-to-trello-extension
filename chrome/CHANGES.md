@@ -4,6 +4,10 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.7.2.26
+-----------------
+- Make sure UI, Sign-out, Report works (enough) when Trello Authenticate fails.
+
 Version 2.7.2.25
 -----------------
 - Look for old legacy classname m{UNIQUEID} only if other emailId tags aren't present
