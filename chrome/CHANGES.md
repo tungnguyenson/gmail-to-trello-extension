@@ -6,7 +6,7 @@ CHANGE LOG:
 
 Version 2.7.2.26
 -----------------
-- Make sure UI, Sign-out, Report works (enough) when Trello Authenticate fails.
+- Make sure UI, Sign-out works (enough) when Trello Authenticate fails.
 
 Version 2.7.2.25
 -----------------
