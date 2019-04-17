@@ -18,10 +18,6 @@ GmailToTrello.App.prototype.bindEvents = function() {
    var self = this;
 
     /*** Data's events binding ***/
-    this.model.event.addListener('onBeforeAuthorize', function() {
-        self.popupView.showMessage(self, 'Authorizing...');    
-    });
-    
     this.model.event.addListener('onAuthenticateFailed', function() {
         self.popupView.showMessage(self, 'Trello authorization failed');    
     });
