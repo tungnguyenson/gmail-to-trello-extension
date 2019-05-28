@@ -83,6 +83,7 @@
     width: 14px;
     height: 14px;
     opacity:0.55;
+    background-image: none !important;
 }
 
 #gttButton:hover > div {
