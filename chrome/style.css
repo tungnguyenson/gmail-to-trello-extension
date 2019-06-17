@@ -98,7 +98,7 @@ ul#gttPosition {display: inline-block; float: left; padding: 0; margin: 0 0 2px 
     list-style: none;
     border-radius: 3px;
     border: 1px solid #ccc;
-    border-top-width: 5px;
+    border-top-width: 4px;
     cursor: pointer;
     background: #F2F2F2;
     font-size: 11px;
@@ -122,7 +122,7 @@ ul#gttPosition {display: inline-block; float: left; padding: 0; margin: 0 0 2px 
 }
 
 #gttLabels li:hover, #gttMembers li:hover, #gttLabels li.active:hover, #gttMembers li.active:hover {border-color: #52A8D9; color: #1789C0;}
-#gttLabels li.active, #gttMembers li.active {border-color: inherit; color: black; padding: 4px 4px; border: 3px solid; border-top-width:7px;}
+#gttLabels li.active, #gttMembers li.active {border-color: inherit; color: black; padding: 3px 3px; border: 4px solid; border-top-width:7px; background:linear-gradient(to bottom, #eeeeee 0, #999999 100%);}
 #gttPosition li:hover, #gttPosition li.active:hover {color: black;}
 #gttPosition li.active {color: darkgreen; background: #F2F2F2;}
 
@@ -135,7 +135,7 @@ dl#gttPopup {vertical-align: baseline;}
 #gttPopup .gttTopRight {float: right; vertical-align: top; margin: 0;}
 
 #gttPopup #addToTrello /* input[type=button] */ {font-size: 14px; padding: 5px 18px; color: white; background:linear-gradient(to top, #24a828 0, #1b7e1e 100%); border: 0; border-radius: 3px; cursor: pointer}
-#gttPopup #addToTrello:hover /* input[type=button]:hover */ {background:linear-gradient(to bottom, #1f9323 0, #166919 100%)}
+#gttPopup #addToTrello:hover /* input[type=button]:hover */ {background:linear-gradient(to bottom, #1f9323 0, #166919 100%);}
 #gttPopup input[type=text], #gttPopup textarea {padding: 3px; border: 1px solid #A1A1A1; border-radius: 3px;}
 
 #gttPopup #addToTrello[disabled], #gttPopup #addToTrello[disabled]:hover, #gttPopup input[disabled], #gttPopup input[disabled]:hover {background: #ccc; color:#666; cursor:default;}
