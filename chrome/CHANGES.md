@@ -4,6 +4,10 @@ A free tool that provides an extra 'Add card' button on Gmail UI to add current 
 
 CHANGE LOG:
 
+Version 2.7.2.29
+-----------------
+- Deeper highlighting for Labels and Assign, use gradient to indicate selected
+
 Version 2.7.2.28
 -----------------
 - Remove trash can from GtT pull down
