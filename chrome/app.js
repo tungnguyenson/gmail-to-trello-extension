@@ -30,8 +30,8 @@ GmailToTrello.App.prototype.bindEvents = function() {
     });
     
     this.model.event.addListener('onAuthorized', function() {
-        gtt_log('onAuthorized');
-        gtt_log("Status: " + Trello.authorized().toString());
+        // gtt_log('onAuthorized');
+        // gtt_log("Status: " + Trello.authorized().toString());
         self.popupView.$popupContent.show();
         self.popupView.hideMessage();
     });
@@ -189,7 +189,7 @@ GmailToTrello.App.prototype.initialize = function() {
 
     this.model.isInitialized = false;
 
-    gtt_log('App:initialize');
+    // gtt_log('App:initialize');
     
     this.gmailView.detect();
 

@@ -28,8 +28,8 @@ GmailToTrello.GmailView = function(parent) {
         emailAttachments: '.aZo', // Was: '.aQy',
         emailThreadID: '.a3s.aXjCH',
         emailIDs: ['data-thread-perm-id', 'data-thread-id', 'data-legacy-thread-id'],
-        viewport: '.aeJ:first',
-        viewportSplit: '.aNW:first', //reading panel
+        viewport: '.aia, .nH', // .aia = split view, .nH = breakout view // Was: '.aeJ:first', now using .first()
+        // viewportSplit: '.aNW:first', // reading panel OBSOLETE (Ace, 2020-02-15): Don't know that this is ever used any more
         expandedEmails: '.h7',
         hiddenEmails: '.kv',
         emailInThreads: '.kv,.h7',
@@ -44,15 +44,17 @@ GmailToTrello.GmailView.prototype.preDetect = function() {
 
     var $activeGroup = $('.BltHke[role="main"]');
     
+/* // OBSOLETE (Ace, 2020-02-15): .find is always returning false, don't think detecting split needed any more
     if ($activeGroup.find('.apv, .apN').length > 0) { // .apv = old gmail, .apN = new gmail
         // gtt_log('detect: Detected SplitLayout');
 
         this.layoutMode = this.LAYOUT_SPLIT;
         this.$root = $activeGroup;
     } else {
+*/
         this.layoutMode = this.LAYOUT_DEFAULT;
         this.$root = $('body');
-    }
+//  }
 
     return this.detectToolbar();
 };
@@ -140,12 +142,15 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     var self = this;
     var data = {};
 
+
+/* OBSOLETE (Ace, 2020-02-15): Don't think split is different than flat any more
     // find active email
     if (this.layoutMode === this.LAYOUT_SPLIT) {
         $viewport = $(this.selectors.viewportSplit, this.$root);
     } else {
-        $viewport = $(this.selectors.viewport, this.$root);
-    }
+*/
+        $viewport = $(this.selectors.viewport, this.$root).first();
+//  }
     gtt_log('parseData::viewport: ' + JSON.stringify($viewport));
     if ($viewport.length == 0) {
         return;

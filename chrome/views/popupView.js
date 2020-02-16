@@ -44,7 +44,7 @@ GmailToTrello.PopupView = function(parent) {
 };
 
 GmailToTrello.PopupView.prototype.init = function() {
-    gtt_log('PopupView:init');
+    // gtt_log('PopupView:init');
     var self = this;
 
  //   if (!this.$toolBar) {
@@ -1165,7 +1165,7 @@ GmailToTrello.PopupView.prototype.validateData = function() {
     var images = mime_array('gttImages');
 
     var validateStatus = boardId && listId && title && description ? true : false; // Labels are not required
-    gtt_log('validateData: board:' + boardId + ' list:' + listId + ' title:' + title + ' desc:' + ((description || '') . length));
+    // gtt_log('validateData: board:' + boardId + ' list:' + listId + ' title:' + title + ' desc:' + ((description || '') . length));
 
     if (validateStatus) {
         newCard = {

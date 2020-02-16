@@ -68,10 +68,10 @@ function gtt_log(data) {
  */
  function requestHandler(request, sender, sendResponse) {
     if (request && request.hasOwnProperty('message') && request.message === 'gtt:initialize') {
-        gtt_log('GlobalInit: '+globalInit.toString());
+        // gtt_log('GlobalInit: '+globalInit.toString());
         globalInit = true;
         // enough delay for gmail finishes rendering
-        gtt_log('tabs.onUpdated - complete');
+        // gtt_log('tabs.onUpdated - complete');
         jQuery(document).ready(function() {                    
             gtt_log('document.ready');
             getGmailObject();

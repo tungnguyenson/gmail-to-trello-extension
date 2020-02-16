@@ -24,7 +24,7 @@ GmailToTrello.Model.prototype.init = function() {
 };
 
 GmailToTrello.Model.prototype.initTrello = function() {
-    gtt_log("initTrello");
+    // gtt_log("Model:initTrello");
 
     var self = this;
 
@@ -36,7 +36,7 @@ GmailToTrello.Model.prototype.initTrello = function() {
 };
 
 GmailToTrello.Model.prototype.checkTrelloAuthorized = function() {
-    gtt_log("checkTrelloAuthorized");
+    // gtt_log("checkTrelloAuthorized");
 
     var self = this;
 
@@ -68,6 +68,7 @@ GmailToTrello.Model.prototype.checkTrelloAuthorized = function() {
                     }
                 });
             } else {
+                gtt_log('Model:checkTrelloAuthorized: failed');
                 // We have a valid token, so...how did we get here?
                 // self.event.fire('onAuthorized');
                 // self.loadTrelloData();
@@ -94,7 +95,7 @@ GmailToTrello.Model.prototype.makeAvatarUrl = function(avatarHash) {
 }
 
 GmailToTrello.Model.prototype.loadTrelloData = function() {
-    gtt_log('loadTrelloData');
+    // gtt_log('loadTrelloData');
 
     this.event.fire('onBeforeLoadTrello');
     this.trello.user = null;
@@ -103,7 +104,7 @@ GmailToTrello.Model.prototype.loadTrelloData = function() {
     var self = this;
 
     // get user's info
-    gtt_log('loadTrelloData: User info');
+    // gtt_log('loadTrelloData: User info');
     Trello.get('members/me', {}, function(data) {
         if (!data || !data.hasOwnProperty('id')) {
             return false;
@@ -111,7 +112,7 @@ GmailToTrello.Model.prototype.loadTrelloData = function() {
 
         self.trello.user = data;
 
-        gtt_log('loadTrelloData: User boards');
+        // gtt_log('loadTrelloData: User boards');
         self.trello.boards = null;
         Trello.get('members/me/boards', {
                 'organization': 'true',
@@ -161,14 +162,14 @@ GmailToTrello.Model.prototype.checkTrelloDataReady = function() {
 
 
 GmailToTrello.Model.prototype.loadTrelloLists = function(boardId) {
-    gtt_log('loadTrelloLists');
+    // gtt_log('loadTrelloLists');
 
     var self = this;
     this.trello.lists = null;
 
     Trello.get('boards/' + boardId, {lists: "open", list_fields: "name"}, function(data) {
         self.trello.lists = data.lists;
-        gtt_log('loadTrelloLists: lists:' + JSON.stringify(self.trello.lists));
+        // gtt_log('loadTrelloLists: lists:' + JSON.stringify(self.trello.lists));
         self.event.fire('onLoadTrelloListSuccess');
     }, function failure(data) {
             self.event.fire('onAPIFailure', {data:data});
@@ -176,14 +177,14 @@ GmailToTrello.Model.prototype.loadTrelloLists = function(boardId) {
 };
 
 GmailToTrello.Model.prototype.loadTrelloCards = function(listId) {
-    gtt_log('loadTrelloCards');
+    // gtt_log('loadTrelloCards');
 
     var self = this;
     this.trello.cards = null;
 
     Trello.get('lists/' + listId + '/cards', {fields: "name,pos,idMembers,idLabels"}, function(data) {
         self.trello.cards = data;
-        gtt_log('loadTrelloCards: cards:' + JSON.stringify(self.trello.cards));
+        // gtt_log('loadTrelloCards: cards:' + JSON.stringify(self.trello.cards));
         self.event.fire('onLoadTrelloCardsSuccess');
     }, function failure(data) {
             self.event.fire('onAPIFailure', {data:data});
@@ -191,14 +192,14 @@ GmailToTrello.Model.prototype.loadTrelloCards = function(listId) {
 };
 
 GmailToTrello.Model.prototype.loadTrelloLabels = function(boardId) {
-    gtt_log('loadTrelloLabels');
+    // gtt_log('loadTrelloLabels');
 
     var self = this;
     this.trello.labels = null;
 
     Trello.get('boards/' + boardId + '/labels', {fields: "color,name"}, function(data) {
         self.trello.labels = data;
-        gtt_log('loadTrelloLabels: labels:' + JSON.stringify(self.trello.labels));
+        // gtt_log('loadTrelloLabels: labels:' + JSON.stringify(self.trello.labels));
         self.event.fire('onLoadTrelloLabelsSuccess');
     }, function failure(data) {
         self.event.fire('onAPIFailure', {data:data});
@@ -206,7 +207,7 @@ GmailToTrello.Model.prototype.loadTrelloLabels = function(boardId) {
 };
 
 GmailToTrello.Model.prototype.loadTrelloMembers = function(boardId) {
-    gtt_log('loadTrelloMembers');
+    // gtt_log('loadTrelloMembers');
 
     var self = this;
     this.trello.members = null;
@@ -226,7 +227,7 @@ GmailToTrello.Model.prototype.loadTrelloMembers = function(boardId) {
             'fullName': me.fullName
         });
 
-        gtt_log('loadTrelloMembers: members:' + JSON.stringify(self.trello.members));
+        // gtt_log('loadTrelloMembers: members:' + JSON.stringify(self.trello.members));
 
         self.event.fire('onLoadTrelloMembersSuccess');
     }, function failure(data) {
@@ -238,6 +239,7 @@ GmailToTrello.Model.prototype.Uploader = function(args) {
     if (!args || !args.hasOwnProperty('parent')) {
         return;
     }
+
     this.parent = args.parent;
 
     this.data = [];
@@ -347,8 +349,30 @@ GmailToTrello.Model.prototype.Uploader.prototype = {
         xhr.onload = function() {
             var fileReader = new FileReader();
             fileReader.onload = function() {
-                const filename_k = (param_k.split('/').pop().split('#')[0].split('?')[0]) || upload1.name || param_k || 'unknown_filename'; // Removes # or ? after filename
+                // NOTE (Ace, 2020-02-15): We have a funny problem with embedded images so breaking this up:
+                // Was: const filename_k = (param_k.split('/').pop().split('#')[0].split('?')[0]) || upload1.name || param_k || 'unknown_filename'; // Removes # or ? after filename
+                // Remove # or ? afer filename. Could do this as a regex, but this is a bit faster and more resiliant:
+                const slash_split_k = param_k.split('/') // First split by directory slashes
+                const end_slash_split_k = slash_split_k[slash_split_k.length - 1] // Take last slash section
+                const hash_split_k = end_slash_split_k.split('#') // Split by hash so we can split it off
+                const begin_hash_split_k = hash_split_k[0] // Take first hash
+                const question_split_k = begin_hash_split_k.split('?') // Now split by question mark to remove variables
+                const begin_question_split_k = question_split_k[0] // Take content ahead of question mark
+                const filename_k = begin_question_split_k || upload1.name || param_k || 'unknown_filename' // Use found string or reasonable fallbacks
+
                 const file_k = new File([this.result], filename_k);
+                gtt_log('Attaching filename:"' + filename_k + '" size:' + file_k.size)
+                if (!file_k.size) {
+                    msg = 'ERROR: Empty content! Filename:"' + filename_k + '"'
+                    gtt_log(msg)
+                    data = {
+                        'status': 'size:0',
+                        'statusText': msg,
+                        'responseText': 'KNOWN PROBLEM WITH NEW CHROME BROWSER SECURITY [FIX IN PROGRESS]: Try creating/updating card again without attachment "' + filename_k + '"',
+                        'keys': '<none>'
+                    }
+                    return error(data);
+                }
                 var form = new FormData();
                 form.append('file', file_k);
                 form.append('key', Trello.key())
@@ -414,14 +438,14 @@ GmailToTrello.Model.prototype.Uploader.prototype = {
 
 GmailToTrello.Model.prototype.submit = function() {
     let self = this;
-    if (this.newCard === null) {
+    if (self.newCard === null) {
         gtt_log('submit: data is empty');
         return false;
     }
 
-    this.parent.saveSettings();
+    self.parent.saveSettings();
 
-    var data = this.newCard;
+    var data = self.newCard;
     
     var text = data.title || '';
     if (text.length > 0) {
@@ -431,9 +455,9 @@ GmailToTrello.Model.prototype.submit = function() {
     }
     text += data.description;
 
-    text = this.parent.truncate(text, this.parent.popupView.MAX_BODY_SIZE, '...');
+    text = self.parent.truncate(text, self.parent.popupView.MAX_BODY_SIZE, '...');
 
-    var desc = this.parent.truncate(data.description, this.parent.popupView.MAX_BODY_SIZE, '...');
+    var desc = self.parent.truncate(data.description, self.parent.popupView.MAX_BODY_SIZE, '...');
 
     var due_text = '';
 
