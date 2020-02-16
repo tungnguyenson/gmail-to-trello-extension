@@ -1,11 +1,15 @@
-A free tool that provides an extra 'Add card' button on Gmail UI to add current reading email to a Trello card
+A free tool that provides an extra button on Gmail UI to add current reading email to a Trello card
 
----
+---------------------------
 
 CHANGE LOG:
 
-Version 2.7.2.30
------------------
+Version 2.7.2.31@2020-02-15
+---------------------------
+- Try some changes to grow boxes (unsuccessfully)
+
+Version 2.7.2.30@2020-02-15
+---------------------------
 - Gmail UI class names changed again, in gmailView we now use a single viewport: '.aia:first'. It was '.aeJ:first'. We no longer explicitly try to detect splitlayout, which may or may not work. Will need to test with folks.
 - Initial error message when retrieving attachment content fails with 0 length. Probably CORS/CORB new Chrome security model, need to retrieve data from background script. Fix in progress but will take a while to refactor uploading code.
 
