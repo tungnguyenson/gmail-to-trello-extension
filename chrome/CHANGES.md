@@ -4,6 +4,10 @@ A free tool that provides an extra button on Gmail UI to add current reading ema
 
 CHANGE LOG:
 
+Version 2.7.2.31@2020-02-15
+---------------------------
+- Try some changes to grow boxes (unsuccessfully)
+
 Version 2.7.2.30@2020-02-15
 ---------------------------
 - Gmail UI class names changed again, in gmailView we now use a single viewport: '.aia:first'. It was '.aeJ:first'. We no longer explicitly try to detect splitlayout, which may or may not work. Will need to test with folks.
