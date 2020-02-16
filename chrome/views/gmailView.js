@@ -28,7 +28,7 @@ GmailToTrello.GmailView = function(parent) {
         emailAttachments: '.aZo', // Was: '.aQy',
         emailThreadID: '.a3s.aXjCH',
         emailIDs: ['data-thread-perm-id', 'data-thread-id', 'data-legacy-thread-id'],
-        viewport: '.aia:first', // Was: '.aeJ:first',
+        viewport: '.aia, .nH', // .aia = split view, .nH = breakout view // Was: '.aeJ:first', now using .first()
         // viewportSplit: '.aNW:first', // reading panel OBSOLETE (Ace, 2020-02-15): Don't know that this is ever used any more
         expandedEmails: '.h7',
         hiddenEmails: '.kv',
@@ -149,7 +149,7 @@ GmailToTrello.GmailView.prototype.parseData = function() {
         $viewport = $(this.selectors.viewportSplit, this.$root);
     } else {
 */
-        $viewport = $(this.selectors.viewport, this.$root);
+        $viewport = $(this.selectors.viewport, this.$root).first();
 //  }
     gtt_log('parseData::viewport: ' + JSON.stringify($viewport));
     if ($viewport.length == 0) {
