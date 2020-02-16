@@ -198,7 +198,7 @@ GmailToTrello.PopupView.prototype.init_popup = function() {
 GmailToTrello.PopupView.prototype.onResize = function() {
     var origWidth = this.$popup.width();
     var textWidth = origWidth - this.size_k.text.min;
-    $('#gttAttachments,#gttImages,#gttLabels,#gttMembers,#gttDesc,#gttTitle', this.$popup).css('width', textWidth + 'px');
+    $('#gttAttachments,#gttImages,#gttDesc,#gttTitle,#gttMembers,#gttLabels', this.$popup).css('width', textWidth + 'px');
     this.validateData(); // Assures size is saved
 };
 
@@ -211,7 +211,7 @@ GmailToTrello.PopupView.prototype.resetDragResize = function() {
             minWidth: this.size_k.width.min,
             maxHeight: this.size_k.height.max,
             maxWidth: this.size_k.width.max,
-            alsoResize: '#gttAttachments,#gttImages,#gttLabels,#gttMembers,#gttDesc,#gttTitle',
+            alsoResize: '#gttAttachments,#gttImages,#gttDesc,#gttTitle',
             handles: 'w,sw,s,se,e'
         });
 };
