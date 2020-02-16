@@ -139,9 +139,17 @@ GmailToTrello.GmailView.prototype.parseData = function() {
         return;
     }
 
-    var self = this;
-    var data = {};
+    let self = this;
+    let data = {};
 
+    let url_with_filename = function (url_in, name_in) {
+        let self = this;
+        let add = '&';
+        if (url_in.indexOf('?') === -1) {
+            add = '?';
+        }
+        return url_in + add + self.parent.UNIQUE_URI_VAR + '=/' + name_in;
+    }
 
 /* OBSOLETE (Ace, 2020-02-15): Don't think split is different than flat any more
     // find active email
@@ -156,12 +164,12 @@ GmailToTrello.GmailView.prototype.parseData = function() {
         return;
     }
 
-    var y0 = $viewport.offset().top;
+    let y0 = $viewport.offset().top;
     //gtt_log(y0);
-    var $visibleMail = null;
+    let $visibleMail = null;
     // parse expanded emails again
     $(this.selectors.expandedEmails, this.$root).each(function() {
-        var $this = $(this);
+        let $this = $(this);
         if ($visibleMail === null && $this.offset().top >= y0)
             $visibleMail = $this;
     });
@@ -171,8 +179,8 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     }
 
     // Check for email body first. If we don't have this, then bail.
-    var $emailBody = $(this.selectors.emailBody, $visibleMail);
-    var $emailBody1 = $emailBody[0];
+    let $emailBody = $(this.selectors.emailBody, $visibleMail);
+    let $emailBody1 = $emailBody[0];
     if (!$emailBody1) {
         return;
     }
@@ -181,39 +189,25 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     // var startTime = new Date().getTime();
     
     // host name
-    var $host = $(this.selectors.host, $visibleMail);
-    var hostName = ($host.attr('name') || '').trim();
-    var hostEmail = ($host.attr('email') || '').trim();
-    /*
-    var title  = ($host.attr('title') || "").trim();
-    var matched = title.match(/[^:]+:\s+([^\(]+)\(([^\)]+)\)/);
-    var hostName = 'unknown';
-    var hostEmail = 'unknown@dot.com';
-    if (matched && matched.length > 1) {
-        hostName = matched[1].trim();
-        hostEmail = matched[2].trim();
-    }
-    */
+    let $host = $(this.selectors.host, $visibleMail);
+    let hostName = ($host.attr('name') || '').trim();
+    let hostEmail = ($host.attr('email') || '').trim();
 
     // email name
-    var emailName = ($(this.selectors.emailName, $visibleMail).attr('name') || '').trim();
-    var emailAddress = ($(this.selectors.emailAddress, $visibleMail).attr('email') || '').trim();
-    var emailAttachments = $(this.selectors.emailAttachments, $visibleMail).map(function() {
-        var item = $(this).attr('download_url');
+    let emailName = ($(this.selectors.emailName, $visibleMail).attr('name') || '').trim();
+    let emailAddress = ($(this.selectors.emailAddress, $visibleMail).attr('email') || '').trim();
+    let emailAttachments = $(this.selectors.emailAttachments, $visibleMail).map(function() {
+        let item = $(this).attr('download_url');
         if (item && item.length > 0) {
             var attachment = item.match(/^([^:]+)\s*:\s*([^:]+)\s*:\s*(.+)$/);
             if (attachment && attachment.length > 3) {
                 const name_k = self.parent.decodeEntities(attachment[2]); // was: decodeURIComponent
                 const url_k = attachment[3]; // Was: self.parent.midTruncate(attachment[3], 50, '...');
-                var add = '&';
-                if (url_k.indexOf('?') === -1) {
-                    add = '?';
-                }
                 return {
                    'mimeType': attachment[1],
                    'name': name_k,
                     // NOTE (Ace@2017-04-20): Adding this explicitly at the end of the URL so it'll pick up the "filename":
-                   'url': url_k + add + self.parent.UNIQUE_URI_VAR + '=/' + name_k,
+                   'url': url_with_filename(url_k, name_k),
                    'checked': 'false'
                 }; // [0] is the whole string
             }
@@ -246,18 +240,18 @@ GmailToTrello.GmailView.prototype.parseData = function() {
         }));
     }
 
-    var from_raw = emailName + ' <' + emailAddress + '> ' + data.time;
-    var from_md = '[' + emailName + '](' + emailAddress + ') ' + data.time;  // FYI (Ace, 10-Jan-2017): [name](url "comment") is markdown syntax
+    let from_raw = emailName + ' <' + emailAddress + '> ' + data.time;
+    let from_md = '[' + emailName + '](' + emailAddress + ') ' + data.time;  // FYI (Ace, 10-Jan-2017): [name](url "comment") is markdown syntax
 
     // subject
-    var $subject = $(this.selectors.emailSubject, this.$root);
+    let $subject = $(this.selectors.emailSubject, this.$root);
     data.subject = ($subject.text() || '').trim();
 
     // Find emailId via legacy
     // <span data-thread-id="#thread-f:1602441164947422913" data-legacy-thread-id="163d03bfda277ec1" data-legacy-last-message-id="163d03bfda277ec1">Tips for using your new inbox</span>
     const ids_len_k = this.selectors.emailIDs.length;
-    var iter = 0;
-    var emailId = 0;
+    let iter = 0;
+    let emailId = 0;
     do {
         emailId = ($subject.attr(this.selectors.emailIDs[iter]) || '').trim(); // Try new Gmail format
     } while (!emailId && ++iter < ids_len_k);
@@ -275,12 +269,12 @@ GmailToTrello.GmailView.prototype.parseData = function() {
         }
     }
     
-    var subject = encodeURIComponent(data.subject);
-    var dateSearch = encodeURIComponent(data.time);
+    let subject = encodeURIComponent(data.subject);
+    let dateSearch = encodeURIComponent(data.time);
     
-    var txtAnchor = 'Search';
-    var txtDirect = 'https://mail.google.com/mail/#search/' + subject;
-    var txtDirectComment = 'Search by subject';
+    let txtAnchor = 'Search';
+    let txtDirect = 'https://mail.google.com/mail/#search/' + subject;
+    let txtDirectComment = 'Search by subject';
 
     if (emailId && emailId.length > 1) {
         txtAnchor = 'Id';
@@ -299,8 +293,8 @@ GmailToTrello.GmailView.prototype.parseData = function() {
         
     
     // email body
-    var make_preprocess_mailto = function (name, email) {
-        var forms = [
+    let make_preprocess_mailto = function (name, email) {
+        let forms = [
             '%name% <%email%>',
             '%name% (%email%)',
             '%name% %email%',
@@ -314,36 +308,44 @@ GmailToTrello.GmailView.prototype.parseData = function() {
             'email': email
         };
 
-        var anchor_md = self.parent.anchorMarkdownify(name, email); // Don't need to add 'mailto:'
+        let anchor_md = self.parent.anchorMarkdownify(name, email); // Don't need to add 'mailto:'
 
-        var retn = {};
+        let retn = {};
 
         $.each(forms, function(iter, item) {
-            var item1 = self.parent.replacer(item, dict);
+            let item1 = self.parent.replacer(item, dict);
             retn[item1.toLowerCase()] = anchor_md;
         });
 
         return retn;
     }
 
-    var preprocess = {'a':{}};
+    let preprocess = {'a':{}};
     $.extend(preprocess['a'], make_preprocess_mailto(emailName, emailAddress), make_preprocess_mailto(hostName, hostEmail));
     
-    var selectedText = this.parent.getSelectedText();
+    let selectedText = this.parent.getSelectedText();
 
     data.body_raw =  from_raw + ':\n\n' + (selectedText || this.parent.markdownify($emailBody1, false, preprocess));
     data.body_md = from_md + ':\n\n' + (selectedText || this.parent.markdownify($emailBody1, true, preprocess));
 
     data.attachments = emailAttachments;
 
-    var emailImages = {};
+    let emailImages = {};
 
     $('img', $emailBody1).each(function(index, value) {
-        var href = ($(this).prop("src") || '').trim(); // Was attr
-        var text = self.parent.midTruncate(($(this).prop("alt") || self.parent.uriForDisplay(href) || '').trim(), 50, '...');
-        var type = ($(this).prop("type") || "text/link").trim(); // Was attr
-        if (href.length > 0 && text.length > 0) { // Will store as key/value pairs to automatically overide duplicates
-            emailImages[href] = {'mimeType': type, 'name': self.parent.decodeEntities(text), 'url': href, 'checked': 'false'};
+        const href_k = ($(this).prop("src") || '').trim(); // Was attr
+        const alt_k = $(this).prop("alt") || '';
+        // <div id=":cb" class="T-I J-J5-Ji aQv T-I-ax7 L3 a5q" role="button" tabindex="0" aria-label="Download attachment Screen Shot 2020-02-05 at 6.04.37 PM.png" data-tooltip-class="a1V" data-tooltip="Download"><div class="aSK J-J5-Ji aYr"></div></div>}
+        const $divs_k = $(this).nextAll("div[dir='ltr']");
+        const $div1_k = $divs_k.find(".T-I.J-J5-Ji.aQv.T-I-ax7.L3.a5q").first();
+        const aria_k = $div1_k.attr('aria-label') || '';
+        const aria_split_k = aria_k.split('Download attachment ');
+        const aria_name_k = aria_split_k[aria_split_k.length-1] || '';
+        const name_k = (alt_k.length > aria_name_k.length ? alt_k : aria_name_k) || self.parent.uriForDisplay(href_k) || '';
+        const display_k = self.parent.decodeEntities(self.parent.midTruncate(name_k.trim(), 50, '...'));
+        const type_k = ($(this).prop("type") || "text/link").trim(); // Was attr
+        if (href_k.length > 0 && display_k.length > 0) { // Will store as key/value pairs to automatically overide duplicates
+            emailImages[href_k] = {'mimeType': type_k, 'name': display_k, 'url': url_with_filename(href_k, name_k), 'checked': 'false'};
         }
     });
 
