@@ -5,8 +5,12 @@ A free tool that provides an extra button on Gmail UI to add current reading ema
 CHANGE LOG:
 
 
+Version 2.7.2.33@2020-02-16
+--------------------------------
+- Standardize on selectors for embedded titles
+
 Version 2.7.2.32@2020-02-15
----------------------------
+--------------------------------
 - Try some changes to grow boxes (unsuccessfully)
 - Update file naming upload code to gleen filename from aria-label text
 

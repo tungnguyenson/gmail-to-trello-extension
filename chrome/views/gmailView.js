@@ -20,7 +20,7 @@ GmailToTrello.GmailView = function(parent) {
 
     this.selectors = {
         // selectors mapping, modify here when gmail's markup changes:
-        toolbarButton: '.G-Ni:first',
+        // toolbarButton: '.G-Ni:first',
         emailName: '.gD',
         emailAddress: '.gD', // Was: '.go', now using same name property
         emailSubject: '.hP',
@@ -33,8 +33,11 @@ GmailToTrello.GmailView = function(parent) {
         expandedEmails: '.h7',
         hiddenEmails: '.kv',
         emailInThreads: '.kv,.h7',
-        timestamp: '.gH .gK .g3:first',
-        host: "span[dir='ltr']:first" // Was: 'a.gb_b.gb_eb.gb_R'
+        timestamp: '.gH .gK .g3',
+        host: "span[dir='ltr']", // Was: 'a.gb_b.gb_eb.gb_R'
+        emailEmbedded: "div[dir='ltr']",
+        emailEmbeddedTitle: '.T-I.J-J5-Ji.aQv.T-I-ax7.L3.a5q',
+        emailEmbeddedNameAttr: 'aria-label'
     };
 };
 
@@ -189,7 +192,7 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     // var startTime = new Date().getTime();
     
     // host name
-    let $host = $(this.selectors.host, $visibleMail);
+    let $host = $(this.selectors.host, $visibleMail).first();
     let hostName = ($host.attr('name') || '').trim();
     let hostEmail = ($host.attr('email') || '').trim();
 
@@ -215,7 +218,7 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     });
 
     // timestamp
-    const $time_k = $(this.selectors.timestamp, $visibleMail);
+    const $time_k = $(this.selectors.timestamp, $visibleMail).first();
     const timeAttr_k = (($time_k.length > 0) ? ($time_k.attr('title') || $time_k.text() || $time_k.attr('alt')) : '').trim();
     
     /* Used to do this to convert to a true dateTime object, but there is too much hassle in doing so:
@@ -336,9 +339,9 @@ GmailToTrello.GmailView.prototype.parseData = function() {
         const href_k = ($(this).prop("src") || '').trim(); // Was attr
         const alt_k = $(this).prop("alt") || '';
         // <div id=":cb" class="T-I J-J5-Ji aQv T-I-ax7 L3 a5q" role="button" tabindex="0" aria-label="Download attachment Screen Shot 2020-02-05 at 6.04.37 PM.png" data-tooltip-class="a1V" data-tooltip="Download"><div class="aSK J-J5-Ji aYr"></div></div>}
-        const $divs_k = $(this).nextAll("div[dir='ltr']");
-        const $div1_k = $divs_k.find(".T-I.J-J5-Ji.aQv.T-I-ax7.L3.a5q").first();
-        const aria_k = $div1_k.attr('aria-label') || '';
+        const $divs_k = $(this).nextAll(self.selectors.emailEmbedded);
+        const $div1_k = $divs_k.find(self.selectors.emailEmbeddedTitle).first();
+        const aria_k = $div1_k.attr(self.selectors.emailEmbeddedNameAttr) || '';
         const aria_split_k = aria_k.split('Download attachment ');
         const aria_name_k = aria_split_k[aria_split_k.length-1] || '';
         const name_k = (alt_k.length > aria_name_k.length ? alt_k : aria_name_k) || self.parent.uriForDisplay(href_k) || '';
