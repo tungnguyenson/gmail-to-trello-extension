@@ -5,9 +5,11 @@ A free tool that provides an extra button on Gmail UI to add current reading ema
 CHANGE LOG:
 
 
-Version 2.7.2.33@2020-02-16
+Version 2.7.2.34@2020-02-16
 --------------------------------
 - Standardize on selectors for embedded titles
+- Reduce scopes of domains in manifest
+- Update descriptive text in manifest
 
 Version 2.7.2.32@2020-02-15
 --------------------------------
