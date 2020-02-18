@@ -27,9 +27,9 @@ function gtt_log(data) {
             count: 0,
             max: 300,
             debugMode: false
-        };
+        }
         chrome.storage.sync.get('debugMode', function(response) {
-            if (response.debugMode) {
+            if (response.hasOwnProperty('debugMode') && response['debugMode']) {
                 window.gtt_log_g.debugMode = true;
             };
         });

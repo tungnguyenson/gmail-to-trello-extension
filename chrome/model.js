@@ -337,10 +337,11 @@ GmailToTrello.Model.prototype.Uploader.prototype = {
         }
     },
 
-    'attach': function(method, property, upload1, success, error) {
+    'attach': function(method, property, upload1, success, failure) {
         if (!property || property.length < 6 || !upload1 || !upload1.value || upload1.value.length < 6) return;
         
         const UPLOAD_ATTACH = 'gtt:upload_attach';
+        const UPLOAD_ATTACH_RESULTS = 'gtt:upload_attach_results';
         const trello_url_k = 'https://api.trello.com/1/';
         const param_k = upload1.value;
 
@@ -355,203 +356,24 @@ GmailToTrello.Model.prototype.Uploader.prototype = {
         const begin_question_split_k = question_split_k[0] // Take content ahead of question mark
         const filename_k = begin_question_split_k || upload1.name || param_k || 'unknown_filename' // Use found string or reasonable fallbacks
 
-        var xhr = new XMLHttpRequest();
-        xhr.open('get', param_k);
-        xhr.responseType = 'blob'; // Use blob to get the mimetype
-        xhr.onload = function() {
-            var fileReader = new FileReader();
-            fileReader.onload = function() {
-                const file_k = new File([this.result], filename_k);
-                gtt_log('Attaching filename:"' + filename_k + '" size:' + file_k.size)
-                if (!file_k.size) {
-                    msg = 'ERROR: Empty content! Filename:"' + filename_k + '"'
-                    gtt_log(msg)
-                    data = {
-                        'status': 'size:0',
-                        'statusText': msg,
-                        'responseText': 'KNOWN PROBLEM WITH NEW CHROME BROWSER SECURITY [FIX IN PROGRESS]: Try creating/updating card again without attachment "' + filename_k + '"',
-                        'keys': '<none>'
-                    }
-                    return error(data);
-                }
-                var form = new FormData();
-                form.append('file', file_k);
-                form.append('key', Trello.key())
-                form.append('token', Trello.token());
-                gtt_log(JSON.stringify(form);
-                    
-                let body = new URLSearchParams()
-                body.append('file', file_k);
-                body.append('key', Trello.key())
-                body.append('token', Trello.token());
-                fetch(trello_url_k + property, {
-                    method: 'POST',
-                    // headers: {'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: body
-                })
-                .then(response => response.json())
-                .then(data => success(data))
-                .catch(err => error(err));
-                /*
-                const opts_k = {
-                    'url': trello_url_k + property,
-                    'method': 'POST',
-                    'data': form,
-                    'dataType': 'json',
-                    'success': success,
-                    'error': error,
-                    'cache': false,
-                    'contentType': false,
-                    'processData': false
-                };
-                return $.ajax(opts_k);
-                */
-            };
-            fileReader.readAsArrayBuffer(xhr.response); // Use filereader on blob to get content
-        };
-        xhr.send();
-    },
-
-    'attach_new': function(method, property, upload1, success, error) {
-        if (!property || property.length < 6 || !upload1 || !upload1.value || upload1.value.length < 6) return;
-        
-        const UPLOAD_ATTACH = 'gtt:upload_attach';
-        const trello_url_k = 'https://api.trello.com/1/';
-        const param_k = upload1.value;
-
-        // NOTE (Ace, 2020-02-15): We have a funny problem with embedded images so breaking this up:
-        // Was: const filename_k = (param_k.split('/').pop().split('#')[0].split('?')[0]) || upload1.name || param_k || 'unknown_filename'; // Removes # or ? after filename
-        // Remove # or ? afer filename. Could do this as a regex, but this is a bit faster and more resiliant:
-        const slash_split_k = param_k.split('/') // First split by directory slashes
-        const end_slash_split_k = slash_split_k[slash_split_k.length - 1] // Take last slash section
-        const hash_split_k = end_slash_split_k.split('#') // Split by hash so we can split it off
-        const begin_hash_split_k = hash_split_k[0] // Take first hash
-        const question_split_k = begin_hash_split_k.split('?') // Now split by question mark to remove variables
-        const begin_question_split_k = question_split_k[0] // Take content ahead of question mark
-        const filename_k = begin_question_split_k || upload1.name || param_k || 'unknown_filename' // Use found string or reasonable fallbacks
-
-        let error_empty = function(filename, error_fxn) {
-            msg = 'ERROR: Empty content! Filename:"' + filename + '"'
-            gtt_log(msg)
-            data = {
-                'status': 'size:0',
-                'statusText': msg,
-                'responseText': 'KNOWN PROBLEM WITH NEW CHROME BROWSER SECURITY [FIX IN PROGRESS]: Try creating/updating card again without attachment "' + filename_k + '"',
-                'keys': '<none>'
+        let callback = function(args) {
+            if (args.hasOwnProperty(UPLOAD_ATTACH_RESULTS) && args[UPLOAD_ATTACH_RESULTS] === 'success') {
+                success(args);
+            } else {
+                failure(args);
             }
-            return error_fxn(data);
-        };
+        }
 
-        let file_processor = function(storage_key) {
-            if (!storage_key) {
-                return error_empty(filename_k, error);
-            }
-            chrome.storage.local.get([storage_key], function(response) {
-                if (response.hasOwnProperty(storage_key) && response[storage_key]) {
-                    const file_k = response[storage_key]['file'];
-                    if (!file_k.size) {
-                        return error_empty(filename_k, error);
-                    }
-                    var form = new FormData();
-                    form.append('file', file_k);
-                    form.append('key', Trello.key())
-                    form.append('token', Trello.token());
-
-                    const opts_k = {
-                        'url': trello_url_k + property,
-                        'method': 'POST',
-                        'data': form,
-                        'dataType': 'json',
-                        'success': success,
-                        'error': error,
-                        'cache': false,
-                        'contentType': false,
-                        'processData': false
-                    };
-                    return $.ajax(opts_k);
-                } else {
-                    return error_empty(filename_k, error);
-                }
-            });
-        };
-    
-        let hash = {}
-        hash[UPLOAD_ATTACH] = {
-            'url': upload1.value,
-            'filename': filename_k
+        let dict = {}
+        dict[UPLOAD_ATTACH] = {
+            'url_asset': upload1.value,
+            'filename': filename_k,
+            'trello_key': Trello.key(),
+            'trello_token': Trello.token(),
+            'url_upload': trello_url_k + property
         }
         
-        chrome.runtime.sendMessage(hash, file_processor);
-    },
-
-    'attach_original': function(method, property, upload1, success, error) {
-        if (!property || property.length < 6 || !upload1 || !upload1.value || upload1.value.length < 6) return;
-        
-        const UPLOAD_ATTACH = 'gtt:upload_attach';
-        const trello_url_k = 'https://api.trello.com/1/';
-        const param_k = upload1.value;
-
-        // NOTE (Ace, 2020-02-15): We have a funny problem with embedded images so breaking this up:
-        // Was: const filename_k = (param_k.split('/').pop().split('#')[0].split('?')[0]) || upload1.name || param_k || 'unknown_filename'; // Removes # or ? after filename
-        // Remove # or ? afer filename. Could do this as a regex, but this is a bit faster and more resiliant:
-        const slash_split_k = param_k.split('/') // First split by directory slashes
-        const end_slash_split_k = slash_split_k[slash_split_k.length - 1] // Take last slash section
-        const hash_split_k = end_slash_split_k.split('#') // Split by hash so we can split it off
-        const begin_hash_split_k = hash_split_k[0] // Take first hash
-        const question_split_k = begin_hash_split_k.split('?') // Now split by question mark to remove variables
-        const begin_question_split_k = question_split_k[0] // Take content ahead of question mark
-        const filename_k = begin_question_split_k || upload1.name || param_k || 'unknown_filename' // Use found string or reasonable fallbacks
-
-        let hash = {}
-        hash[UPLOAD_ATTACH] = {
-            'url': upload1.value,
-            'filename': filename_k
-        }
-        
-        chrome.runtime.sendMessage(hash, function() {
-            window.alert('Done!');
-        });
-
-        var xhr = new XMLHttpRequest();
-        xhr.open('get', param_k);
-        xhr.responseType = 'blob'; // Use blob to get the mimetype
-        xhr.onload = function() {
-            var fileReader = new FileReader();
-            fileReader.onload = function() {
-                const file_k = new File([this.result], filename_k);
-                gtt_log('Attaching filename:"' + filename_k + '" size:' + file_k.size)
-                if (!file_k.size) {
-                    msg = 'ERROR: Empty content! Filename:"' + filename_k + '"'
-                    gtt_log(msg)
-                    data = {
-                        'status': 'size:0',
-                        'statusText': msg,
-                        'responseText': 'KNOWN PROBLEM WITH NEW CHROME BROWSER SECURITY [FIX IN PROGRESS]: Try creating/updating card again without attachment "' + filename_k + '"',
-                        'keys': '<none>'
-                    }
-                    return error(data);
-                }
-                var form = new FormData();
-                form.append('file', file_k);
-                form.append('key', Trello.key())
-                form.append('token', Trello.token());
-
-                const opts_k = {
-                    'url': trello_url_k + property,
-                    'method': 'POST',
-                    'data': form,
-                    'dataType': 'json',
-                    'success': success,
-                    'error': error,
-                    'cache': false,
-                    'contentType': false,
-                    'processData': false
-                };
-                return $.ajax(opts_k);
-            };
-            fileReader.readAsArrayBuffer(xhr.response); // Use filereader on blob to get content
-        };
-        xhr.send();
+        chrome.runtime.sendMessage(dict, callback);
     },
 
     'upload': function() {
@@ -562,7 +384,7 @@ GmailToTrello.Model.prototype.Uploader.prototype = {
             let generateKeysAndValues = function(object) {
                 let keysAndValues = [];
                 $.each(object, function(key, value) {
-                    keysAndValues.push(key + ' (' + (value || '').toString().length + ')');
+                    keysAndValues.push(key + '=' + (value || '') + ' (' + (value || '').toString().length + ')');
                 });
                 return keysAndValues.sort().join(' ');
             };

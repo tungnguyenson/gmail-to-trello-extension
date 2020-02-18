@@ -145,13 +145,8 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     let self = this;
     let data = {};
 
-    let url_with_filename = function (url_in, name_in) {
-        let self = this;
-        let add = '&';
-        if (url_in.indexOf('?') === -1) {
-            add = '?';
-        }
-        return url_in + add + self.parent.UNIQUE_URI_VAR + '=/' + name_in;
+    let url_with_filename = function (url_in='', var_in='') {
+        return self.parent.url_add_var(url_in, self.parent.UNIQUE_URI_VAR + '=/' + var_in);
     }
 
 /* OBSOLETE (Ace, 2020-02-15): Don't think split is different than flat any more
