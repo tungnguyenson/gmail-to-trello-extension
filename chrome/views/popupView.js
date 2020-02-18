@@ -1206,7 +1206,7 @@ GmailToTrello.PopupView.prototype.reset = function() {
 GmailToTrello.PopupView.prototype.displaySubmitCompleteForm = function() {
     var self = this;
     var data = this.data.newCard;
-    gtt_log('displaySubmitCompleteForm: ' + this.data);
+    // gtt_log('displaySubmitCompleteForm: ' + JSON.stringify(this.data)); // This fails with a circular reference
 
     // NB: this is a terrible hack. The existing showMessage displays HTML by directly substituting text strings.
     // This is very dangerous (very succeptible to XSS attacks) and generally bad practice.  It should be either

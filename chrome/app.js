@@ -748,4 +748,16 @@ GmailToTrello.App.prototype.validHash = function(args) {
     return valid;
 };
 
+GmailToTrello.App.prototype.url_add_var = function(url_in='', var_in='') {
+    let add = '';
+    if (url_in && url_in.length && var_in && var_in.length) {
+        add = '&';
+        if (url_in.indexOf('?') === -1) {
+            add = '?';
+        }
+    }
+
+    return url_in + add + var_in;
+};
+
 // End, app.js
