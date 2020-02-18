@@ -1,5 +1,3 @@
-[ ] UPDATE jQuery to 3.4.x
-
 [ ] https://stackoverflow.com/questions/14149209/read-the-version-from-manifest-json: chrome.runtime.getManifest().version and ask to reload on new version
 [ ] https://developer.chrome.com/extensions/contextMenus
 [ ] https://github.com/brainbreaker/clearData-WebExtension-Demo

@@ -422,7 +422,7 @@ GmailToTrello.PopupView.prototype.submit = function() {
     if (self.validateData()) {
         //$('#addToTrello', this.$popup).attr('disabled', 'disabled');
         self.$popupContent.hide();
-        self.showMessage(self, 'Submiting to Trello...');
+        self.showMessage(self, 'Submitting to Trello...');
         self.event.fire('onSubmit');
     }
 };

@@ -28,7 +28,7 @@
     {
       "matches": ["https://mail.google.com/*"],
       "js": [
-          "lib/jquery-3.1.1.min.js",
+          "lib/jquery-3.4.1.min.js",
           "lib/jquery-ui-1.12.1.min.js",
           "lib/trello.min.js",
           "lib/date.js",
@@ -60,7 +60,7 @@
     "views/error.html",
     "views/subscribe.html",
     "views/versionUpdate.html",
-    "lib/jquery-3.1.1.min.map",
+    "lib/jquery-3.4.1.min.map",
     "inject.js"
   ],
   "homepage_url": "https://trello.com/b/CGU9BYgd/gmail-to-trello-chrome-extension",

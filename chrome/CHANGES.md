@@ -5,6 +5,7 @@ A free tool that provides an extra button on Gmail UI to add gmail text and atta
  * Standardize on selectors for embedded titles
  * Reduce scopes of domains in manifest
  * Update descriptive text in manifest
+ * Update to jQuery 3.4.1.slim
 
 === 2.7.2.32@2020-02-15...2.7.0.0 ===
  * Try some changes to grow boxes (unsuccessfully)
