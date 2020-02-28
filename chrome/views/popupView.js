@@ -414,6 +414,18 @@ GmailToTrello.PopupView.prototype.bindEvents = function() {
             self.clearMembers();
         }
     });
+
+    $('#gttAttachHeader', this.$popup).click(function(event) {
+        if (self.parent.modKey(event)) {
+            self.toggleCheckboxes('gttAttachments');
+        }
+    })
+
+    $('#gttImagesHeader', this.$popup).click(function(event) {
+        if (self.parent.modKey(event)) {
+            self.toggleCheckboxes('gttImages');
+        }
+    })
 };
 
 GmailToTrello.PopupView.prototype.submit = function() {
@@ -999,6 +1011,14 @@ GmailToTrello.PopupView.prototype.updateCards = function() {
     $gtt.change();
 };
 
+// Select/de-select attachments and images based on first button's state:
+GmailToTrello.PopupView.prototype.toggleCheckboxes = function(tag) {
+    var $jTags = $('#' + tag + ' input[type="checkbox"]', self.$popup);
+    let $jTag1 = $jTags.first();
+    const checked_k = $jTag1.prop('checked') || false;
+    $jTags.prop('checked', !checked_k);
+}
+
 GmailToTrello.PopupView.prototype.clearLabels = function() {
     this.data.settings.labelsId = '';
     this.updateLabels();
@@ -1144,11 +1164,11 @@ GmailToTrello.PopupView.prototype.validateData = function() {
     var position = $position.attr('trelloId-position');
 
     var mime_array = function (tag) {
-        var $jTag = $('#' + tag + ' input[type="checkbox"]', self.$popup);
+        var $jTags = $('#' + tag + ' input[type="checkbox"]', self.$popup);
         var array = [];
         var array1 = {};
 
-        $.each($jTag, function() {
+        $.each($jTags, function() {
            array1 = {
                 'url': $(this).attr('url'),
                 'name': $(this).attr('name'),
