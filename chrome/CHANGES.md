@@ -1,11 +1,13 @@
 A free tool that provides an extra button on Gmail UI to add gmail text and attachments to a Trello card
 
-=== 2.8.0.001@2020-02-17 ===
+=== 2.8.0.002@2020-02-28 ===
  * Now uses background script for retrieval and upload of all attachments/images/embedded images, should resolve CORS/CORB new higher level of Chrome Security.
  * Standardize on selectors for embedded titles
  * Reduce scopes of domains in manifest
  * Update descriptive text in manifest
  * Update to jQuery 3.4.1.slim
+ * Add option/shift-click to "Attach" or "Images" will select-all/deselect-all based on first checkbox's state
+ * Remove in-app purchases
 
 === 2.7.2.32@2020-02-15...2.7.0.0 ===
  * Try some changes to grow boxes (unsuccessfully)
