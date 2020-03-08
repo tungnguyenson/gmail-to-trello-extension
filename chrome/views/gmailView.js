@@ -157,7 +157,7 @@ GmailToTrello.GmailView.prototype.parseData = function() {
 */
         $viewport = $(this.selectors.viewport, this.$root).first();
 //  }
-    gtt_log('parseData::viewport: ' + JSON.stringify($viewport));
+    // gtt_log('GmailView:parseData::viewport: ' + JSON.stringify($viewport));
     if ($viewport.length == 0) {
         return;
     }
@@ -180,6 +180,7 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     let $emailBody = $(this.selectors.emailBody, $visibleMail);
     let $emailBody1 = $emailBody[0];
     if (!$emailBody1) {
+        gtt_log('GmailView:parseData::emailBody: ' + JSON.stringify($emailBody));
         return;
     }
 
