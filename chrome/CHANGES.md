@@ -8,6 +8,7 @@ A free tool that provides an extra button on Gmail UI to add gmail text and atta
  * Update to jQuery 3.4.1.slim
  * Add option/shift-click to "Attach" or "Images" will select-all/deselect-all based on first checkbox's state
  * Remove in-app purchases
+ * Output jQuery object when body can't be found
 
 === 2.7.2.32@2020-02-15...2.7.0.0 ===
  * Try some changes to grow boxes (unsuccessfully)
