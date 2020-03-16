@@ -1,0 +1,12 @@
+I have four active in-app purchasable SKUs that I have never coded up or used, can you delete them completely?
+
+I was experimenting with having in-app purchases a couple years ago, and I believe their presence is now making it impossible for me to publish updates to my Chrome Extension (that has always been free and we've never charged for it.)
+
+Here's the in-app purchase skus that can be completely deleted:
+
+Gmail-to-Trello Yearly Subscription $19.99 (gmail_to_trello_yearly_subscription_19_99)  $19.99  6/27/17 Active
+Gmail-to-Trello Yearly Subscription $29.99 (gmail_to_trello_yearly_subscription_29_99)  $29.99  6/27/17 Active
+Gmail-to-Trello Yearly Subscription $0.99 (gmail_to_trello_yearly_subscription_99cents) $0.99   6/27/17 Active
+Gmail-to-Trello Yearly Subscription $9.99 (gmail_to_trello_yearly_subscription_9_99)    $9.99   6/27/17 Active
+
+Can you help?
