@@ -12,7 +12,7 @@
     <div class="content" style="display: none;">
         <div class="gttTopRight">
             <div style="float: left;" class="clearfix listrow">
-                <ul id="gttPosition" />
+                <!-- <ul id="gttPosition" /> -->
             </div>
             <div style="float: left;"><input type="button" disabled="true" id="addToTrello" title="Add this Gmail data to Trello" value="+Trello!" /></div>
         </div>
@@ -25,6 +25,10 @@
                   </select>
                   <select id="gttList" class="gttWhere">
                       <option value="">...please pick a board...</option>
+                  </select>
+                  <select id="gttPosition">
+                      <option value="below">below:</option>
+                      <option value="to">to:</option>
                   </select>
                   <select id="gttCard" class="gttWhere">
                       <option value="">...please pick a list...</option>
