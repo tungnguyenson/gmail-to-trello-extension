@@ -758,7 +758,8 @@ GmailToTrello.PopupView.prototype.bindGmailData = function(data) {
         .attr('gmail-body-raw', data.body_raw || '')
         .attr('gmail-body-md', data.body_md || '')
         .attr('gmail-link-raw', data.link_raw || '')
-        .attr('gmail-link-md', data.link_md || '');
+        .attr('gmail-link-md', data.link_md || '')
+        .attr('gmail-id', data.emailId || 0);
 
     var mime_html = function(tag, isImage) {
         var html = '';
@@ -949,7 +950,7 @@ GmailToTrello.PopupView.prototype.updateLists = function() {
 GmailToTrello.PopupView.prototype.updateCards = function() {
     var self = this;
 
-    const newcard_k = '<option value="-1">(top)</option>';
+    const newcard_k = '<option value="-1">(new card at top)</option>';
 
     var cards = this.data.trello.cards;
 
@@ -1093,40 +1094,41 @@ GmailToTrello.PopupView.prototype.updateMembers = function() {
 GmailToTrello.PopupView.prototype.validateData = function() {
     var self = this;
     var newCard = {};
-    var boardId = $('#gttBoard', this.$popup).val();
-    var listId = $('#gttList', this.$popup).val();
-    var position = $('#gttPosition', this.$popup).val();
-    var $card = $('#gttCard', this.$popup).find(':selected').first();
+    var boardId = $('#gttBoard', self.$popup).val();
+    var listId = $('#gttList', self.$popup).val();
+    var position = $('#gttPosition', self.$popup).val();
+    var $card = $('#gttCard', self.$popup).find(':selected').first();
     var cardId = $card.val() || '';
     var cardPos = $card.prop('pos') || '';
     var cardMembers = $card.prop('members') || '';
     var cardLabels = $card.prop('labels') || '';
-    var due_Date = $('#gttDue_Date', this.$popup).val();
-    var due_Time = $('#gttDue_Time', this.$popup).val();
-    var title = $('#gttTitle', this.$popup).val();
-    var description = $('#gttDesc', this.$popup).val();
-    var useBackLink = $('#chkBackLink', this.$popup).is(':checked');
-    var markdown = $('#chkMarkdown', this.$popup).is(':checked');
-    var timeStamp = $('.gH .gK .g3:first', this.$visibleMail).attr('title');
-    var popupWidth = this.$popup.css('width');
-    var labelsId = $('#gttLabels li.active', this.$popup).map(function(iter, item) {
+    var due_Date = $('#gttDue_Date', self.$popup).val();
+    var due_Time = $('#gttDue_Time', self.$popup).val();
+    var title = $('#gttTitle', self.$popup).val();
+    var description = $('#gttDesc', self.$popup).val();
+    var emailId = $('#gttDesc', self.$popup).attr('gmail-id') || 0;
+    var useBackLink = $('#chkBackLink', self.$popup).is(':checked');
+    var markdown = $('#chkMarkdown', self.$popup).is(':checked');
+    var timeStamp = $('.gH .gK .g3:first', self.$visibleMail).attr('title');
+    var popupWidth = self.$popup.css('width');
+    var labelsId = $('#gttLabels li.active', self.$popup).map(function(iter, item) {
             var val = $(item).attr('trelloId-label');
             return val;
         }).get().join();
-    var labelsCount = $('#gttLabels li', this.$popup).length;
+    var labelsCount = $('#gttLabels li', self.$popup).length;
 
-    if (!labelsCount && labelsId.length < 1 && this.data && this.data.settings && this.data.settings.labelsId) {
-        labelsId = this.data.settings.labelsId; // We're not yet showing labels so override labelsId with settings
+    if (!labelsCount && labelsId.length < 1 && self.data && self.data.settings && self.data.settings.labelsId) {
+        labelsId = self.data.settings.labelsId; // We're not yet showing labels so override labelsId with settings
     }
 
-    var membersId = $('#gttMembers li.active', this.$popup).map(function(iter, item) {
+    var membersId = $('#gttMembers li.active', self.$popup).map(function(iter, item) {
             var val = $(item).attr('trelloId-member');
             return val;
         }).get().join();
-    var membersCount = $('#gttMembers li', this.$popup).length;
+    var membersCount = $('#gttMembers li', self.$popup).length;
 
-    if (!membersCount && membersId.length < 1 && this.data && this.data.settings && this.data.settings.membersId) {
-        membersId = this.data.settings.membersId; // We're not yet showing members so override membersId with settings
+    if (!membersCount && membersId.length < 1 && self.data && self.data.settings && self.data.settings.membersId) {
+        membersId = self.data.settings.membersId; // We're not yet showing members so override membersId with settings
     }
 
     var mime_array = function (tag) {
@@ -1155,6 +1157,7 @@ GmailToTrello.PopupView.prototype.validateData = function() {
 
     if (validateStatus) {
         newCard = {
+            emailId: emailId,
             boardId: boardId,
             listId: listId,
             cardId: cardId,
@@ -1175,11 +1178,11 @@ GmailToTrello.PopupView.prototype.validateData = function() {
             position: position,
             timeStamp: timeStamp
         };
-        this.data.newCard = newCard;
-        $.extend(this.data.settings, newCard);
-        this.parent.saveSettings();
+        self.data.newCard = newCard;
+        $.extend(self.data.settings, newCard);
+        self.parent.saveSettings();
     }
-    $('#addToTrello', this.$popup).attr('disabled', validateStatus ? false : 'disabled');
+    $('#addToTrello', self.$popup).attr('disabled', validateStatus ? false : 'disabled');
 
     return validateStatus;
 };

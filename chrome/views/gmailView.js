@@ -250,21 +250,22 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     // <span data-thread-id="#thread-f:1602441164947422913" data-legacy-thread-id="163d03bfda277ec1" data-legacy-last-message-id="163d03bfda277ec1">Tips for using your new inbox</span>
     const ids_len_k = this.selectors.emailIDs.length;
     let iter = 0;
-    let emailId = 0;
+    
+    data.emailId = 0;
     do {
-        emailId = ($subject.attr(this.selectors.emailIDs[iter]) || '').trim(); // Try new Gmail format
-    } while (!emailId && ++iter < ids_len_k);
+        data.emailId = ($subject.attr(this.selectors.emailIDs[iter]) || '').trim(); // Try new Gmail format
+    } while (!data.emailId && ++iter < ids_len_k);
 
-    if (!emailId) { // try to find via explicitly named class item:
+    if (!data.emailId) { // try to find via explicitly named class item:
         var emailIdViaClass = $emailBody1.classList[$emailBody1.classList.length-1];
         if (emailIdViaClass && emailIdViaClass.length > 1) {
             if (emailIdViaClass.charAt(0) === 'm' && emailIdViaClass.charAt(1) <= '9') { // Only useful class is m####### otherwise use data legacy
-                emailId = emailIdViaClass.substr(1);
+                data.emailId = emailIdViaClass.substr(1);
             } else {
-                emailId = 0; // Didn't find anything useful
+                data.emailId = 0; // Didn't find anything useful
             }
         } else {
-            emailId = 0;
+            data.emailId = 0;
         }
     }
     
@@ -275,9 +276,9 @@ GmailToTrello.GmailView.prototype.parseData = function() {
     let txtDirect = 'https://mail.google.com/mail/#search/' + subject;
     let txtDirectComment = 'Search by subject';
 
-    if (emailId && emailId.length > 1) {
+    if (data.emailId && data.emailId.length > 1) {
         txtAnchor = 'Id';
-        txtDirect = 'https://mail.google.com' + window.location.pathname /* /mail/u/0/ */ + '#all/' + emailId;
+        txtDirect = 'https://mail.google.com' + window.location.pathname /* /mail/u/0/ */ + '#all/' + data.emailId;
         txtDirectComment = 'Open by id';
     }
    
