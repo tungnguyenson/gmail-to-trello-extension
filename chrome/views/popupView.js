@@ -212,7 +212,7 @@ GmailToTrello.PopupView.prototype.resetDragResize = function() {
             maxHeight: this.size_k.height.max,
             maxWidth: this.size_k.width.max,
             alsoResize: '#gttAttachments,#gttImages,#gttDesc,#gttTitle,#gttMembers,#gttLabels',
-            handles: 'w,sw,s,se,e'
+            handles: 'w,sw,s,se,e',
         });
 };
 
