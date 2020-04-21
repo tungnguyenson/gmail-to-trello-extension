@@ -1,10 +1,4 @@
 Gmail-to-Trello Extension
 =========================
 
-Published on Chrome Web Store: 
-https://chrome.google.com/webstore/detail/gmail-to-trello/oceoildfbiaeclndnjknjpfaoofeekgl?hl=en
-
-Support, commonly asked questions, interaction with other GtT fans:
-https://trello.com/b/CGU9BYgd/gmail-to-trello-extension
-
-There are some additional useful documents in ./docs folder.
+Work on this repo has been abandoned for a large name change we had to undergo due to us being unduely affected by Chrome Web Store hacking. Please join our open source efforts here: http://g2t.pub/github and our community here: http://g2t.support.
